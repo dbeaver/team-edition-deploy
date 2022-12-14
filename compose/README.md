@@ -14,7 +14,7 @@ Make sure that's all TCP ports from below list is available in your network stac
 
 #### There is some steps to run CloudBeaver DE with docker-compose:
 
-Change directory to `cbte (`cd cbte`).  
+Change directory to `cbte` (`cd cbte`).  
 
 1. Configure CloudBeaver settings by editing `.env` file. You must copy it from `.env.example` 
 
