@@ -44,6 +44,17 @@ do
 	export "$line"
 done < .env
 
+## Check certificate exists if scheme https 
+## But if Let's Encrypt arg used will pass this check
+if [[ $CLOUDBEAVER_SCHEME == "https" ]] || [[ -n "$1" ]] && [[ ! "$1" == "le" ]];
+then
+	if [ ! -f nginx/ssl/fullchain.pem ] || [ ! -f nginx/ssl/privkey.pem ];
+	then
+	  echo "Certificate or key not exist. Stopped"
+	  exit 1
+	fi
+fi
+
 # Untemplate sql init script
 CP_PG_USERS=("QM" "DC")
 for user in ${CP_PG_USERS[@]};
