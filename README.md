@@ -1,4 +1,4 @@
 ## CloudBeaver Team Edition
 
-- [Docker compose deployment](k8s)
+- [Docker compose deployment](compose)
 - [Kubernetes deployment](k8s)
