@@ -1,0 +1,12 @@
+location /dc {
+    proxy_pass       http://cloudbeaver-dc:8970;
+}
+location /rm {
+    proxy_pass       http://cloudbeaver-rm:8971;
+}
+location /qm {
+    proxy_pass       http://cloudbeaver-qm:8972;
+}
+location / {
+    proxy_pass       http://cloudbeaver-te:8978;
+}

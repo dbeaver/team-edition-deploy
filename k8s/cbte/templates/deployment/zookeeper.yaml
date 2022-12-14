@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: zookeeper
+  name: zookeeper
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zookeeper
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        {{ .Release.Name }}-net: "true"
+        app: zookeeper
+    spec:
+      securityContext:
+        runAsUser: 1001
+        fsGroup: 1001      
+      containers:
+        - image: docker.io/bitnami/zookeeper:3.8
+          imagePullPolicy: "IfNotPresent"
+          name: zookeeper
+          env:
+            - name: ALLOW_ANONYMOUS_LOGIN
+              value: "yes"
+          ports:
+            - containerPort: 2181
+          resources: {}
+          volumeMounts:
+            - mountPath: /bitnami
+              name: {{ .Release.Name }}-zookeeper-data
+      hostname: zookeeper
+      restartPolicy: Always
+      volumes:
+        - name: {{ .Release.Name }}-zookeeper-data
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-zookeeper-data
+status: {}

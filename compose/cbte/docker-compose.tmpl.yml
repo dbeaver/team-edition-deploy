@@ -1,0 +1,160 @@
+version: "3"
+
+volumes:
+  metadata_data: {}
+  de_data: {}
+  dc_data: {}
+  rm_data: {}
+  qm_data: {}
+  zookeeper_data: {}
+  kafka_data: {}
+
+networks:
+  cloudbeaver-te-net:
+
+
+services:
+  nginx:
+    restart: unless-stopped
+    image: nginx
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - cloudbeaver-te-net
+    env_file:
+      - ./.env  
+    depends_on:
+      - cloudbeaver-te
+      - cloudbeaver-dc
+      - cloudbeaver-rm
+      - cloudbeaver-qm
+
+  zookeeper:
+    restart: unless-stopped
+    image: docker.io/bitnami/zookeeper:3.8
+    expose:
+      - 2181
+    volumes:
+      - "zookeeper_data:/bitnami"
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    networks:
+      - cloudbeaver-te-net
+
+  kafka:
+    restart: unless-stopped
+    image: docker.io/bitnami/kafka:3.2
+    hostname: kafka
+    expose:
+      - 9092
+    volumes:
+      - "kafka_data:/bitnami"
+    environment:
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    depends_on:
+      - zookeeper
+    networks:
+      - cloudbeaver-te-net
+
+  postgres:
+    restart: unless-stopped
+    hostname: postgres
+    image: postgres:14
+    volumes:
+      - metadata_data:/var/lib/postgresql/data
+      - ./cloudbeaver-db-init.sql:/docker-entrypoint-initdb.d/cb-init.sql
+    env_file:
+      - ./.env
+    environment:
+      - POSTGRES_DB: cloudbeaver
+    expose:
+      - 5432
+    networks:
+      - cloudbeaver-te-net
+
+  cloudbeaver-te:
+    restart: unless-stopped
+    hostname: cloudbeaver-te    
+    image: dbeaver/cloudbeaver-te:${CLOUDBEAVER_VERSION_TAG}
+    pull_policy: always
+    volumes:
+      - de_data:/opt/cloudbeaver/workspace
+      - ./cert/public/:/opt/cloudbeaver/conf/certificates/
+    environment:
+      - CLOUDBEAVER_DC_SERVER_URL: http://cloudbeaver-dc:8970/dc
+    env_file:
+      - ./.env
+    expose:
+      - 8978
+    depends_on:
+      - cloudbeaver-dc
+      - cloudbeaver-rm
+      - cloudbeaver-qm
+    networks:
+      - cloudbeaver-te-net
+
+  cloudbeaver-dc:
+    restart: unless-stopped
+    image: dbeaver/cloudbeaver-dc:${CLOUDBEAVER_VERSION_TAG}
+    hostname: cloudbeaver-dc
+    pull_policy: always
+    environment:
+      - CLOUDBEAVER_DC_SERVER_URL: http://cloudbeaver-dc:8970/dc
+      - CLOUDBEAVER_QM_SERVER_URL: http://cloudbeaver-qm:8972/qm
+      - CLOUDBEAVER_RM_SERVER_URL: http://cloudbeaver-rm:8971/rm
+      - CLOUDBEAVER_DC_BACKEND_DB_URL: jdbc:postgresql://postgres:5432/cloudbeaver?currentSchema=dc
+      - CLOUDBEAVER_DC_BACKEND_DB_USER: dc
+      - CLOUDBEAVER_QM_BACKEND_DB_URL: jdbc:postgresql://postgres:5432/cloudbeaver?currentSchema=qm
+      - CLOUDBEAVER_QM_BACKEND_DB_USER: qm
+    env_file:
+      - ./.env
+    volumes:
+      - dc_data:/opt/domain-controller/workspace
+      - ./cert/private/:/opt/domain-controller/conf/certificates/
+    depends_on: 
+      - postgres
+    expose:
+      - 8970
+    networks:
+      - cloudbeaver-te-net
+
+  cloudbeaver-rm:
+    restart: unless-stopped
+    image: dbeaver/cloudbeaver-rm:${CLOUDBEAVER_VERSION_TAG}
+    hostname: cloudbeaver-rm
+    pull_policy: always
+    env_file:
+      - ./.env
+    environment:
+      - CLOUDBEAVER_DC_SERVER_URL: http://cloudbeaver-dc:8970/dc      
+    volumes:
+      - rm_data:/opt/resource-manager/workspace
+      - ./cert/public/:/opt/resource-manager/conf/certificates/
+    depends_on: 
+      - cloudbeaver-dc
+    expose:
+      - 8971
+    networks:
+      - cloudbeaver-te-net
+
+  cloudbeaver-qm:
+    restart: unless-stopped
+    image: dbeaver/cloudbeaver-qm:${CLOUDBEAVER_VERSION_TAG}
+    hostname: cloudbeaver-qm
+    pull_policy: always
+    env_file:
+      - ./.env
+    environment:
+      - CLOUDBEAVER_DC_SERVER_URL: http://cloudbeaver-dc:8970/dc      
+    volumes:
+      - qm_data:/opt/query-manager/workspace
+      - ./cert/public/:/opt/query-manager/conf/certificates/
+    depends_on:   
+      - postgres
+      - cloudbeaver-dc
+    expose:
+      - 8972
+    networks:
+      - cloudbeaver-te-net

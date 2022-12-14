@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-init-db
+  labels:
+    app: db
+data:
+  cb-init.sql: |-
+    {{ range .Files.Lines "files/db-schema.sql" }}
+    {{ . }}{{ end }}

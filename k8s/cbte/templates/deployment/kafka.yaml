@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: kafka
+  name: kafka
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        {{ .Release.Name }}-net: "true"
+        app: kafka
+    spec:
+      securityContext:
+        runAsUser: 1001
+        fsGroup: 1001         
+      containers:
+        - image: docker.io/bitnami/kafka:3.2
+          imagePullPolicy: "IfNotPresent"
+          name: kafka
+          env:
+            - name: KAFKA_CFG_ZOOKEEPER_CONNECT
+              value: "zookeeper:2181"
+            - name: ALLOW_PLAINTEXT_LISTENER
+              value: "yes"
+          ports:
+            - containerPort: 9092
+          resources: {}
+          volumeMounts:
+            - mountPath: /bitnami
+              name: {{ .Release.Name }}-kafka-data
+      hostname: kafka
+      restartPolicy: Always
+      volumes:
+        - name: {{ .Release.Name }}-kafka-data
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-kafka-data
+status: {}
