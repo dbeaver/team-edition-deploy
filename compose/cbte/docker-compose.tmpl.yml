@@ -68,7 +68,7 @@ services:
     env_file:
       - ./.env
     environment:
-      - POSTGRES_DB: cloudbeaver
+      - POSTGRES_DB=cloudbeaver
     expose:
       - 5432
     networks:
@@ -83,7 +83,7 @@ services:
       - de_data:/opt/cloudbeaver/workspace
       - ./cert/public/:/opt/cloudbeaver/conf/certificates/
     environment:
-      - CLOUDBEAVER_DC_SERVER_URL: http://cloudbeaver-dc:8970/dc
+      - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
     env_file:
       - ./.env
     expose:
@@ -101,13 +101,13 @@ services:
     hostname: cloudbeaver-dc
     pull_policy: always
     environment:
-      - CLOUDBEAVER_DC_SERVER_URL: http://cloudbeaver-dc:8970/dc
-      - CLOUDBEAVER_QM_SERVER_URL: http://cloudbeaver-qm:8972/qm
-      - CLOUDBEAVER_RM_SERVER_URL: http://cloudbeaver-rm:8971/rm
-      - CLOUDBEAVER_DC_BACKEND_DB_URL: jdbc:postgresql://postgres:5432/cloudbeaver?currentSchema=dc
-      - CLOUDBEAVER_DC_BACKEND_DB_USER: dc
-      - CLOUDBEAVER_QM_BACKEND_DB_URL: jdbc:postgresql://postgres:5432/cloudbeaver?currentSchema=qm
-      - CLOUDBEAVER_QM_BACKEND_DB_USER: qm
+      - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
+      - CLOUDBEAVER_QM_SERVER_URL=http://cloudbeaver-qm:8972/qm
+      - CLOUDBEAVER_RM_SERVER_URL=http://cloudbeaver-rm:8971/rm
+      - CLOUDBEAVER_DC_BACKEND_DB_URL=jdbc:postgresql://postgres:5432/cloudbeaver?currentSchema=dc
+      - CLOUDBEAVER_DC_BACKEND_DB_USER=dc
+      - CLOUDBEAVER_QM_BACKEND_DB_URL=jdbc:postgresql://postgres:5432/cloudbeaver?currentSchema=qm
+      - CLOUDBEAVER_QM_BACKEND_DB_USER=qm
     env_file:
       - ./.env
     volumes:
@@ -128,7 +128,7 @@ services:
     env_file:
       - ./.env
     environment:
-      - CLOUDBEAVER_DC_SERVER_URL: http://cloudbeaver-dc:8970/dc      
+      - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc      
     volumes:
       - rm_data:/opt/resource-manager/workspace
       - ./cert/public/:/opt/resource-manager/conf/certificates/
@@ -147,7 +147,7 @@ services:
     env_file:
       - ./.env
     environment:
-      - CLOUDBEAVER_DC_SERVER_URL: http://cloudbeaver-dc:8970/dc      
+      - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc      
     volumes:
       - qm_data:/opt/query-manager/workspace
       - ./cert/public/:/opt/query-manager/conf/certificates/
