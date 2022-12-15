@@ -18,7 +18,7 @@ Change directory to `cbte`.
 
 1. Configure CloudBeaver settings by editing `.env` file. You must copy it from `.env.example` 
 
-2. Configure domain name. 
+2. Configure domain name (optional). 
 
     You may skip this step, in this case cluster will be configured for localhost.  
     Set CLOUDBEAVER_DOMAIN property to desired domain name.
