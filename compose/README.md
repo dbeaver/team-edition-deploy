@@ -14,20 +14,25 @@ Make sure that's all TCP ports from below list is available in your network stac
 
 #### There is some steps to run CloudBeaver DE with docker-compose:
 
-Change directory to `cbte` (`cd cbte`).  
+Change directory to `cbte`.  
 
 1. Configure CloudBeaver settings by editing `.env` file. You must copy it from `.env.example` 
 
-2. Create A dns records for `CLOUDBEAVER_DOMAIN`:
+2. Configure domain name. 
 
-3. If you set *https* endpoint scheme in `.env` than create valid TLS certificate for a domain endpoint `CLOUDBEAVER_DOMAIN` and place it into `compose/cbte/nginx/ssl`.
+    You may skip this step, in this case cluster will be configured for localhost.  
+    Set CLOUDBEAVER_DOMAIN property to desired domain name.
+    Create A dns records for `CLOUDBEAVER_DOMAIN`. 
+    
+3. Configure SSL (optional). 
+
+     If you set *https* endpoint scheme in `.env` than create valid TLS certificate for a domain endpoint `CLOUDBEAVER_DOMAIN` and place it into `compose/cbte/nginx/ssl`.
 
     - generate SSL certificate for a domain `CLOUDBEAVER_DOMAIN` specified in `.env` and put it to `compose/cbte/nginx/ssl/fullchain.pem` as certificate and `compose/cbte/nginx/ssl/privkey.pem` as a private key.
     
     __or__
 
     - if you set up CloudBeaver in public network you can get certificate from LetsEncrypt provider by starting `install.sh` script with `le` argument. 
-
 
 4. Prepare CloudBeaver environment.
 	- `chmod +x install.sh`
