@@ -28,21 +28,16 @@ Change directory to `cbte`.
 
      If you set *https* endpoint scheme in `.env` than create valid TLS certificate for a domain endpoint `CLOUDBEAVER_DOMAIN` and place it into `compose/cbte/nginx/ssl`.
 
-    - generate SSL certificate for a domain `CLOUDBEAVER_DOMAIN` specified in `.env` and put it to `compose/cbte/nginx/ssl/fullchain.pem` as certificate and `compose/cbte/nginx/ssl/privkey.pem` as a private key.
-    
-    __or__
-
+    - generate SSL certificate for a domain `CLOUDBEAVER_DOMAIN` specified in `.env` and put it to `compose/cbte/nginx/ssl/fullchain.pem` as certificate and `compose/cbte/nginx/ssl/privkey.pem` as a private key.  
+    or
     - if you set up CloudBeaver in public network you can get certificate from LetsEncrypt provider by starting `install.sh` script with `le` argument. 
 
 4. Prepare CloudBeaver environment.
-	- `chmod +x install.sh`
-	- `./install.sh`
-
+    - `./install.sh`  
     or
-
     - `./install.sh le`  to use it with LetsEncrypt
 
-5. Start CloudBeaver
+5. Start the cluster
 	- `docker-compose up -d`
 
 
