@@ -1,7 +1,7 @@
 # CloudBeaver Team Edition Install
 ## installation
 
-For start to use CloudBeaver DE you need to have several dependencies:
+System requirements:
 - Linux or Mac OS
 - cURL installed
 - [Docker](https://docs.docker.com/engine/install/ubuntu/) installed. Make sure you have chosen the right OS distro.
@@ -12,7 +12,7 @@ Make sure that's all TCP ports from below list is available in your network stac
  - 80/tcp
  - 443/tcp
 
-#### There is some steps to run CloudBeaver DE with docker-compose:
+### Configuring and starting CloudBeaver Team cluster:
 
 Change directory to `cbte`.  
 
@@ -21,7 +21,7 @@ Change directory to `cbte`.
 2. Configure domain name (optional). 
 
     You may skip this step, in this case cluster will be configured for localhost.  
-    Set CLOUDBEAVER_DOMAIN property to desired domain name.
+    Set CLOUDBEAVER_DOMAIN property to desired domain name.  
     Create A dns records for `CLOUDBEAVER_DOMAIN`. 
     
 3. Configure SSL (optional). 
@@ -40,14 +40,11 @@ Change directory to `cbte`.
 5. Start the cluster
 	- `docker-compose up -d`
 
+### Services will be accessible in next uris:
 
-#### Services will be accessible in next uris:
+- CloudBeaver https://__CLOUDBEAVER_DOMAIN__ - main CloudBeaver user interface. It will open admin panel on first start
+- CloudBeaver https://__CLOUDBEAVER_DOMAIN__/dc - endpoint for desktop applications
 
-CloudBeaver https://__CLOUDBEAVER_DOMAIN__
-
-DBeaver DC Link https://__CLOUDBEAVER_DOMAIN__/dc
-
-RM https://__CLOUDBEAVER_DOMAIN__/rm
-
-QM https://__CLOUDBEAVER_DOMAIN__/qm
-
+### Stopping the cluster
+`docker-compose down`
+      
