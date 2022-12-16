@@ -37,4 +37,8 @@ cloudbeaverQM:
   replicaCount: 1
   image: dbeaver/cloudbeaver-qm
 
+dbPasswords:
+  postgres: postgres
+  dc: DCpassword
+  qm: QMpassword
 

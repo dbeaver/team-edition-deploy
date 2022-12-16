@@ -21,9 +21,16 @@ spec:
         - image: postgres:13
           imagePullPolicy: "IfNotPresent"
           name: postgres
-          envFrom:
-          - configMapRef:
-              name: {{ .Release.Name }}-db
+          env:
+            - name: POSTGRES_DB
+              value: cloudbeaver
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-db-pass
+                  key: postgres-pass
           ports:
             - containerPort: 5432
           resources: {}
@@ -31,8 +38,8 @@ spec:
             - mountPath: /var/lib/postgresql/data
               name: {{ .Release.Name }}-db-data
             - name: {{ .Release.Name }}-initalize-script
-              mountPath: /docker-entrypoint-initdb.d/cb-init.sql
-              subPath: cb-init.sql
+              mountPath: /docker-entrypoint-initdb.d
+              readOnly: true
       hostname: postgres
       restartPolicy: Always
       volumes:
@@ -40,6 +47,9 @@ spec:
           persistentVolumeClaim:
             claimName: {{ .Release.Name }}-db-data
         - name: {{ .Release.Name }}-initalize-script
-          configMap:
-            name: {{ .Release.Name }}-init-db
+          secret:
+            secretName: {{ .Release.Name }}-init-db
+            items:
+              - key: cb-init.sql
+                path: cb-init.sql
 status: {}

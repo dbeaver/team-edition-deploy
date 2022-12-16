@@ -1,5 +1,5 @@
 apiVersion: v2
-name: cloudbeaver-te
+name: cbte
 description: A Helm chart for CloudBeaver TE application
 type: application
 version: 0.0.1

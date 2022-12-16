@@ -18,11 +18,11 @@ spec:
         {{ .Release.Name }}-net: "true"
         app: cloudbeaver-qm
     spec:
-      securityContext:
-          runAsUser: 1000
-          runAsGroup: 1000
-          fsGroup: 1000
-          fsGroupChangePolicy: "Always"      
+      # securityContext:
+      #     runAsUser: 1000
+      #     runAsGroup: 1000
+      #     fsGroup: 1000
+      #     fsGroupChangePolicy: "Always"      
       containers:
         - image: "{{ .Values.cloudbeaverQM.image }}:{{ .Values.cloudbeaver.imageTag | default .Chart.AppVersion }}"
           imagePullPolicy: "{{ .Values.cloudbeaver.pullPolicy }}"
