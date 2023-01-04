@@ -9,6 +9,14 @@ proxy_set_header Host $http_host;
 proxy_read_timeout 1800s;
 
 # Allow websocket connections
+map $http_upgrade $connection_upgrade {
+        default          upgrade;
+
+        # See http://nginx.org/en/docs/http/ngx_http_upstream_module.html#keepalive
+        ''               '';
+
+}
+
 proxy_set_header                        Upgrade           $http_upgrade;
 
 proxy_set_header                        Connection        $connection_upgrade;
