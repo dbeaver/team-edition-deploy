@@ -3,14 +3,34 @@
 CERT_CSR="/C=US/ST=NY/L=NYC/O=CloudBeaver Security/OU=IT Department/CN=cloudbeaver.io"
 SECRET_CERT_CSR="/C=US/ST=NY/L=NYC/O=CloudBeaver Secret /OU=IT Department/CN=cloudbeaver.io"
 
+shopt -s expand_aliases
 set -e
 
-if ! [ -x "$(command -v docker)" ] && [ -x "$(command -v docker-compose)" ]; then
-  echo 'Error: docker or docker-compose is not installed.' >&2
+### Check docker installed
+if ! [ -x "$(command -v docker)" ]; then
+  echo 'Error: docker is not installed.' >&2
+  exit 1
+fi
+
+#### Ckech user can use docker 
+if ! docker ps  > /dev/null 2>&1; then
+  echo "You need to add $(whoami) user in to docker group." >&2
+  echo "Example: sudo gpasswd -a $(whoami) docker" >&2
+  echo "After that you must reload session - logout, login" >&2
   exit 1
 fi
 
 
+if docker compose > /dev/null 2>&1; then
+	echo "Docker compose plugin temporary aliased in to docker-compose"
+	alias docker-compose="docker compose"
+elif docker-compose > /dev/null 2>&1; then  
+  echo "Found docker-compose binary. "
+else 
+	echo "docker compose plugin or docker-compose binary not installed."
+	echo "Go to Docker Compose Install Docks: https://docs.docker.com/compose/install/" 
+	exit 1
+fi
 
 compose_ver=`docker-compose version --short`
 if [ "${compose_ver%%.*}" -ge 2 ]; then

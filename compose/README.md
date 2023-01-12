@@ -6,6 +6,8 @@ System requirements:
 - cURL installed
 - [Docker](https://docs.docker.com/engine/install/ubuntu/) installed. Make sure you have chosen the right OS distro.
 - [docker-compose](https://docs.docker.com/compose/install/) binary installed and added to you PATH variable. Supported version 2.10 and above
+    
+    - **Be carefull. If you install `docker-compose-plugin` you must use `docker compose` command instead of `docker-compose`**
 - openssl. Presented on your OS usually
 
 Make sure that's all TCP ports from below list is available in your network stack.
@@ -38,7 +40,7 @@ Change directory to `cbte`.
     - `./install.sh le`  to use it with LetsEncrypt
 
 5. Start the cluster
-	- `docker-compose up -d`
+	- `docker-compose up -d` or `docker compose up -d` 
 
 ### Services will be accessible in next uris:
 
