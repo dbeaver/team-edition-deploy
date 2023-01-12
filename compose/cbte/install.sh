@@ -10,9 +10,14 @@ if ! [ -x "$(command -v docker)" ] && [ -x "$(command -v docker-compose)" ]; the
   exit 1
 fi
 
+
+
 compose_ver=`docker-compose version --short`
 if [ "${compose_ver%%.*}" -ge 2 ]; then
 	echo "compose is actual"
+else
+	echo "To use this app, you must use docker-compose version 2.x or later."
+	exit 1
 fi
 
 if [ ! -e ".env" ] ; then
