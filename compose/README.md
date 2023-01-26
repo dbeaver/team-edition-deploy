@@ -7,7 +7,7 @@ System requirements:
 - [Docker](https://docs.docker.com/engine/install/ubuntu/) installed. Make sure you have chosen the right OS distro.
 - [docker-compose](https://docs.docker.com/compose/install/) binary installed and added to you PATH variable. Supported version 2.10 and above
     
-    - **Be carefull. If you install `docker-compose-plugin` you must use `docker compose` command instead of `docker-compose`**
+    - **Be careful. If you install `docker-compose-plugin` you must use `docker compose` command instead of `docker-compose`**
 - openssl. Presented on your OS usually
 
 Make sure that's all TCP ports from below list is available in your network stack.
