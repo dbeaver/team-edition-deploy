@@ -17,6 +17,8 @@ server {
 server {
     listen 443 ssl;
     server_name $CLOUDBEAVER_DOMAIN;
+    
+    client_max_body_size 500M;
 
     include /etc/nginx/conf.d/cloudbeaver.locations;
 }

@@ -17,6 +17,7 @@ metadata:
     nginx.ingress.kubernetes.io/session-cookie-change-on-failure: "true"
     nginx.ingress.kubernetes.io/session-cookie-secure: "true"
     nginx.ingress.kubernetes.io/session-cookie-max-age: "345600"
+    nginx.ingress.kubernetes.io/proxy-body-size: "500m"
     # nginx.ingress.kubernetes.io/use-regex: true
 spec:
 {{- if eq "https" .Values.httpScheme }}    

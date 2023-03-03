@@ -24,6 +24,8 @@ server {
     ssl_certificate /etc/letsencrypt/live/$CLOUDBEAVER_DOMAIN/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/$CLOUDBEAVER_DOMAIN/privkey.pem;    
 
+    client_max_body_size 500M;
+    
     include /etc/nginx/conf.d/cloudbeaver.locations;
 
     location /.well-known/acme-challenge/ {
