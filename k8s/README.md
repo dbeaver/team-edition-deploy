@@ -41,6 +41,15 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `helm install cloudbeaver ./cbte`
 
 
+### Version update procedure.
+
+1. Change directory to `team-edition-deploy/k8s`.
+
+2. Change value of `imageTag` in configuration file `k8s/cbte/values.yaml` with a preferred version. Go to next step if tag `latest` set.
+
+3. Upgrade cluster: `helm upgrade cloudbeaver ./cbte` 
+
+
 #### DO proxy hack
 
 Edit ingress controller with:

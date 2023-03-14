@@ -49,3 +49,14 @@ Ensure all TCP ports from the below list are available in your network stack.
 
 ### Stopping the cluster
 `docker-compose down`
+
+
+### Version update procedure.
+
+1. Change directory to `team-edition-deploy/compose/cbte`.
+
+2. Change value of `CLOUDBEAVER_VERSION_TAG` in `.env` with a preferred version. Go to next step if tag `latest` set.
+
+3. Pull new docker images: `docker-compose pull` or `docker compose pull`  
+
+4. Retart cluster: `docker-compose up -d` or `docker compose up -d` 
