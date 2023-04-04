@@ -22,6 +22,8 @@ spec:
           imagePullPolicy: "IfNotPresent"
           name: postgres
           env:
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
             - name: POSTGRES_DB
               value: cloudbeaver
             - name: POSTGRES_USER
