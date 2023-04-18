@@ -7,6 +7,9 @@ location /rm {
 location /qm {
     proxy_pass       http://cloudbeaver-qm:8972;
 }
+location /tm {
+    proxy_pass       http://cloudbeaver-tm:8973;
+}
 
 location /api/ws {
     proxy_pass       http://cloudbeaver-te:8978;
