@@ -64,11 +64,10 @@ services:
     image: postgres:14
     volumes:
       - metadata_data:/var/lib/postgresql/data
-      - ./cloudbeaver-db-init.sql:/docker-entrypoint-initdb.d/cb-init.sql
-    env_file:
-      - ./.env
     environment:
       - POSTGRES_DB=cloudbeaver
+      - POSTGRES_USER=${CLOUDBEAVER_DB_USER}
+      - POSTGRES_PASSWORD=${CLOUDBEAVER_DB_PASSWORD}
     expose:
       - 5432
     networks:
@@ -104,17 +103,11 @@ services:
       - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
       - CLOUDBEAVER_QM_SERVER_URL=http://cloudbeaver-qm:8972/qm
       - CLOUDBEAVER_RM_SERVER_URL=http://cloudbeaver-rm:8971/rm
-      - CLOUDBEAVER_DC_BACKEND_DB_URL=jdbc:postgresql://postgres:5432/cloudbeaver?currentSchema=dc
-      - CLOUDBEAVER_DC_BACKEND_DB_USER=dc
-      - CLOUDBEAVER_QM_BACKEND_DB_URL=jdbc:postgresql://postgres:5432/cloudbeaver?currentSchema=qm
-      - CLOUDBEAVER_QM_BACKEND_DB_USER=qm
     env_file:
       - ./.env
     volumes:
       - dc_data:/opt/domain-controller/workspace
       - ./cert/private/:/opt/domain-controller/conf/certificates/
-    depends_on: 
-      - postgres
     expose:
       - 8970
     networks:
@@ -151,8 +144,7 @@ services:
     volumes:
       - qm_data:/opt/query-manager/workspace
       - ./cert/public/:/opt/query-manager/conf/certificates/
-    depends_on:   
-      - postgres
+    depends_on:
       - cloudbeaver-dc
     expose:
       - 8972

@@ -37,8 +37,16 @@ cloudbeaverQM:
   replicaCount: 1
   image: dbeaver/cloudbeaver-qm
 
-dbPasswords:
-  postgres: postgres
-  dc: DCpassword
-  qm: QMpassword
-
+# Backend DB connection set.
+# if you prefer to use your own database: 
+# change internal_db variable to false and configure jdbc url cloudbeaver_db_url variable.
+# Supported db engines and drivers:
+# - for postgresql use postgres-jdbc driver.
+# - for mysql use mysql8 driver.
+# - for oracle use oracle_thin driver.
+backend:
+  internal_db: true
+  cloudbeaver_db_driver: postgres-jdbc
+  cloudbeaver_db_url: jdbc:postgresql://postgres:5432/cloudbeaver
+  cloudbeaver_db_user: postgres
+  cloudbeaver_db_password: postgres    
