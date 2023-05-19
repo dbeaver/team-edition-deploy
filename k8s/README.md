@@ -16,8 +16,6 @@
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`git clone https://github.com/dbeaver/team-edition-deploy`
 
-* Create `k8s/cbte/values.yaml` from `k8s/cbte/example.values.yaml`
-
 * Edit chart values in `k8s/cbte/values.yaml`
 
 * Add an A record in your DNS hosting for a value of `cloudbeaverBaseDomain` variable with load balancer IP address.

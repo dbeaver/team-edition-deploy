@@ -1,4 +1,3 @@
-{{- if .Values.backend.internal_db }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -13,4 +12,3 @@ spec:
     requests:
       storage: 2Gi
 status: {}
-{{- end }}

@@ -26,18 +26,25 @@ spec:
       containers:
         - image: "{{ .Values.cloudbeaverDC.image }}:{{ .Values.cloudbeaver.imageTag | default .Chart.AppVersion }}"
           imagePullPolicy: "{{ .Values.cloudbeaver.pullPolicy }}"
-          env:            
-            - name: CLOUDBEAVER_DB_URL
-              value: "{{ .Values.backend.cloudbeaver_db_url }}"
-            - name: CLOUDBEAVER_DB_DRIVER
-              value: "{{ .Values.backend.cloudbeaver_db_driver }}"
-            - name: CLOUDBEAVER_DB_USER
-              value: "{{ .Values.backend.cloudbeaver_db_user }}"
-            - name: CLOUDBEAVER_DB_PASSWORD
+          env:
+            - name: CLOUDBEAVER_DC_BACKEND_DB_URL
+              value: jdbc:postgresql://postgres:5432/cloudbeaver?currentSchema=dc
+            - name: CLOUDBEAVER_QM_BACKEND_DB_URL
+              value: jdbc:postgresql://postgres:5432/cloudbeaver?currentSchema=qm
+            - name: CLOUDBEAVER_DC_BACKEND_DB_USER
+              value: dc
+            - name: CLOUDBEAVER_DC_BACKEND_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ .Release.Name }}-db-pass
-                  key: postgres-pass
+                  key: dc-pass
+            - name: CLOUDBEAVER_QM_BACKEND_DB_USER
+              value: qm
+            - name: CLOUDBEAVER_QM_BACKEND_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-db-pass
+                  key: qm-pass
             - name: CLOUDBEAVER_DC_SERVER_URL
               value: "http://cloudbeaver-dc:8970/dc"
             - name: CLOUDBEAVER_RM_SERVER_URL

@@ -64,6 +64,8 @@ services:
     image: postgres:14
     volumes:
       - metadata_data:/var/lib/postgresql/data
+    env_file:
+      - ./.env
     environment:
       - POSTGRES_DB=cloudbeaver
       - POSTGRES_USER=${CLOUDBEAVER_DB_USER}
@@ -111,6 +113,8 @@ services:
     volumes:
       - dc_data:/opt/domain-controller/workspace
       - ./cert/private/:/opt/domain-controller/conf/certificates/
+    depends_on: 
+      - postgres
     expose:
       - 8970
     networks:
@@ -147,7 +151,8 @@ services:
     volumes:
       - qm_data:/opt/query-manager/workspace
       - ./cert/public/:/opt/query-manager/conf/certificates/
-    depends_on:
+    depends_on:   
+      - postgres
       - cloudbeaver-dc
     expose:
       - 8972
