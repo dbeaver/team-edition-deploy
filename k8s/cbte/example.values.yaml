@@ -37,6 +37,10 @@ cloudbeaverQM:
   replicaCount: 1
   image: dbeaver/cloudbeaver-qm
 
+dbPasswords:
+  postgres: postgres
+
+
 # Backend DB connection set.
 # if you prefer to use your own database: 
 # change internal_db variable to false and configure jdbc url cloudbeaver_db_url variable.
