@@ -80,6 +80,29 @@ then
 	fi
 fi
 
+# Untemplate sql init script
+CP_PG_USERS=("QM" "DC")
+for user in ${CP_PG_USERS[@]};
+do
+	password=CLOUDBEAVER_"$user"_BACKEND_DB_PASSWORD
+
+	case $(uname) in
+
+	  Linux)
+	    sed -i s/"$user"password/"${!password}"/ cloudbeaver-db-init.sql
+	    ;;
+
+	  Darwin)
+	    sed -i'' -e s/"$user"password/"${!password}"/g cloudbeaver-db-init.sql
+	    ;;
+
+	  *)
+	    echo -n "unknown OS Type. Sed tool may be incompatible"
+	    ;;
+	esac	
+	
+done 
+
 #### Untemplate compose
 # create empty compose yml file 
 touch docker-compose.yml
