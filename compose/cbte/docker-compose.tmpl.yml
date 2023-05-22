@@ -10,7 +10,8 @@ volumes:
   kafka_data: {}
 
 networks:
-  cloudbeaver-te-net:
+  cloudbeaver-te-public-net:
+  cloudbeaver-te-private-net:
 
 
 services:
@@ -21,7 +22,7 @@ services:
       - 80:80
       - 443:443
     networks:
-      - cloudbeaver-te-net
+      - cloudbeaver-te-public-net
     env_file:
       - ./.env  
     depends_on:
@@ -40,7 +41,7 @@ services:
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
     networks:
-      - cloudbeaver-te-net
+      - cloudbeaver-te-public-net
 
   kafka:
     restart: unless-stopped
@@ -56,7 +57,7 @@ services:
     depends_on:
       - zookeeper
     networks:
-      - cloudbeaver-te-net
+      - cloudbeaver-te-public-net
 
   postgres:
     restart: unless-stopped
@@ -65,14 +66,14 @@ services:
     volumes:
       - metadata_data:/var/lib/postgresql/data
       - ./cloudbeaver-db-init.sql:/docker-entrypoint-initdb.d/cb-init.sql
-    env_file:
-      - ./.env
     environment:
       - POSTGRES_DB=cloudbeaver
+      - POSTGRES_USER=${CLOUDBEAVER_DB_USER}
+      - POSTGRES_PASSWORD=${CLOUDBEAVER_DB_PASSWORD}      
     expose:
       - 5432
     networks:
-      - cloudbeaver-te-net
+      - cloudbeaver-te-private-net
 
   cloudbeaver-te:
     restart: unless-stopped
@@ -93,7 +94,7 @@ services:
       - cloudbeaver-rm
       - cloudbeaver-qm
     networks:
-      - cloudbeaver-te-net
+      - cloudbeaver-te-public-net
 
   cloudbeaver-dc:
     restart: unless-stopped
@@ -104,10 +105,12 @@ services:
       - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
       - CLOUDBEAVER_QM_SERVER_URL=http://cloudbeaver-qm:8972/qm
       - CLOUDBEAVER_RM_SERVER_URL=http://cloudbeaver-rm:8971/rm
-      - CLOUDBEAVER_DC_BACKEND_DB_URL=jdbc:postgresql://postgres:5432/cloudbeaver?currentSchema=dc
-      - CLOUDBEAVER_DC_BACKEND_DB_USER=dc
-      - CLOUDBEAVER_QM_BACKEND_DB_URL=jdbc:postgresql://postgres:5432/cloudbeaver?currentSchema=qm
-      - CLOUDBEAVER_QM_BACKEND_DB_USER=qm
+      - CLOUDBEAVER_DC_BACKEND_DB_URL=${CLOUDBEAVER_DB_URL}?currentSchema=dc
+      - CLOUDBEAVER_DC_BACKEND_DB_USER=${CLOUDBEAVER_DB_USER}
+      - CLOUDBEAVER_DC_BACKEND_DB_PASSWORD=${CLOUDBEAVER_DB_PASSWORD}
+      - CLOUDBEAVER_QM_BACKEND_DB_URL=${CLOUDBEAVER_DB_URL}?currentSchema=qm
+      - CLOUDBEAVER_QM_BACKEND_DB_USER=${CLOUDBEAVER_DB_USER}
+      - CLOUDBEAVER_QM_BACKEND_DB_PASSWORD=${CLOUDBEAVER_DB_PASSWORD}
     env_file:
       - ./.env
     volumes:
@@ -118,7 +121,8 @@ services:
     expose:
       - 8970
     networks:
-      - cloudbeaver-te-net
+      - cloudbeaver-te-public-net
+      - cloudbeaver-te-private-net
 
   cloudbeaver-rm:
     restart: unless-stopped
@@ -137,7 +141,7 @@ services:
     expose:
       - 8971
     networks:
-      - cloudbeaver-te-net
+      - cloudbeaver-te-public-net
 
   cloudbeaver-qm:
     restart: unless-stopped
@@ -157,4 +161,5 @@ services:
     expose:
       - 8972
     networks:
-      - cloudbeaver-te-net
+      - cloudbeaver-te-public-net
+      - cloudbeaver-te-private-net

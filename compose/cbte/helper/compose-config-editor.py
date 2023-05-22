@@ -20,6 +20,9 @@ if len(sys.argv) > 1 and sys.argv[1] == "le":
 with open('/docker-compose.tmpl.yml') as file:
     document = yaml.full_load(file)
 
+use_external_db = os.environ.get('USE_EXTERNAL_DB', "false")
+if use_external_db.lower() == "true":
+	del document['services']['postgres']
 
 certbot_config = {
 	"image": "certbot/certbot",

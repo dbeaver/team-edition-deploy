@@ -1,3 +1,4 @@
+{{- if .Values.backend.internal_db }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -27,7 +28,7 @@ spec:
             - name: POSTGRES_DB
               value: cloudbeaver
             - name: POSTGRES_USER
-              value: postgres
+              value: {{ .Values.backend.cloudbeaver_db_user }}
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -55,3 +56,4 @@ spec:
               - key: cb-init.sql
                 path: cb-init.sql
 status: {}
+{{- end }}
