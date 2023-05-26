@@ -24,7 +24,7 @@ services:
     networks:
       - cloudbeaver-te-public-net
     env_file:
-      - ./.env  
+      - ./.env
     depends_on:
       - cloudbeaver-te
       - cloudbeaver-dc
@@ -69,7 +69,7 @@ services:
     environment:
       - POSTGRES_DB=cloudbeaver
       - POSTGRES_USER=${CLOUDBEAVER_DB_USER}
-      - POSTGRES_PASSWORD=${CLOUDBEAVER_DB_PASSWORD}      
+      - POSTGRES_PASSWORD=${CLOUDBEAVER_DB_PASSWORD}
     expose:
       - 5432
     networks:
@@ -77,7 +77,7 @@ services:
 
   cloudbeaver-te:
     restart: unless-stopped
-    hostname: cloudbeaver-te    
+    hostname: cloudbeaver-te
     image: dbeaver/cloudbeaver-te:${CLOUDBEAVER_VERSION_TAG}
     pull_policy: always
     volumes:
@@ -111,12 +111,15 @@ services:
       - CLOUDBEAVER_QM_BACKEND_DB_URL=${CLOUDBEAVER_DB_URL}?currentSchema=qm
       - CLOUDBEAVER_QM_BACKEND_DB_USER=${CLOUDBEAVER_DB_USER}
       - CLOUDBEAVER_QM_BACKEND_DB_PASSWORD=${CLOUDBEAVER_DB_PASSWORD}
+      - CLOUDBEAVER_TM_BACKEND_DB_URL=${CLOUDBEAVER_DB_URL}?currentSchema=tm
+      - CLOUDBEAVER_TM_BACKEND_DB_USER=${CLOUDBEAVER_DB_USER}
+      - CLOUDBEAVER_TM_BACKEND_DB_PASSWORD=${CLOUDBEAVER_DB_PASSWORD}
     env_file:
       - ./.env
     volumes:
       - dc_data:/opt/domain-controller/workspace
       - ./cert/private/:/opt/domain-controller/conf/certificates/
-    depends_on: 
+    depends_on:
       - postgres
     expose:
       - 8970
@@ -132,11 +135,11 @@ services:
     env_file:
       - ./.env
     environment:
-      - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc      
+      - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
     volumes:
       - rm_data:/opt/resource-manager/workspace
       - ./cert/public/:/opt/resource-manager/conf/certificates/
-    depends_on: 
+    depends_on:
       - cloudbeaver-dc
     expose:
       - 8971
@@ -151,11 +154,11 @@ services:
     env_file:
       - ./.env
     environment:
-      - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc      
+      - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
     volumes:
       - qm_data:/opt/query-manager/workspace
       - ./cert/public/:/opt/query-manager/conf/certificates/
-    depends_on:   
+    depends_on:
       - postgres
       - cloudbeaver-dc
     expose:
