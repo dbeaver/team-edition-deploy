@@ -17,9 +17,9 @@ spec:
         {{ .Release.Name }}-net: "true"
         app: kafka
     spec:
-      securityContext:
-        runAsUser: 1001
-        fsGroup: 1001         
+      # securityContext:
+      #   runAsUser: 1001
+      #   fsGroup: 1001
       containers:
         - image: docker.io/bitnami/kafka:3.2
           imagePullPolicy: "IfNotPresent"

@@ -1,4 +1,5 @@
 ---
+{{- if eq .Values.ingressController "nginx" }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -20,12 +21,12 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-body-size: "500m"
     # nginx.ingress.kubernetes.io/use-regex: true
 spec:
-{{- if eq "https" .Values.httpScheme }}    
+{{- if eq "https" .Values.httpScheme }}
   tls:
     - hosts:
       - {{ .Values.cloudbeaverBaseDomain }}
       secretName: {{ .Release.Name }}-ingress-tls
-{{- end }}      
+{{- end }}
   rules:
   - host: "{{ .Values.cloudbeaverBaseDomain }}"
     http:
@@ -58,3 +59,4 @@ spec:
               name: cloudbeaver-qm
               port:
                 number: 8972
+{{ end }}                

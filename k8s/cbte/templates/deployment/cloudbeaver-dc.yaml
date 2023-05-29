@@ -22,7 +22,7 @@ spec:
       #     runAsUser: 1000
       #     runAsGroup: 1000
       #     fsGroup: 1000
-      #     fsGroupChangePolicy: "Always"       
+      #     fsGroupChangePolicy: "Always"
       containers:
         - image: "{{ .Values.cloudbeaverDC.image }}:{{ .Values.cloudbeaver.imageTag | default .Chart.AppVersion }}"
           imagePullPolicy: "{{ .Values.cloudbeaver.pullPolicy }}"
@@ -54,7 +54,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ .Release.Name }}-db-pass
-                  key: postgres-pass                  
+                  key: postgres-pass
             - name: CLOUDBEAVER_DC_SERVER_URL
               value: "http://cloudbeaver-dc:8970/dc"
             - name: CLOUDBEAVER_RM_SERVER_URL
@@ -71,7 +71,7 @@ spec:
               mountPath: /opt/domain-controller/workspace
             - name: private-cers
               mountPath: /opt/domain-controller/conf/certificates
-              readOnly: true           
+              readOnly: true
       {{- if .Values.cloudbeaver.pullCredsName }}
       imagePullSecrets:
         - name: {{ .Values.cloudbeaver.pullCredsName }}
@@ -96,4 +96,4 @@ spec:
                     - key: tls.crt
                       path: secret-cert.crt
                     - key: tls.key
-                      path: secret-key.key           
+                      path: secret-key.key

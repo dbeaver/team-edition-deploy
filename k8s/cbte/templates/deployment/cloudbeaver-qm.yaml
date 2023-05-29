@@ -22,12 +22,12 @@ spec:
       #     runAsUser: 1000
       #     runAsGroup: 1000
       #     fsGroup: 1000
-      #     fsGroupChangePolicy: "Always"      
+      #     fsGroupChangePolicy: "Always"
       containers:
         - image: "{{ .Values.cloudbeaverQM.image }}:{{ .Values.cloudbeaver.imageTag | default .Chart.AppVersion }}"
           imagePullPolicy: "{{ .Values.cloudbeaver.pullPolicy }}"
           name: cloudbeaver-qm
-          env:        
+          env:
             - name: CLOUDBEAVER_DC_SERVER_URL
               value: "http://cloudbeaver-dc:8970/dc"
           ports:
@@ -38,7 +38,7 @@ spec:
               name: {{ .Release.Name }}-qm-data
             - name: cross-ssl-cert
               mountPath: /opt/query-manager/conf/certificates
-              readOnly: true                        
+              readOnly: true
       {{- if .Values.cloudbeaver.pullCredsName }}
       imagePullSecrets:
         - name: {{ .Values.cloudbeaver.pullCredsName }}
@@ -51,7 +51,7 @@ spec:
             claimName: {{ .Release.Name }}-qm-data
         - name: cross-ssl-cert
           secret:
-            secretName: {{ .Release.Name }}-crossservice-ssl  
+            secretName: {{ .Release.Name }}-crossservice-ssl
             items:
               - key: tls.crt
                 path: dc-cert.crt

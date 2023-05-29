@@ -3,3 +3,8 @@ compose/cbte/.env
 compose/cbte/docker-compose.yml
 compose/cbte/nginx/ssl
 k8s/cbte/values.yaml
+
+
+k8s/cbte/crossSsl/
+k8s/cbte/ingressSsl/
+k8s/cbte/secretSsl/

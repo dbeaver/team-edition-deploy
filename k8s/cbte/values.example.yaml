@@ -6,10 +6,12 @@
 cloudbeaver:
   imageTag: "latest"
   pullPolicy: Always
-  # pullCredsName - name of a secret config map that contains docker repo auths 
+  # pullCredsName - name of a secret config map that contains docker repo auths
   # pullCredsName: regcred
 
 # Ingress Values
+# Supported ingress controllers: nginx, haproxy
+ingressController: nginx
 # Domain name for ingress endpoint
 cloudbeaverBaseDomain: "cloudbeaver.local"
 # LoadBallancer secure mode. Possible values - http, https
@@ -23,7 +25,7 @@ httpsCertPath: "ingressSsl"
 
 crossServiceCertPath: "crossSsl"
 secretCertPath: "secretSsl"
-# Service depend values 
+# Service depend values
 cloudbeaverTE:
   replicaCount: 1
   image: dbeaver/cloudbeaver-te

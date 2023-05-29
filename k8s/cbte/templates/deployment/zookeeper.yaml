@@ -17,9 +17,9 @@ spec:
         {{ .Release.Name }}-net: "true"
         app: zookeeper
     spec:
-      securityContext:
-        runAsUser: 1001
-        fsGroup: 1001      
+      # securityContext:
+      #   runAsUser: 1001
+      #   fsGroup: 1001
       containers:
         - image: docker.io/bitnami/zookeeper:3.8
           imagePullPolicy: "IfNotPresent"

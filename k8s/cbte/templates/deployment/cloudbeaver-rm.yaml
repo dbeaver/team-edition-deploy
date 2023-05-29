@@ -22,23 +22,23 @@ spec:
       #     runAsUser: 1000
       #     runAsGroup: 1000
       #     fsGroup: 1000
-      #     fsGroupChangePolicy: "Always"      
+      #     fsGroupChangePolicy: "Always"
       containers:
         - image: "{{ .Values.cloudbeaverRM.image }}:{{ .Values.cloudbeaver.imageTag | default .Chart.AppVersion }}"
           imagePullPolicy: "{{ .Values.cloudbeaver.pullPolicy }}"
           name: cloudbeaver-rm
-          env:    
+          env:
             - name: CLOUDBEAVER_DC_SERVER_URL
-              value: "http://cloudbeaver-dc:8970/dc"         
+              value: "http://cloudbeaver-dc:8970/dc"
           ports:
             - containerPort: 8971
           resources: {}
           volumeMounts:
             - mountPath: /opt/resource-manager/workspace
-              name: {{ .Release.Name }}-rm-data  
+              name: {{ .Release.Name }}-rm-data
             - name: cross-ssl-cert
               mountPath: /opt/resource-manager/conf/certificates
-              readOnly: true                        
+              readOnly: true
       {{- if .Values.cloudbeaver.pullCredsName }}
       imagePullSecrets:
         - name: {{ .Values.cloudbeaver.pullCredsName }}
@@ -51,7 +51,7 @@ spec:
             claimName: {{ .Release.Name }}-rm-data
         - name: cross-ssl-cert
           secret:
-            secretName: {{ .Release.Name }}-crossservice-ssl  
+            secretName: {{ .Release.Name }}-crossservice-ssl
             items:
               - key: tls.crt
                 path: dc-cert.crt
