@@ -11,8 +11,8 @@
   * for k8s with kubectl `kubectl-do exec -it postgres-*********-***** psql -U postgres`.
 
 - change postgres password(replace `NewStR0NgP2sSw0rD` with your own strong password):
-  * `ALTER USER postgres IDENTIFIED BY 'NewStR0NgP2sSw0rD';`
+  * `ALTER USER postgres WITH PASSWORD 'NewStR0NgP2sSw0rD';`
 
 - restart or redeploy cluster services:
-  * for compose in `compose/cbte` execute `docker compose restart` command.
+  * for compose in `compose/cbte` execute `docker compose up -d` command.
   * for k8s in `k8s/` dir execute `helm upgrade cloudbeaver ./cbte`.
