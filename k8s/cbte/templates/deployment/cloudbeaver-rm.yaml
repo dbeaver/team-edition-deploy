@@ -16,7 +16,6 @@ spec:
       labels:
         date: "{{ now | unixEpoch }}"
         {{ .Release.Name }}-net: "true"
-        {{ .Release.Name }}-private-net: "true"
         app: cloudbeaver-rm
     spec:
       # securityContext:
