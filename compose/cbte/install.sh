@@ -178,4 +178,4 @@ if [[ -n "$1" ]] && [[ "$1" == "le" ]]; then
    get_le_certs
 fi
 
-# docker-compose pull
+docker-compose pull

@@ -15,7 +15,7 @@ spec:
   template:
     metadata:
       labels:
-        {{ .Release.Name }}-net: "true"
+        {{ .Release.Name }}-private-net: "true"
         app: db
     spec:
       containers:
