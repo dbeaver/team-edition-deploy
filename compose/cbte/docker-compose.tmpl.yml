@@ -6,6 +6,7 @@ volumes:
   dc_data: {}
   rm_data: {}
   qm_data: {}
+  tm_data: {}  
   zookeeper_data: {}
   kafka_data: {}
 
@@ -30,6 +31,7 @@ services:
       - cloudbeaver-dc
       - cloudbeaver-rm
       - cloudbeaver-qm
+      - cloudbeaver-tm
 
   zookeeper:
     restart: unless-stopped
@@ -103,8 +105,9 @@ services:
     pull_policy: always
     environment:
       - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
-      - CLOUDBEAVER_QM_SERVER_URL=http://cloudbeaver-qm:8972/qm
       - CLOUDBEAVER_RM_SERVER_URL=http://cloudbeaver-rm:8971/rm
+      - CLOUDBEAVER_QM_SERVER_URL=http://cloudbeaver-qm:8972/qm
+      - CLOUDBEAVER_TM_SERVER_URL=http://cloudbeaver-rm:8973/tm
       - CLOUDBEAVER_DC_BACKEND_DB_URL=${CLOUDBEAVER_DB_URL}?currentSchema=dc
       - CLOUDBEAVER_DC_BACKEND_DB_USER=${CLOUDBEAVER_DB_USER}
       - CLOUDBEAVER_DC_BACKEND_DB_PASSWORD=${CLOUDBEAVER_DB_PASSWORD}
@@ -166,3 +169,24 @@ services:
     networks:
       - cloudbeaver-te-public-net
       - cloudbeaver-te-private-net
+
+  cloudbeaver-tm:
+    restart: unless-stopped
+    image: dbeaver/cloudbeaver-tm:${CLOUDBEAVER_VERSION_TAG}
+    hostname: cloudbeaver-tm
+    pull_policy: always
+    env_file:
+      - ./.env
+    environment:
+      - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
+    volumes:
+      - tm_data:/opt/task-manager/workspace
+      - ./cert/public/:/opt/task-manager/conf/certificates/
+    depends_on:
+      - postgres
+      - cloudbeaver-dc
+    expose:
+      - 8973
+    networks:
+      - cloudbeaver-te-public-net
+      - cloudbeaver-te-private-net      

@@ -62,6 +62,8 @@ spec:
               value: "http://cloudbeaver-rm:8971/rm"
             - name: CLOUDBEAVER_QM_SERVER_URL
               value: "http://cloudbeaver-qm:8972/qm"
+            - name: CLOUDBEAVER_TM_SERVER_URL
+              value: "http://cloudbeaver-qm:8973/tm"              
             - name: CLOUDBEAVER_PUBLIC_URL
               value: "{{ .Values.httpScheme }}://{{ .Values.cloudbeaverBaseDomain }}"
           ports:

@@ -38,6 +38,9 @@ cloudbeaverRM:
 cloudbeaverQM:
   replicaCount: 1
   image: dbeaver/cloudbeaver-qm
+cloudbeaverTM:
+  replicaCount: 1
+  image: dbeaver/cloudbeaver-tm
 
 backend:
   internal_db: true
