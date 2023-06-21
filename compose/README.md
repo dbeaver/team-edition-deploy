@@ -1,7 +1,6 @@
-# CloudBeaver Team Edition Install
-## Installation
+# Team Edition Installation with Docker Compose
 
-System requirements:
+### System requirements:
 - Linux or macOS
 - `curl`
 - [Docker](https://docs.docker.com/engine/install/ubuntu/) installed. Make sure you have chosen the right OS distro.
