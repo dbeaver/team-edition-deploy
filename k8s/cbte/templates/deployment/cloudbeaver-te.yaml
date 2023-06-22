@@ -1,57 +1,57 @@
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  labels:
-    app: cloudbeaver-te
-  name: cloudbeaver-te
-spec:
-  replicas: {{ .Values.cloudbeaverTE.replicaCount }}
-  selector:
-    matchLabels:
-      app: cloudbeaver-te
-  strategy:
-    type: Recreate
-  template:
-    metadata:
-      labels:
-        date: "{{ now | unixEpoch }}"
-        {{ .Release.Name }}-net: "true"
-        app: cloudbeaver-te
-    spec:
-      # securityContext:
-      #     runAsUser: 1000
-      #     runAsGroup: 1000
-      #     fsGroup: 1000
-      #     fsGroupChangePolicy: "Always"
-      containers:
-        - image: "{{ .Values.cloudbeaverTE.image }}:{{ .Values.cloudbeaver.imageTag | default .Chart.AppVersion }}"
-          imagePullPolicy: "{{ .Values.cloudbeaver.pullPolicy }}"
-          name: cloudbeaver-te
-          env:
-            - name: CLOUDBEAVER_DC_SERVER_URL
-              value: "http://cloudbeaver-dc:8970/dc"
-          ports:
-            - containerPort: 8978
-          resources: {}
-          volumeMounts:
-            - mountPath: /opt/cloudbeaver/workspace
-              name: {{ .Release.Name }}-te-data
-            - name: cross-ssl-cert
-              mountPath: /opt/cloudbeaver/conf/certificates
-              readOnly: true
-      {{- if .Values.cloudbeaver.pullCredsName }}
-      imagePullSecrets:
-        - name: {{ .Values.cloudbeaver.pullCredsName }}
-      {{- end }}
-      hostname: cloudbeaver-te
-      restartPolicy: Always
-      volumes:
-        - name: {{ .Release.Name }}-te-data
-          persistentVolumeClaim:
-            claimName: {{ .Release.Name }}-te-data
-        - name: cross-ssl-cert
-          secret:
-            secretName: {{ .Release.Name }}-crossservice-ssl
-            items:
-              - key: tls.crt
-                path: dc-cert.crt
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   labels:
+#     app: cloudbeaver-te
+#   name: cloudbeaver-te
+# spec:
+#   replicas: {{ .Values.cloudbeaverTE.replicaCount }}
+#   selector:
+#     matchLabels:
+#       app: cloudbeaver-te
+#   strategy:
+#     type: Recreate
+#   template:
+#     metadata:
+#       labels:
+#         date: "{{ now | unixEpoch }}"
+#         {{ .Release.Name }}-net: "true"
+#         app: cloudbeaver-te
+#     spec:
+#       # securityContext:
+#       #     runAsUser: 1000
+#       #     runAsGroup: 1000
+#       #     fsGroup: 1000
+#       #     fsGroupChangePolicy: "Always"
+#       containers:
+#         - image: "{{ .Values.cloudbeaverTE.image }}:{{ .Values.cloudbeaver.imageTag | default .Chart.AppVersion }}"
+#           imagePullPolicy: "{{ .Values.cloudbeaver.pullPolicy }}"
+#           name: cloudbeaver-te
+#           env:
+#             - name: CLOUDBEAVER_DC_SERVER_URL
+#               value: "http://cloudbeaver-dc:8970/dc"
+#           ports:
+#             - containerPort: 8978
+#           resources: {}
+#           volumeMounts:
+#             - mountPath: /opt/cloudbeaver/workspace
+#               name: {{ .Release.Name }}-te-data
+#             - name: cross-ssl-cert
+#               mountPath: /opt/cloudbeaver/conf/certificates
+#               readOnly: true
+#       {{- if .Values.cloudbeaver.pullCredsName }}
+#       imagePullSecrets:
+#         - name: {{ .Values.cloudbeaver.pullCredsName }}
+#       {{- end }}
+#       hostname: cloudbeaver-te
+#       restartPolicy: Always
+#       volumes:
+#         - name: {{ .Release.Name }}-te-data
+#           persistentVolumeClaim:
+#             claimName: {{ .Release.Name }}-te-data
+#         - name: cross-ssl-cert
+#           secret:
+#             secretName: {{ .Release.Name }}-crossservice-ssl
+#             items:
+#               - key: tls.crt
+#                 path: dc-cert.crt
