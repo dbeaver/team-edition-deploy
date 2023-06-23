@@ -59,11 +59,11 @@ spec:
               name: cloudbeaver-qm
               port:
                 number: 8972
-        # - path: /(tm)(.*)
-        #   pathType: Prefix
-        #   backend:
-        #     service:
-        #       name: cloudbeaver-tm
-        #       port:
-        #         number: 8973                
+        - path: /(tm)(.*)
+          pathType: Prefix
+          backend:
+            service:
+              name: cloudbeaver-tm
+              port:
+                number: 8973                
 {{ end }}                

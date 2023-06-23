@@ -1,11 +1,11 @@
-# apiVersion: v1
-# kind: Service
-# metadata:
-#   labels:
-#     app: cloudbeaver-te
-#   name: cloudbeaver-te
-# spec:
-#   ports:
-#     - port: 8978
-#   selector:
-#     app: cloudbeaver-te
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: cloudbeaver-te
+  name: cloudbeaver-te
+spec:
+  ports:
+    - port: 8978
+  selector:
+    app: cloudbeaver-te
