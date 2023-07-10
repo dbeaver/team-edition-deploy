@@ -1,5 +1,11 @@
 ## CloudBeaver Team Edition
 
+### Verison 23.0.0
+
+For using specific version clone this repository with a branch option:
+
+`git clone --branch 23.0.0 https://github.com/dbeaver/team-edition-deploy.git`
+
 ### Deployment 
 - [Docker compose deployment](compose)
 - [Kubernetes deployment](k8s)
