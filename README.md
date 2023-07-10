@@ -1,6 +1,8 @@
 ## CloudBeaver Team Edition
 
+
 ### Deployment 
+
 - [Docker compose deployment](compose)
 - [Kubernetes deployment](k8s)
 
@@ -21,3 +23,8 @@ Now you can use web-based or desktop clients to work
 #### How to change db password for already deployed clusters
 
 To change an internal postgres password use [this instruction](https://github.com/dbeaver/team-edition-deploy/blob/devel/CHANGEPWD.md#how-to-change-db-password-for-already-deployed-clusters).
+
+
+#### Using previous versions:
+
+[23.0.0](https://github.com/dbeaver/team-edition-deploy/tree/23.0.0)
