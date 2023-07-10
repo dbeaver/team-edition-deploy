@@ -25,6 +25,6 @@ Now you can use web-based or desktop clients to work
 To change an internal postgres password use [this instruction](https://github.com/dbeaver/team-edition-deploy/blob/devel/CHANGEPWD.md#how-to-change-db-password-for-already-deployed-clusters).
 
 
-#### Using previous versions:
+### Older versions:
 
 [23.0.0](https://github.com/dbeaver/team-edition-deploy/tree/23.0.0)
