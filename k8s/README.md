@@ -1,4 +1,4 @@
-## DBeaver TE Helm chart for Kubernetes
+## Team Edition Helm chart for Kubernetes
 
 #### Minimum requirements:
 
@@ -9,39 +9,34 @@
 * `git` and `kubectl` installed on the deploy host
 * [Nginx load balancer](https://docs.nginx.com/nginx-ingress-controller/installation/installation-with-helm/) and [Kubernetes Helm plugin](https://helm.sh/docs/topics/plugins/) added to your `k8s`
 
-#### How to run services
+### How to run services
 
-* Configure `kubectl` tool for using your Kubernetes instance 
-* Clone this repo from GitHub:
-
+1. Configure `kubectl` tool for using your Kubernetes instance 
+2. Clone this repo from GitHub:  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`git clone https://github.com/dbeaver/team-edition-deploy`
-
-* Create `k8s/cbte/values.yaml` from `k8s/cbte/example.values.yaml`
-
-* Edit chart values in `k8s/cbte/values.yaml`
-
-* Add an A record in your DNS hosting for a value of `cloudbeaverBaseDomain` variable with load balancer IP address.
-
-* Generate internal services certificates:
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;On Linux or macOS, run the script to prepare services certificates: 
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`cd k8s/cbte`
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`./services-certs-generator.sh`
-
-* If you set the *HTTPS* endpoint scheme, then create a valid TLS certificate for the domain endpoint `cloudbeaverBaseDomain` and place it into `k8s/cbte/ingressSsl`:
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Certificate: `k8s/cbte/ingressSsl/fullchain.pem`
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Private Key: `k8s/cbte/ingressSsl/privkey.pem`
-
-* Deploy DBeaver TE with Helm:
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; in the `k8s` directory
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `helm install cloudbeaver ./cbte`
-
+3. Create `k8s/cbte/values.yaml` from `k8s/cbte/example.values.yaml`
+4. Edit chart values in `k8s/cbte/values.yaml`
+   1. If on OpenShift, change the `ingressController` value to `haproxy`
+5. Add security context (OpenShift only)  
+  Uncomment the following lines in `cloudbeaver-*.yaml` files in [templates/deployment](cbte/templates/deployment):  
+    ```yaml
+          # securityContext:
+          #     runAsUser: 1000
+          #     runAsGroup: 1000
+          #     fsGroup: 1000
+          #     fsGroupChangePolicy: "Always"
+    ```
+6. Add an A record in your DNS hosting for a value of `cloudbeaverBaseDomain` variable with load balancer IP address.
+7. Generate internal services certificates:  
+   On Linux or macOS, run the script to prepare services certificates:   
+     `cd k8s/cbte`  
+     `./services-certs-generator.sh`
+8. If you set the *HTTPS* endpoint scheme, then create a valid TLS certificate for the domain endpoint `cloudbeaverBaseDomain` and place it into `k8s/cbte/ingressSsl`:  
+  Certificate: `k8s/cbte/ingressSsl/fullchain.pem`  
+  Private Key: `k8s/cbte/ingressSsl/privkey.pem`
+9. Deploy Team Edition with Helm:  
+  in the `k8s` directory  
+  `helm install cloudbeaver ./cbte`
 
 ### Version update procedure.
 
