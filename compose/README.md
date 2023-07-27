@@ -19,7 +19,7 @@ Ensure all TCP ports from the below list are available in your network stack.
 
 1. Configure CloudBeaver settings by editing the `.env` file. You must copy it from `.env.example`.
 
-1. Configure domain name (optional). 
+1. Configure domain name. 
 
     You may skip this step. In this case, the cluster will be configured for localhost.  
     Set the `CLOUDBEAVER_DOMAIN` property to the desired domain name.  
@@ -27,7 +27,7 @@ Ensure all TCP ports from the below list are available in your network stack.
     
 1. Configure SSL (optional). 
 
-     If you set the *HTTPS* endpoint scheme in `.env`, create a valid TLS certificate for a domain endpoint `CLOUDBEAVER_DOMAIN` and place it into `compose/cbte/nginx/ssl`.
+     If you set the *https* endpoint scheme in `.env` as value of `CLOUDBEAVER_SCHEME`, create a valid TLS certificate for a domain endpoint `CLOUDBEAVER_DOMAIN` and place it into `compose/cbte/nginx/ssl`.
 
     - Generate SSL certificate for a domain `CLOUDBEAVER_DOMAIN` specified in `.env` and put it to `compose/cbte/nginx/ssl/fullchain.pem` as certificate and `compose/cbte/nginx/ssl/privkey.pem` as a private key.  
     or
@@ -43,8 +43,8 @@ Ensure all TCP ports from the below list are available in your network stack.
 
 ### Services will be accessible in the next URIs:
 
-- CloudBeaver https://__CLOUDBEAVER_DOMAIN__ - main CloudBeaver user interface. It will open the admin panel on the first start
-- CloudBeaver https://__CLOUDBEAVER_DOMAIN__/dc - endpoint for desktop applications
+- CloudBeaver __CLOUDBEAVER_SCHEME__://__CLOUDBEAVER_DOMAIN__ - main CloudBeaver user interface. It will open the admin panel on the first start
+- CloudBeaver __CLOUDBEAVER_SCHEME__://__CLOUDBEAVER_DOMAIN__/dc - endpoint for desktop applications
 
 ### Stopping the cluster
 `docker-compose down`
