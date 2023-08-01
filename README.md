@@ -1,30 +1,32 @@
-## CloudBeaver Team Edition
+## DBeaver Team Edition
 
+#### Version 23.2
+
+DBeaver Team Edition is a client-server application.  
+It requires server deployment. You can deploy it on a single host (e.g. your local computer)
+or in a cloud.  
 
 ### Deployment 
 
-- [Docker compose deployment](compose)
-- [Kubernetes deployment](k8s)
+- [Docker compose](compose) - the simplest way to deploy and run the server on the local machine
+- [Kubernetes](k8s) - if you prefer to run everything with docker orchestration 
 
-### Initial configuration
+### Server initial configuration
 
-1. Go to deployed server URL
-1. Login as `cbadmin`, `cbadmin20`
-1. Configuire your license
+After you started the server:
 
-Now you can use web-based or desktop clients to work
+- Go to deployed server URL (e.g. `http://localhost/` in the simplest case)
+- Login as `cbadmin`/`cbadmin20`
+- Configure your license
+- That's it
 
-### Misc
-
-- [CloudBeaver public repository](https://github.com/dbeaver/cloudbeaver/)
-- [DBeaver Team Edition desktop client](https://dbeaver.com/download/team-edition/)
-
+Now you can use web interface or [desktop clients](https://dbeaver.com/download/team-edition/) to work with your databases
 
 #### How to change db password for already deployed clusters
 
-To change an internal postgres password use [this instruction](https://github.com/dbeaver/team-edition-deploy/blob/devel/CHANGEPWD.md#how-to-change-db-password-for-already-deployed-clusters).
-
+To change an internal postgres password use [this instruction](CHANGEPWD.md#how-to-change-db-password-for-already-deployed-clusters).
 
 ### Older versions:
 
-[23.0.0](https://github.com/dbeaver/team-edition-deploy/tree/23.0.0)
+- [23.1.0](https://github.com/dbeaver/team-edition-deploy/tree/23.1.0)
+- [23.0.0](https://github.com/dbeaver/team-edition-deploy/tree/23.0.0)
