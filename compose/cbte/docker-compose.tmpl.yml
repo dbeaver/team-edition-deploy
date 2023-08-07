@@ -79,7 +79,6 @@ services:
     restart: unless-stopped
     hostname: cloudbeaver-te
     image: dbeaver/cloudbeaver-te:${CLOUDBEAVER_VERSION_TAG}
-    pull_policy: always
     volumes:
       - te_data:/opt/cloudbeaver/workspace
       - ./cert/public/:/opt/cloudbeaver/conf/certificates/
@@ -100,7 +99,6 @@ services:
     restart: unless-stopped
     image: dbeaver/cloudbeaver-dc:${CLOUDBEAVER_VERSION_TAG}
     hostname: cloudbeaver-dc
-    pull_policy: always
     environment:
       - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
       - CLOUDBEAVER_RM_SERVER_URL=http://cloudbeaver-rm:8971/rm
@@ -131,7 +129,6 @@ services:
     restart: unless-stopped
     image: dbeaver/cloudbeaver-rm:${CLOUDBEAVER_VERSION_TAG}
     hostname: cloudbeaver-rm
-    pull_policy: always
     env_file:
       - ./.env
     environment:
@@ -150,7 +147,6 @@ services:
     restart: unless-stopped
     image: dbeaver/cloudbeaver-qm:${CLOUDBEAVER_VERSION_TAG}
     hostname: cloudbeaver-qm
-    pull_policy: always
     env_file:
       - ./.env
     environment:
