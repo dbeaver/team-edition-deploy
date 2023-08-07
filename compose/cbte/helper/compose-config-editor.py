@@ -82,7 +82,7 @@ def volumes_config(volume):
 
 if os.environ.get("DBEAVER_TEAM_EDITION_AMI") is not None:
 	for volume in document['volumes']:
-		if volume == "zookeeper_data" or volume == "kafka_data":
+		if volume == "kafka_data":
 			continue
 		document['volumes'][volume] = volumes_config(volume)
 
