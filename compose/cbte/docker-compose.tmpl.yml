@@ -2,7 +2,7 @@ version: "3"
 
 volumes:
   metadata_data: {}
-  de_data: {}
+  te_data: {}
   dc_data: {}
   rm_data: {}
   qm_data: {}
@@ -81,7 +81,7 @@ services:
     image: dbeaver/cloudbeaver-te:${CLOUDBEAVER_VERSION_TAG}
     pull_policy: always
     volumes:
-      - de_data:/opt/cloudbeaver/workspace
+      - te_data:/opt/cloudbeaver/workspace
       - ./cert/public/:/opt/cloudbeaver/conf/certificates/
     environment:
       - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
