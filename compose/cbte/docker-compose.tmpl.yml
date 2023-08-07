@@ -6,7 +6,6 @@ volumes:
   dc_data: {}
   rm_data: {}
   qm_data: {}
-  zookeeper_data: {}
   kafka_data: {}
 
 networks:
