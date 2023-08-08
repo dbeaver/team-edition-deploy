@@ -58,5 +58,35 @@ elif cb_scheme == "https":
 else:
 	document['services']['nginx']['volumes'] = nginx_http_volumes
 
+
+####### AWS AMI helper
+volume_local_paths = {
+  "metadata_data": "/var/dbeaver/postgre",
+  "te_data": "/var/dbeaver/cloudbeaver/workspace",
+  "dc_data": "/var/dbeaver/domain-controller/workspace",
+  "rm_data": "/var/dbeaver/resource-manager/workspace",
+  "qm_data": "/var/dbeaver/query-manager/workspace",
+  "tm_data": "/var/dbeaver/task-manager/workspace"
+}
+
+def volumes_config(volume):
+	volume_config = {
+	    "driver": "local",
+	    "driver_opts": {
+	      	"type": "none",
+	      	"o": "bind",
+	      	"device": volume_local_paths.get(volume)
+	    }
+	}
+	return volume_config
+
+if os.environ.get("DBEAVER_TEAM_EDITION_AMI") is not None:
+	for volume in document['volumes']:
+		if volume == "kafka_data":
+			continue
+		document['volumes'][volume] = volumes_config(volume)
+
+
+
 with open('/docker-compose.yml', 'w') as file:
     documents = yaml.dump(document, file, Dumper=IndentDumper, sort_keys=False)
