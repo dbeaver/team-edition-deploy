@@ -32,7 +32,7 @@ services:
 
   kafka:
     restart: unless-stopped
-    image: docker.io/bitnami/kafka:3.2
+    image: dbeaver/cloudbeaver-kafka:3.2
     hostname: kafka
     expose:
       - 9092
