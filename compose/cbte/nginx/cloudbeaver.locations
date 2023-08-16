@@ -1,13 +1,13 @@
-location /dc {
+location ~ /dc(/|$) {
     proxy_pass       http://cloudbeaver-dc:8970;
 }
-location /rm {
+location ~ /rm(/|$) {
     proxy_pass       http://cloudbeaver-rm:8971;
 }
-location /qm {
+location ~ /qm(/|$) {
     proxy_pass       http://cloudbeaver-qm:8972;
 }
-# location /tm {
+# location ~ /tm(/|$) {
 #     proxy_pass       http://cloudbeaver-tm:8973;
 # }
 
