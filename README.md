@@ -30,3 +30,4 @@ To change an internal postgres password use [this instruction](CHANGEPWD.md#how-
 
 - [23.1.0](https://github.com/dbeaver/team-edition-deploy/tree/23.1.0)
 - [23.0.0](https://github.com/dbeaver/team-edition-deploy/tree/23.0.0)
+- [Early access](https://github.com/dbeaver/team-edition-deploy/tree/ea)
