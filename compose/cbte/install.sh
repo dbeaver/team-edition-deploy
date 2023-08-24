@@ -80,6 +80,10 @@ then
 	fi
 fi
 
+if [ $CLOUDBEAVER_DB_PASSWORD == "StR0NgP2sSw0rD" ] ; then 
+	sed -i "s/CLOUDBEAVER_DB_PASSWORD=StR0NgP2sSw0rD/CLOUDBEAVER_DB_PASSWORD=$(openssl rand -base64 12)/g" .env
+fi
+
 #### Untemplate compose
 # create empty compose yml file 
 touch docker-compose.yml
