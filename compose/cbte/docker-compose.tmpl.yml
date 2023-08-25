@@ -97,7 +97,7 @@ services:
       - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
       - CLOUDBEAVER_RM_SERVER_URL=http://cloudbeaver-rm:8971/rm
       - CLOUDBEAVER_QM_SERVER_URL=http://cloudbeaver-qm:8972/qm
-      - CLOUDBEAVER_QM_SERVER_URL=http://cloudbeaver-tm:8973/tm
+      - CLOUDBEAVER_TM_SERVER_URL=http://cloudbeaver-tm:8973/tm
       - CLOUDBEAVER_DC_BACKEND_DB_URL=${CLOUDBEAVER_DB_URL}?currentSchema=dc
       - CLOUDBEAVER_DC_BACKEND_DB_USER=${CLOUDBEAVER_DB_USER}
       - CLOUDBEAVER_DC_BACKEND_DB_PASSWORD=${CLOUDBEAVER_DB_PASSWORD}
