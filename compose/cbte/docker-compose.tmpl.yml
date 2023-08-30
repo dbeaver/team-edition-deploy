@@ -56,7 +56,7 @@ services:
   postgres:
     restart: unless-stopped
     hostname: postgres
-    image: postgres:14
+    image: dbeaver/cloudbeaver-postgres:14
     volumes:
       - metadata_data:/var/lib/postgresql/data
       - ./cloudbeaver-db-init.sql:/docker-entrypoint-initdb.d/cb-init.sql
