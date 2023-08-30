@@ -19,7 +19,7 @@ spec:
         app: db
     spec:
       containers:
-        - image: postgres:13
+        - image: dbeaver/cloudbeaver-postgres:14
           imagePullPolicy: "IfNotPresent"
           name: postgres
           env:
