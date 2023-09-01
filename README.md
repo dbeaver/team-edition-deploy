@@ -10,6 +10,7 @@ or in a cloud.
 
 - [Docker compose](compose) - the simplest way to deploy and run the server on the local machine
 - [Kubernetes](k8s) - if you prefer to run everything with docker orchestration 
+- [AWS AMI](ami) - if you wamt use AWS for deploy
 
 ### Server initial configuration
 
