@@ -11,7 +11,7 @@
 - Go to AWS EC2 > Launch instance
 - Choose `DBeaver Team Edition` in AWS Marketplace AMIs
 - Use recommended instance type t2.xlarge (or larger) for the best experience with this product
-- For your secure recommended open only `443 80 22` ports in security group
+- For your secure not recommended make the service public 
 - Launch instance
 
 ### How to use manager
