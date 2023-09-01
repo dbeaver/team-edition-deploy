@@ -2,10 +2,17 @@
 
 #### Minimum requirements:
 
-* t2.large instance
-* 2 CPUs
-* 8Gb RAM
+* t2.xlarge instance
+* 4 CPUs
+* 16Gb RAM
 
+### How to deploy AMI in AWS
+
+- Go to AWS EC2 > Launch instance
+- Choose `DBeaver Team Edition` in AWS Marketplace AMIs
+- Use recommended instance type t2.xlarge (or larger) for the best experience with this product
+- For your secure recommended open only `443 80 22` ports in security group
+- Launch instance
 
 ### How to use manager
 
