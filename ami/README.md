@@ -4,7 +4,7 @@
 
 * 4 CPUs
 * 16Gb RAM
-* 100G Disk (SSD recommended)
+* 100G Storage (SSD recommended)
 
 ### How to deploy AMI in AWS
 
