@@ -3,15 +3,16 @@
 #### Minimum requirements:
 
 * 4 CPUs
-* 16Gb RAM
-* 100G Storage (SSD recommended)
+* 16GB RAM
+* 100GB Storage (SSD recommended)
+
 
 ### How to deploy AMI in AWS
 
 - Go to AWS Marketplace
 - Choose [DBeaver Team Edition](https://aws.amazon.com/marketplace/pp/prodview-kijugxnqada5i?sr=0-2&ref_=beagle&applicationId=AWSMPContessa)
 - Use recommended instance resources for the best experience with this product
-- For your secure not recommended make the service public 
+- For security reasons, it is not recommended to make the service public
 - Launch instance
 
 ### How to use manager
@@ -32,5 +33,5 @@
 ### Version update procedure.
 
 - Enter `dbeaver-te update list`
-- Choose the version which you want to update
+- Choose the version you want to update
 - `dbeaver-te update %version%`
