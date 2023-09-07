@@ -10,6 +10,7 @@ or in a cloud.
 
 - [Docker compose](compose) - the simplest way to deploy and run the server on the local machine
 - [Kubernetes](k8s) - if you prefer to run everything with docker orchestration 
+- [AWS AMI](ami) - if you want to use AWS for deployment
 
 ### Server initial configuration
 
@@ -25,6 +26,10 @@ Now you can use web interface or [desktop clients](https://dbeaver.com/download/
 #### How to change db password for already deployed clusters
 
 To change an internal postgres password use [this instruction](CHANGEPWD.md#how-to-change-db-password-for-already-deployed-clusters).
+
+### Early Access:
+
+- [Early access](https://github.com/dbeaver/team-edition-deploy/tree/ea)
 
 ### Older versions:
 
