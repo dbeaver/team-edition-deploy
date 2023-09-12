@@ -3,4 +3,4 @@ name: cbte
 description: A Helm chart for CloudBeaver TE application
 type: application
 version: 0.0.1
-appVersion: 23.1.0
+appVersion: 23.2.0
