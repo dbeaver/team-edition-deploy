@@ -13,7 +13,7 @@ or in a cloud.
  * Cloud
     * AWS
         - [AWS AMI](AWS/ami/) - if you want to use AWS for deployment
-        - [AWS ECS](AWS/aws-ecs-fargate/) - create and deploy ECS cluster
+        - [AWS ECS](AWS/ecs-fargate/) - create and deploy ECS cluster
 
 ### Server initial configuration
 
