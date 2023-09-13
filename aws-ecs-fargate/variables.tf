@@ -141,7 +141,7 @@ variable "cloudbeaver-dc-env" {
   },
   {
       "name": "CLOUDBEAVER_PUBLIC_URL",
-      "value": "https://te.aws.dbeaver.com"
+      "value": ""
   }]
 }
 
