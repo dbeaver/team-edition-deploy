@@ -5,7 +5,7 @@ variable "aws_account_id" {
 
 variable "dbeaver-aws-region" {
   type    = string
-  default = "eu-central-1"
+  default = ""
 }
 
 variable "image_version" {
