@@ -9,8 +9,11 @@
 
 ### How to deploy AMI in AWS
 
-- Go to AWS Marketplace
-- Choose [DBeaver Team Edition](https://aws.amazon.com/marketplace/pp/prodview-kijugxnqada5i?sr=0-2&ref_=beagle&applicationId=AWSMPContessa)
+- Go to AWS EC2 -> AMI Catalog -> Community AMIs
+- Find `dbeaver-te-server-ubuntu-23-2-0` (`ami-0897bbdc0845df8a9`)
+
+![example](image.png)
+
 - Use recommended instance resources for the best experience with this product
 - For security reasons, it is not recommended to make the service public
 - Launch instance

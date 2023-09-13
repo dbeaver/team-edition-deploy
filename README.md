@@ -7,10 +7,13 @@ It requires server deployment. You can deploy it on a single host (e.g. your loc
 or in a cloud.  
 
 ### Deployment 
-
-- [Docker compose](compose) - the simplest way to deploy and run the server on the local machine
-- [Kubernetes](k8s) - if you prefer to run everything with docker orchestration 
-- [AWS AMI](ami) - if you want to use AWS for deployment
+ * On premise
+    - [Docker compose](compose) - the simplest way to deploy and run the server on the local machine
+    - [Kubernetes](k8s) - if you prefer to run everything with docker orchestration 
+ * Cloud
+    * AWS
+        - [AWS AMI](AWS/ami/) - if you want to use AWS for deployment
+        - [AWS ECS](AWS/ecs-fargate/) - create and deploy ECS cluster
 
 ### Server initial configuration
 
