@@ -11,8 +11,8 @@ or in a cloud.
     - [Docker compose](compose) - the simplest way to deploy and run the server on the local machine
     - [Kubernetes](k8s) - if you prefer to run everything with docker orchestration 
  * AWS
-- [AWS AMI](AWS/ami/) - if you want to use AWS for deployment
-- [AWS ECS](AWS/aws-ecs-fargate/) - create and deploy ECS cluster
+    - [AWS AMI](AWS/ami/) - if you want to use AWS for deployment
+    - [AWS ECS](AWS/aws-ecs-fargate/) - create and deploy ECS cluster
 
 ### Server initial configuration
 
