@@ -27,8 +27,8 @@
 ### Configuration SSL certificate
 
 - Replace files in `/opt/dbeaver-team-server/team-edition-deploy/compose/cbte/nginx/ssl`
-   - Certificate: `/fullchain.pem`  
-   - Private Key: `/privkey.pem`
+   - Certificate: `fullchain.pem`  
+   - Private Key: `privkey.pem`
 - Change `CLOUDBEAVER_DOMAIN=localhost` to your domain in .env file
 - Enter `dbeaver-te stop` and `dbeaver-te start` to accept new config
 
