@@ -28,6 +28,6 @@
 
 9. Run `terraform init` and then `terraform apply` to create the ECS cluster and complete the deployment.
 
-10. Cluster destruction is performed in reverse order
+10. Cluster destruction is performed in reverse order:
     - Run `terraform destroy` in `ecs-fargate` directory to destroy ECS cluster
     - Run `terraform destroy` in `/build` directory to destroy Amazon Elastic Container Registry (ECR) 
