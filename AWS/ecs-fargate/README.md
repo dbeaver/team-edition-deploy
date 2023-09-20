@@ -30,4 +30,4 @@
 
 10. Cluster destruction is performed in reverse order:
     - Run `terraform destroy` in `ecs-fargate` directory to destroy ECS cluster
-    - Run `terraform destroy` in `/build` directory to destroy Amazon Elastic Container Registry (ECR) 
+    - Run `terraform destroy` in `ecs-fargate/build` directory to destroy Amazon Elastic Container Registry (ECR) 
