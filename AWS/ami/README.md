@@ -14,9 +14,12 @@
 
 ![example](image.png)
 
+- Launch instance
+
+#### Note:
 - Use recommended `Minimum requirements` resources for the best experience with this product
 - For security reasons, it is not recommended to make the service public in security group configuration
-- Launch instance
+
 
 ### How to use manager
 
@@ -26,7 +29,7 @@ Manager is a utility provided by us for easy management and administration
 - Enter `dbeaver-te` or `dbeaver-te help` in terminal to see help menu
 
 
-### Configuration SSL certificate
+### SSL certificate configuration
 
 - Replace files in `/opt/dbeaver-team-server/team-edition-deploy/compose/cbte/nginx/ssl`
    - Certificate: `fullchain.pem`  
@@ -35,7 +38,7 @@ Manager is a utility provided by us for easy management and administration
 - Enter `dbeaver-te stop` and `dbeaver-te start` to accept new config
 
 
-### Version update procedure.
+### Version update procedure
 
 The update occurs with the help of the manager
 
