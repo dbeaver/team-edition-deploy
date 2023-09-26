@@ -26,7 +26,7 @@
 `dbeaver-te` is a utility to manage a Team Edition server. Using this manager, you can start or stop the server, as well as update its version.
 
 - Connect to your server through the terminal
-- Enter dbeaver-te or dbeaver-te help to see help menu
+- Enter `dbeaver-te` or `dbeaver-te help` to see help menu
 
 
 ### SSL certificate configuration
