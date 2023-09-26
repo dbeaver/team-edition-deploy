@@ -23,10 +23,10 @@
 
 ### How to use manager
 
-Manager is a utility provided by us for easy management and administration
+`dbeaver-te` is a utility to manage a Team Edition server. Using this manager, you can start or stop the server, as well as update its version.
 
-- You can use `dbeaver-te` for managment of all services on your server
-- Enter `dbeaver-te` or `dbeaver-te help` in terminal to see help menu
+- Connect to your server through the terminal
+- Enter dbeaver-te or dbeaver-te help to see help menu
 
 
 ### SSL certificate configuration
