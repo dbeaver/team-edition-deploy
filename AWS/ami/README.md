@@ -21,14 +21,6 @@
 - For security reasons, it is not recommended to make the service public in security group configuration
 
 
-### How to use manager
-
-`dbeaver-te` is a utility to manage a Team Edition server. Using this manager, you can start or stop the server, as well as update its version.
-
-- Connect to your server through the terminal
-- Enter `dbeaver-te` or `dbeaver-te help` to see help menu
-
-
 ### SSL certificate configuration
 
 - Replace files in `/opt/dbeaver-team-server/team-edition-deploy/compose/cbte/nginx/ssl`
@@ -40,8 +32,5 @@
 
 ### Version update procedure
 
-The update occurs with the help of the manager
-
-- Enter `dbeaver-te update list`
-- Choose the version you want to update
-- `dbeaver-te update %version%`
+- Change `CLOUDBEAVER_VERSION_TAG` in `/opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env`
+- Run `docker compose up -d`
