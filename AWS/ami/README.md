@@ -9,28 +9,29 @@
 
 ### How to deploy AMI in AWS
 
-- Go to [AWS EC2](https://us-east-1.console.aws.amazon.com/ec2/home?region=us-east-1) -> AMI Catalog -> Community AMIs
-- Find `dbeaver-te-server-ubuntu-23-2-0`
-
-![example](image.png)
-
+- Go to AWS Marketplace
+- Choose [DBeaver Team Edition](https://aws.amazon.com/marketplace/pp/prodview-kijugxnqada5i?sr=0-2&ref_=beagle&applicationId=AWSMPContessa)
+- Use recommended instance resources for the best experience with this product
+- For security reasons, it is not recommended to make the service public
 - Launch instance
 
-#### Note:
-- Use recommended `Minimum requirements` resources for the best experience with this product
-- For security reasons, it is not recommended to make the service public in security group configuration
+### How to use manager
+
+- You can use `dbeaver-te` for managment of all services on your server
+- Enter `dbeaver-te` or `dbeaver-te help` to see help menu
 
 
-### SSL certificate configuration
+### Configuration SSL certificate
 
 - Replace files in `/opt/dbeaver-team-server/team-edition-deploy/compose/cbte/nginx/ssl`
-   - Certificate: `fullchain.pem`  
-   - Private Key: `privkey.pem`
+   - Certificate: `/fullchain.pem`  
+   - Private Key: `/privkey.pem`
 - Change `CLOUDBEAVER_DOMAIN=localhost` to your domain in .env file
 - Enter `dbeaver-te stop` and `dbeaver-te start` to accept new config
 
 
-### Version update procedure
+### Version update procedure.
 
-- Change `CLOUDBEAVER_VERSION_TAG` in `/opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env`
-- Run `docker compose up -d`
+- Enter `dbeaver-te update list`
+- Choose the version you want to update
+- `dbeaver-te update %version%`
