@@ -9,11 +9,17 @@
 
 ### How to deploy AMI in AWS
 
-- Go to AWS Marketplace
-- Choose [DBeaver Team Edition](https://aws.amazon.com/marketplace/pp/prodview-kijugxnqada5i?sr=0-2&ref_=beagle&applicationId=AWSMPContessa)
-- Use recommended instance resources for the best experience with this product
-- For security reasons, it is not recommended to make the service public
+- Go to [AWS EC2](https://us-east-1.console.aws.amazon.com/ec2/home?region=us-east-1) -> AMI Catalog -> Community AMIs
+- Find `dbeaver-te-server-ubuntu-23-2-0`
+
+![example](image.png)
+
 - Launch instance
+
+#### Note:
+- Use recommended `Minimum requirements` resources for the best experience with this product
+- For security reasons, it is not recommended to make the service public in security group configuration
+
 
 ### How to use manager
 
@@ -23,11 +29,11 @@
 - Enter `dbeaver-te` or `dbeaver-te help` to see help menu
 
 
-### Configuration SSL certificate
+### SSL certificate configuration
 
 - Replace files in `/opt/dbeaver-team-server/team-edition-deploy/compose/cbte/nginx/ssl`
-   - Certificate: `/fullchain.pem`  
-   - Private Key: `/privkey.pem`
+   - Certificate: `fullchain.pem`  
+   - Private Key: `privkey.pem`
 - Change `CLOUDBEAVER_DOMAIN=localhost` to your domain in .env file
 - Enter `dbeaver-te stop` and `dbeaver-te start` to accept new config
 
