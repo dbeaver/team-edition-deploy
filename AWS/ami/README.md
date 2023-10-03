@@ -17,7 +17,9 @@
 
 ### How to use manager
 
-- You can use `dbeaver-te` for managment of all services on your server
+`dbeaver-te` is a utility to manage a Team Edition server. Using this manager, you can start or stop the server, as well as update its version.
+
+- Connect to your server through the terminal
 - Enter `dbeaver-te` or `dbeaver-te help` to see help menu
 
 
@@ -30,7 +32,9 @@
 - Enter `dbeaver-te stop` and `dbeaver-te start` to accept new config
 
 
-### Version update procedure.
+### Version update procedure
+
+The update occurs with the help of the manager
 
 - Enter `dbeaver-te update list`
 - Choose the version you want to update
