@@ -6,6 +6,8 @@ SECRET_CERT_CSR="/C=US/ST=NY/L=NYC/O=CloudBeaver Secret /OU=IT Department/CN=clo
 shopt -s expand_aliases
 set -e
 
+## Flag to replace postgres pass
+
 ### Check docker installed
 if ! [ -x "$(command -v docker)" ]; then
   echo 'Error: docker is not installed.' >&2
