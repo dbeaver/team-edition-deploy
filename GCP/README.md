@@ -66,14 +66,14 @@ You can check that your instance is running correctly by copying and pasting the
 
 
 Where: 
-- `machine-type` - Specifies the machine type used for the instances.  
+- `machine-type` - Specifies the machine type used for the instances. (4 CPUs and 16GB RAM resources recommended)  
 - `tags` - These tags allow network firewall rules and routes to be applied to specified VM instances.  
 - `image` - Specifies the boot image for the instances. You can choose anyone from our public image.  
 - `create-disk=auto-delete=yes` - Creates and attaches persistent disks to the instances. This persistent disk will be automatically deleted when the instance is deleted.  
 - `boot-disk-size` - The size of the boot disk, is 100GB recommended.  
 - `boot-disk-device-name` - The name the guest operating system will see for the boot disk.  
 
-Dbeaver TEGCP public image list:
+Dbeaver TE GCP public image list:
 - `https://www.googleapis.com/compute/v1/projects/dbeaver-public/global/images/dbeaver-te-server-ubuntu-23-2-0`
 - `https://www.googleapis.com/compute/v1/projects/dbeaver-public/global/images/dbeaver-te-server-rhel-23-2-0`
 
