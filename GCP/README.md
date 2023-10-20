@@ -57,7 +57,8 @@ You can check that your instance is running correctly by copying and pasting the
 
 - In the terminal that opens, you can just enter the following command   
 
-`gcloud beta compute instances create dbeaver-te-server --zone=us-central1-a \`  
+`gcloud beta compute instances create dbeaver-te-server \`
+`--zone=us-central1-a \`  
 `--machine-type=e2-standard-4 \`  
 `--tags=http-server,https-server \`  
 `--image=https://www.googleapis.com/compute/v1/projects/dbeaver-public/global/images/dbeaver-te-server-ubuntu-23-2-0 \`  
@@ -66,6 +67,7 @@ You can check that your instance is running correctly by copying and pasting the
 
 
 Where: 
+- `zone` - Zone of the instances to create. You can choose this from [GCP zones](https://cloud.google.com/compute/docs/regions-zones)  
 - `machine-type` - Specifies the machine type used for the instances. (4 CPUs and 16GB RAM resources recommended)  
 - `tags` - These tags allow network firewall rules and routes to be applied to specified VM instances.  
 - `image` - Specifies the boot image for the instances. You can choose anyone from our public image.  
