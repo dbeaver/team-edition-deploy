@@ -27,7 +27,7 @@ To deploy Team Edition in Google Cloud Console interface, you need to import Tea
 - In the **Name** fild write the image name in the following format: `dbeaver-te-ubuntu/rhel-%version%`
 - In the **Source** field select **Virtual disk (VMDK, VHD)**.
 - If you are prompted to enable Cloud Build tools and grant permissions, do so.
-- Copy the following URI `dbeaver-te-server/dbeaver` in the **Cloud Storage file** field, click **BROWSE**, and select the version you need.
+- Copy the following URI `dbeaver-te-server/dbeaver` in the **Virtual disk file** field, click **BROWSE**, and select the version you need.
 
 ![Alt text](image2.png)
 
@@ -76,13 +76,13 @@ You can check that your instance is running correctly by copying and pasting the
 
 3. In the terminal that opens, enter the following command:
 
-`gcloud beta compute instances create dbeaver-te-server \`
-`--zone=us-central1-a \`
-`--machine-type=e2-standard-4 \`
-`--tags=http-server,https-server \`
-`--image=https://www.googleapis.com/compute/v1/projects/dbeaver-public/global/images/dbeaver-te-server-ubuntu-23-2-0 \`
-`--create-disk=auto-delete=yes \`
-`--boot-disk-size=100GB --boot-disk-device-name=dbeaver-te-server`
+`gcloud beta compute instances create dbeaver-te-server \`  
+`--zone=us-central1-a \`  
+`--machine-type=e2-standard-4 \`  
+`--tags=http-server,https-server \`  
+`--image=https://www.googleapis.com/compute/v1/projects/dbeaver-public/global/images/dbeaver-te-server-ubuntu-23-2-0 \`  
+`--create-disk=auto-delete=yes \`  
+`--boot-disk-size=100GB --boot-disk-device-name=dbeaver-te-server`  
 
 
 Where:
