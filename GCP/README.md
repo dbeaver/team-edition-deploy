@@ -1,12 +1,18 @@
-## Deploy a Dbeaver instance in GCP
+# Deployment options
 
-### Import Dbeaver custom image on your GCP account
+- [Deploy a DBeaver instance in GCP](#deploy-a-dbeaver-instance-in-gcp)
+- [Deploy a DBeaver instance in GCP with google CLI](#deploy-a-dbeaver-instance-in-gcp-with-google-cli)
+
+
+## Deploy a DBeaver instance in GCP
+
+### Import DBeaver custom image on your GCP account
 
 - Navigate to "Compute Engine" -> "Images"  
 ![Alt text](<image1.png>)
 
 - Click on "[+] CREATE IMAGE"
-- Give it a name (dbeaver-te/-ce/-ee-ubuntu/rhel-%version%)
+- Give it a name (dbeaver-te-ubuntu/rhel-%version%)
 - For the "Source" field select "Virtual disk (VMDK, VHD)"
 - If you are prompted to enable Cloud Build tools and grant permissions, do it
 - Copy the following URI in the "Cloud Storage file" field and click BROWSE
@@ -17,7 +23,7 @@
 
 - Select the version you need
 - **The other fields are not required**
-- Click on "Create". You may have to wait up to 15 minutes while the Dbeaver server custom image imports to your account  
+- Click on "Create". You may have to wait up to 15 minutes while the DBeaver server custom image imports to your account  
 
 ![Alt text](image3.png)
 
@@ -29,23 +35,23 @@
 ![Alt text](image4.png)
 
 - Give your instance a name
-- In the "Machine configuration" section, make sure to pick a "Machine type" with recommended memory and cpu (4 CPUs and 16GB RAM) to run Dbeaver server.  
+- In the "Machine configuration" section, make sure to pick a "Machine type" with recommended memory and cpu (4 CPUs and 16GB RAM) to run DBeaver server.  
 
 ![Alt text](image5.png)
 
 - In the "Boot disk" section, click the "Change" button
-- From the "Custom images" tab, select the image that you just imported in the previous steps (dbeaver-te/-ce/-ee-ubuntu/rhel-%version%) from the drop down menu. Select a disk size of at least 100GB. When you are done, click on "Select"
+- From the "Custom images" tab, select the image that you just imported in the previous steps (dbeaver-te-ubuntu/rhel-%version%) from the drop down menu. Select a disk size of at least 100GB. When you are done, click on "Select"
 
 ![Alt text](<image6.png>)
 
-- In the "Firewall" section, make sure to check the "Allow HTTP traffic" and "Allow HTTPS traffic" boxes so that your Dbeaver server instance can be open from internet.
-- Finally, click on the "Create" button. After a few minutes, your Dbeaver server instance should be up and running  
+- In the "Firewall" section, make sure to check the "Allow HTTP traffic" and "Allow HTTPS traffic" boxes so that your DBeaver server instance can be open from internet.
+- Finally, click on the "Create" button. After a few minutes, your DBeaver server instance should be up and running  
 
 ![Alt text](image7.png)
 
 You can check that your instance is running correctly by copying and pasting the "External IP" address provided by GCP into your browser
 
-## Deploy a Dbeaver instance in GCP with google CLI
+## Deploy a DBeaver instance in GCP with google CLI
 
 - Navigate to "Compute Engine"
 
@@ -75,9 +81,37 @@ Where:
 - `boot-disk-size` - The size of the boot disk, is 100GB recommended.  
 - `boot-disk-device-name` - The name the guest operating system will see for the boot disk.  
 
-Dbeaver TE GCP public image list:
+DBeaver TE GCP public image list:
 - `https://www.googleapis.com/compute/v1/projects/dbeaver-public/global/images/dbeaver-te-server-ubuntu-23-2-0`
 - `https://www.googleapis.com/compute/v1/projects/dbeaver-public/global/images/dbeaver-te-server-rhel-23-2-0`
 
 
 You can change the parameters you need for deployment yourself. For detailed information on working with GoogleCloud CLI, you can read the [documentation](https://cloud.google.com/sdk/gcloud/reference/beta/compute/instances/create).
+
+
+# Setup and control options
+
+### How to use manager
+
+`dbeaver-te` is a utility to manage a Team Edition server. Using this manager, you can start or stop the server, as well as update its version.
+
+- Connect to your server through the terminal
+- Enter `dbeaver-te` or `dbeaver-te help` to see help menu
+
+
+### SSL certificate configuration
+
+- Replace files in `/opt/dbeaver-team-server/team-edition-deploy/compose/cbte/nginx/ssl`
+   - Certificate: `fullchain.pem`  
+   - Private Key: `privkey.pem`
+- Change `CLOUDBEAVER_DOMAIN=localhost` to your domain in .env file
+- Enter `dbeaver-te stop` and `dbeaver-te start` to accept new config
+
+
+### Version update procedure
+
+The update occurs with the help of the manager
+
+- Enter `dbeaver-te update list`
+- Choose the version you want to update
+- `dbeaver-te update %version%`
