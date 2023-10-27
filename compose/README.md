@@ -13,6 +13,24 @@ Ensure all TCP ports from the below list are available in your network stack.
  - 80/tcp
  - 443/tcp (for HTTPS access)
 
+
+### Using external DB
+
+- Open .env.example file
+- Change `USE_EXTERNAL_DB` to `true` value
+- Change `CLOUDBEAVER_DB_DRIVER` to driver for DB you want to use `postgres-jdbc`/`mysql8`/`oracle_thin`
+- Enter the authentication data for your database in the fields `CLOUDBEAVER_DB_URL` `CLOUDBEAVER_DB_USER` `CLOUDBEAVER_DB_PASSWORD`
+
+   #### Configure Oracle DB
+
+   Connect to your Oracle DB and run
+
+   `CREATE USER DC;`  
+   `GRANT UNLIMITED TABLESPACE TO DC;`  
+   `CREATE USER TM;`  
+   `GRANT UNLIMITED TABLESPACE TO TM;`  
+
+
 ### Configuring and starting CloudBeaver Team cluster:
 
 - `cd cbte`
