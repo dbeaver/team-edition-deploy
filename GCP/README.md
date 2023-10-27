@@ -112,7 +112,7 @@ How to user manager:
 1. Connect to your server through the terminal.
   - If you use terminal in browser window:  
     Enter `sudo su - ubuntu`  after open terminal if you use Ubuntu version  
-    Enter `sudo su - ec2-user`  if you use RHEL version  
+    Enter `sudo su - ec2-user`  after open terminal if you use RHEL version  
 2. Enter `dbeaver-te` or `dbeaver-te help` to see the help menu.
 
 
