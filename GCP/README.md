@@ -75,15 +75,15 @@ You can check that your instance is running correctly by copying and pasting the
 2. If you are prompted to authorize, do so.
 
 3. In the terminal that opens, enter the following command:
-
-`gcloud beta compute instances create dbeaver-te-server \`  
-`--zone=us-central1-a \`  
-`--machine-type=e2-standard-4 \`  
-`--tags=http-server,https-server \`  
-`--image=https://www.googleapis.com/compute/v1/projects/dbeaver-public/global/images/dbeaver-te-server-ubuntu-23-2-0 \`  
-`--create-disk=auto-delete=yes \`  
-`--boot-disk-size=100GB --boot-disk-device-name=dbeaver-te-server`  
-
+```
+gcloud beta compute instances create dbeaver-te-server \
+--zone=us-central1-a \
+--machine-type=e2-standard-4 \
+--tags=http-server,https-server \
+--image=https://www.googleapis.com/compute/v1/projects/dbeaver-public/global/images/dbeaver-te-server-ubuntu-23-2-0 \
+--create-disk=auto-delete=yes \
+--boot-disk-size=100GB --boot-disk-device-name=dbeaver-te-server
+```
 
 Where:
 - `zone` - Zone of the instances to create. You can choose this from [GCP zones](https://cloud.google.com/compute/docs/regions-zones)
