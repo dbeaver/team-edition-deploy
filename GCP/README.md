@@ -24,7 +24,7 @@ To deploy Team Edition in Google Cloud Console interface, you need to import Tea
 
 2. Fill in the **Create an image** form:
 
-- In the **Name** fild write the image name in the following format: `dbeaver-te-ubuntu/rhel-%version%`
+- In the **Name** fild write the image name in the following format: `dbeaver-te-server-ubuntu/rhel-%version%`
 - In the **Source** field select **Virtual disk (VMDK, VHD)**.
 - If you are prompted to enable Cloud Build tools and grant permissions, do so.
 - Copy the following URI `dbeaver-te-server/dbeaver` in the **Virtual disk file** field, click **BROWSE**, and select the version you need.
