@@ -10,6 +10,7 @@ SECRET_CERT_CSR="/C=US/ST=NY/L=NYC/O=CloudBeaver Secret Security/OU=IT Departmen
 TESERVICES="dc rm qm te tm db"
 TEVERSION="ea"
 
+
 aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACC_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
 
 

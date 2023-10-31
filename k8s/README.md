@@ -4,7 +4,7 @@
 
 * Kubernetes >= 1.23
 * 2 CPUs
-* 8Gb RAM
+* 16Gb RAM
 * Linux or macOS as deploy host
 * `git` and `kubectl` installed
 
