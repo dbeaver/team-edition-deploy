@@ -28,12 +28,14 @@ If you want to use another database on your side, you can do it according to the
    #### Configure Oracle database
 
    Connect to your Oracle database and run:
-
-   `CREATE USER DC;`  
-   `GRANT UNLIMITED TABLESPACE TO DC;`  
-   `CREATE USER TM;`  
-   `GRANT UNLIMITED TABLESPACE TO TM;`  
-
+```
+   CREATE USER DC;  
+   GRANT UNLIMITED TABLESPACE TO DC;  
+   CREATE USER TM;  
+   GRANT UNLIMITED TABLESPACE TO TM;  
+   CREATE USER QM;  
+   GRANT UNLIMITED TABLESPACE TO QM;  
+```
 
 ### Configuring and starting Team Edition cluster
 
