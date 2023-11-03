@@ -25,7 +25,8 @@ If you want to use another database on your side, you can do it according to the
 3. Change `CLOUDBEAVER_DB_DRIVER` to driver for a database you want to use, for example: `postgres-jdbc`/`mysql8`/`oracle_thin`
 4. Enter the authentication data for your database in the fields `CLOUDBEAVER_DB_URL` `CLOUDBEAVER_DB_USER` `CLOUDBEAVER_DB_PASSWORD`
 
-   #### Configure Oracle database
+
+#### Configure Oracle database
 
    Connect to your Oracle database and run:
 ```
@@ -35,6 +36,24 @@ If you want to use another database on your side, you can do it according to the
    GRANT UNLIMITED TABLESPACE TO TM;  
    CREATE USER QM;  
    GRANT UNLIMITED TABLESPACE TO QM;  
+```
+
+#### Configure Postgres database  
+
+   Connect to your Postgres database and run:
+```
+   CREATE SCHEMA IF NOT EXISTS dc;
+   CREATE SCHEMA IF NOT EXISTS qm;
+   CREATE SCHEMA IF NOT EXISTS tm;
+```
+
+#### Configure MySQL database 
+
+   Connect to your MySQL database and run:
+```
+   CREATE SCHEMA IF NOT EXISTS dc;
+   CREATE SCHEMA IF NOT EXISTS qm;
+   CREATE SCHEMA IF NOT EXISTS tm;
 ```
 
 ### Configuring and starting Team Edition cluster
