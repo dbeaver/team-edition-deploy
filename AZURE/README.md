@@ -9,7 +9,7 @@
 
 ![Alt text](image.png)
 
-2. Enter `DBeaver` in the search field, select `dbeaver-te-server`, then the version, and press **Create VM**.
+2. Enter `dbeaver-te-server` in the search field, select location, then the version, and press **Create VM**.
 
 
 ![Alt text](image-1.png)
