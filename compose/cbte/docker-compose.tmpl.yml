@@ -98,22 +98,23 @@ services:
       - CLOUDBEAVER_RM_SERVER_URL=http://cloudbeaver-rm:8971/rm
       - CLOUDBEAVER_QM_SERVER_URL=http://cloudbeaver-qm:8972/qm
       - CLOUDBEAVER_TM_SERVER_URL=http://cloudbeaver-tm:8973/tm
-      - CLOUDBEAVER_DC_BACKEND_DB_URL=${CLOUDBEAVER_DB_URL}?currentSchema=dc
+      - CLOUDBEAVER_DC_BACKEND_DB_URL=${CLOUDBEAVER_DB_URL}
       - CLOUDBEAVER_DC_BACKEND_DB_USER=${CLOUDBEAVER_DB_USER}
       - CLOUDBEAVER_DC_BACKEND_DB_PASSWORD=${CLOUDBEAVER_DB_PASSWORD}
-      - CLOUDBEAVER_QM_BACKEND_DB_URL=${CLOUDBEAVER_DB_URL}?currentSchema=qm
+      - CLOUDBEAVER_QM_BACKEND_DB_URL=${CLOUDBEAVER_DB_URL}
       - CLOUDBEAVER_QM_BACKEND_DB_USER=${CLOUDBEAVER_DB_USER}
       - CLOUDBEAVER_QM_BACKEND_DB_PASSWORD=${CLOUDBEAVER_DB_PASSWORD}
-      - CLOUDBEAVER_TM_BACKEND_DB_URL=${CLOUDBEAVER_DB_URL}?currentSchema=tm
+      - CLOUDBEAVER_TM_BACKEND_DB_URL=${CLOUDBEAVER_DB_URL}
       - CLOUDBEAVER_TM_BACKEND_DB_USER=${CLOUDBEAVER_DB_USER}
       - CLOUDBEAVER_TM_BACKEND_DB_PASSWORD=${CLOUDBEAVER_DB_PASSWORD}
+      - CLOUDBEAVER_QM_BACKEND_DB_DRIVER=${CLOUDBEAVER_DB_DRIVER}
+      - CLOUDBEAVER_DC_BACKEND_DB_DRIVER=${CLOUDBEAVER_DB_DRIVER}
+      - CLOUDBEAVER_TM_BACKEND_DB_DRIVER=${CLOUDBEAVER_DB_DRIVER}
     env_file:
       - ./.env
     volumes:
       - dc_data:/opt/domain-controller/workspace
       - ./cert/private/:/opt/domain-controller/conf/certificates/
-    depends_on:
-      - postgres
     expose:
       - 8970
     networks:
@@ -150,7 +151,6 @@ services:
       - qm_data:/opt/query-manager/workspace
       - ./cert/public/:/opt/query-manager/conf/certificates/
     depends_on:
-      - postgres
       - cloudbeaver-dc
     expose:
       - 8972
@@ -170,7 +170,6 @@ services:
       - tm_data:/opt/task-manager/workspace
       - ./cert/public/:/opt/task-manager/conf/certificates/
     depends_on:
-      - postgres
       - cloudbeaver-dc
     expose:
       - 8973
