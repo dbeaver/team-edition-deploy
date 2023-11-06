@@ -16,6 +16,8 @@ or in a cloud.
         - [AWS ECS](AWS/ecs-fargate/) - create and deploy ECS cluster
     * GCP
         - [GCP Image](GCP/) - if you want to use GCP for deployment
+    * AZURE 
+        - [AZURE Image](AZURE/) - if you want to use AZURE for deployment
 
 ### Server initial configuration
 
