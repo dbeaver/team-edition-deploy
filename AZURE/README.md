@@ -18,7 +18,7 @@
 
 ![Alt text](image-2.png)
 
-- Choose machine type with recommended resources 4 vCPUs and 16 GiB RAM
+- Choose VM size with recommended resources 4 vCPUs and 16 GiB RAM
 
 ![Alt text](machine-type.png)
 
