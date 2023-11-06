@@ -18,6 +18,10 @@
 
 ![Alt text](image-2.png)
 
+- Choose machine type with recommended resources 4 vCPUs and 16 GiB RAM
+
+![Alt text](machine-type.png)
+
 - In the field **Inbound port rules** select 22, 80, and 443 ports.
 
 ![Alt text](image-3.png)
