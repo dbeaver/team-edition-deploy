@@ -17,7 +17,7 @@ or in a cloud.
     * GCP
         - [GCP Image](GCP/) - if you want to use GCP for deployment
     * AZURE 
-        - [AZURE Image](AZURE/) - if you want to use AZURE for deployment
+        - [AZURE Image](Azure/) - if you want to use AZURE for deployment
 
 ### Server initial configuration
 
