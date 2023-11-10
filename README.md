@@ -1,6 +1,6 @@
 ## DBeaver Team Edition
 
-#### Version 23.2
+#### Version 23.3
 
 DBeaver Team Edition is a client-server application.  
 It requires server deployment. You can deploy it on a single host (e.g. your local computer)
@@ -24,7 +24,6 @@ or in a cloud.
 After you started the server:
 
 - Go to deployed server URL (e.g. `http://localhost/` in the simplest case)
-- Login as `cbadmin`/`cbadmin20`
 - Configure your license
 - That's it
 
