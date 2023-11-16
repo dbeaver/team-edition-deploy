@@ -6,17 +6,17 @@ DBeaver Team Edition is a client-server application.
 It requires server deployment. You can deploy it on a single host (e.g. your local computer)
 or in a cloud.  
 
-### Deployment 
+### Deployment
  * On premise
     - [Docker compose](compose) - the simplest way to deploy and run the server on the local machine
-    - [Kubernetes](k8s) - if you prefer to run everything with docker orchestration 
+    - [Kubernetes](k8s) - if you prefer to run everything with docker orchestration
  * Cloud
     * AWS
         - [AWS AMI](AWS/ami/) - if you want to use AWS for deployment
         - [AWS ECS](AWS/ecs-fargate/) - create and deploy ECS cluster
     * GCP
         - [GCP Image](GCP/) - if you want to use GCP for deployment
-    * Azure 
+    * Azure
         - [Azure Image](Azure/) - if you want to use Azure for deployment
 
 ### Server initial configuration
@@ -36,13 +36,13 @@ Version update is handled differently for different deployment methods. To updat
 - [Docker compose](compose/README.md#version-update-procedure)  
 - [Kubernetes](k8s/README.md#version-update-procedure)  
 - [AWS AMI](AWS/ami/README.md#version-update-procedure)  
-- [AWS ECS](AWS/ecs-fargate/README.md#dbeaver-te-deployment-for-aws-ecs-and-fargate-with-terraform)  
+- [AWS ECS](AWS/ecs-fargate/README.md#version-update)  
 - [GCP Image](GCP/README.md#version-update-procedure)  
 
 
-#### How to change db password for already deployed clusters
+#### How to change database password for already deployed clusters
 
-To change an internal postgres password use [this instruction](CHANGEPWD.md#how-to-change-db-password-for-already-deployed-clusters).
+To change an internal PostgreSQL password use [this instruction](CHANGEPWD.md#how-to-change-db-password-for-already-deployed-clusters).
 
 ### Early Access:
 
