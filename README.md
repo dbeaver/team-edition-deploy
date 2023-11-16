@@ -33,11 +33,11 @@ Now you can use web interface or [desktop clients](https://dbeaver.com/download/
 ### Server version update  
 Version update is handled differently for different deployment methods. To update the Team Edition version, follow these instructions:  
 
-[Docker compose](compose/README.md#version-update-procedure)  
-[Kubernetes](k8s/README.md#version-update-procedure)  
-[AWS AMI](AWS/ami/README.md#version-update-procedure)  
-[AWS ECS](AWS/ecs-fargate/README.md#dbeaver-te-deployment-for-aws-ecs-and-fargate-with-terraform)  
-[GCP Image](GCP/README.md#version-update-procedure)  
+- [Docker compose](compose/README.md#version-update-procedure)  
+- [Kubernetes](k8s/README.md#version-update-procedure)  
+- [AWS AMI](AWS/ami/README.md#version-update-procedure)  
+- [AWS ECS](AWS/ecs-fargate/README.md#dbeaver-te-deployment-for-aws-ecs-and-fargate-with-terraform)  
+- [GCP Image](GCP/README.md#version-update-procedure)  
 
 
 #### How to change db password for already deployed clusters
