@@ -24,10 +24,21 @@ or in a cloud.
 After you started the server:
 
 - Go to deployed server URL (e.g. `http://localhost/` in the simplest case)
+- Configure your login/password
 - Configure your license
 - That's it
 
 Now you can use web interface or [desktop clients](https://dbeaver.com/download/team-edition/) to work with your databases
+
+### Server version update  
+Version update is handled differently for different deployment methods. To update the Team Edition version, follow these instructions:  
+
+[Docker compose](compose/README.md#version-update-procedure)  
+[Kubernetes](k8s/README.md#version-update-procedure)  
+[AWS AMI](AWS/ami/README.md#version-update-procedure)  
+[AWS ECS](AWS/ecs-fargate/README.md#dbeaver-te-deployment-for-aws-ecs-and-fargate-with-terraform)  
+[GCP Image](GCP/README.md#version-update-procedure)  
+
 
 #### How to change db password for already deployed clusters
 
