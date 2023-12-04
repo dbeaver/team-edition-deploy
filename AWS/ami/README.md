@@ -10,7 +10,7 @@
 ### How to deploy AMI in AWS
 
 - Go to [AWS EC2](https://us-east-1.console.aws.amazon.com/ec2/home?region=us-east-1) -> AMI Catalog -> Community AMIs
-- Find `dbeaver-te-server-ubuntu-23-2-0`
+- Find `dbeaver-te-server-ubuntu-ea`
 
 ![example](image.png)
 
