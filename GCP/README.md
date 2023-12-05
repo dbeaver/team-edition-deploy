@@ -80,7 +80,7 @@ gcloud beta compute instances create dbeaver-te-server \
 --zone=us-central1-a \
 --machine-type=e2-standard-4 \
 --tags=http-server,https-server \
---image=https://www.googleapis.com/compute/v1/projects/dbeaver-public/global/images/dbeaver-te-server-ubuntu-23-2-0 \
+--image=https://www.googleapis.com/compute/v1/projects/dbeaver-public/global/images/dbeaver-te-server-ubuntu-23-3-0 \
 --create-disk=auto-delete=yes \
 --boot-disk-size=100GB --boot-disk-device-name=dbeaver-te-server
 ```
@@ -95,8 +95,8 @@ Where:
 - `boot-disk-device-name` - The name the guest operating system will see for the boot disk.
 
 DBeaver Team Edition GCP public image list:
-- `https://www.googleapis.com/compute/v1/projects/dbeaver-public/global/images/dbeaver-te-server-ubuntu-23-2-0`
-- `https://www.googleapis.com/compute/v1/projects/dbeaver-public/global/images/dbeaver-te-server-rhel-23-2-0`
+- `https://www.googleapis.com/compute/v1/projects/dbeaver-public/global/images/dbeaver-te-server-ubuntu-23-3-0`
+- `https://www.googleapis.com/compute/v1/projects/dbeaver-public/global/images/dbeaver-te-server-rhel-23-3-0`
 
 
 You can change the parameters you need for deployment yourself. For detailed information on working with Google Cloud CLI, you can read the [documentation](https://cloud.google.com/sdk/gcloud/reference/beta/compute/instances/create).

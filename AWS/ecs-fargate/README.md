@@ -15,7 +15,7 @@
 
 5. Run `terraform init` and then `terraform apply` to create the necessary repositories for the services.
 
-6. Execute `./build-dbeaverte.sh` to quickly build and push Docker images to the Amazon Elastic Container Registry (ECR). You can customize the deployment version by updating the `TEVERSION` environment variable. The default version is `23.2.0`.
+6. Execute `./build-dbeaverte.sh` to quickly build and push Docker images to the Amazon Elastic Container Registry (ECR). You can customize the deployment version by updating the `TEVERSION` environment variable. The default version is `23.3.0`.
 
 7. Make a backup of the `build/cert` directory and store it in a secure location for safekeeping.
 

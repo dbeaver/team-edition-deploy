@@ -10,7 +10,7 @@ variable "dbeaver-aws-region" {
 
 variable "image_version" {
   type = string
-  default = "ea"
+  default = "23.3.0"
 }
 
 variable "alb_certificate_arn" {

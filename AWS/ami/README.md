@@ -10,14 +10,15 @@
 ### How to deploy AMI in AWS
 
 - Go to [AWS EC2](https://us-east-1.console.aws.amazon.com/ec2/home?region=us-east-1) -> AMI Catalog -> Community AMIs
-- Find `dbeaver-te-server-ubuntu-ea`
+- Find `dbeaver-te-server`
+- Choose version
 
 ![example](image.png)
 
 - Launch instance
 
 #### Note:
-- Use recommended `Minimum requirements` resources for the best experience with this product
+- Use recommended [Minimum requirements](#minimum-requirements) resources for the best experience with this product
 - For security reasons, it is not recommended to make the service public in security group configuration
 
 
@@ -25,7 +26,7 @@
 
 `dbeaver-te` is a utility to manage a Team Edition server. Using this manager, you can start or stop the server, as well as update its version.
 
-- Connect to your server through the terminal
+- Connect to your server through the terminal. Use SSH user as `ubuntu` if you use Ubuntu distributive, or `ec2-user` if RHEL distributive.
 - Enter `dbeaver-te` or `dbeaver-te help` to see help menu
 
 
