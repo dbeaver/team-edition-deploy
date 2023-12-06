@@ -13,7 +13,7 @@
 ### How to run services
 - Clone this repo from GitHub: `git clone https://github.com/dbeaver/team-edition-deploy`
 - `cd team-edition-deploy/k8s/cbte`
-- `cp ./example.values.yaml ./values.yaml`
+- `cp ./values.example.yaml ./values.yaml`
 - Edit chart values in `values.yaml` (use any text editor)
 - Configure domain and SSL certificate (optional)
   - Add an A record in your DNS hosting for a value of `cloudbeaverBaseDomain` variable with load balancer IP address.
