@@ -6,6 +6,15 @@ SECRET_CERT_CSR="/C=US/ST=NY/L=NYC/O=CloudBeaver Secret /OU=IT Department/CN=clo
 shopt -s expand_aliases
 set -e
 
+TE_USER=$(grep -Po 'User=\K.*' /etc/systemd/system/dbeaver-team-server.service)
+if [[ "$(whoami)" != "$TE_USER" ]] ; then
+	echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	echo "ERROR: Wrong user"
+	echo "Please enter: sudo su $TE_USER"
+	echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	exit 1
+fi
+
 ## Flag to replace postgres pass
 
 ### Check docker installed
@@ -100,7 +109,20 @@ function get_le_certs() {
 	if [[ $LETSENCRYPT_CERTBOT_EMAIL =~ $email_regex ]] ; then
 		echo "email address OK"
 	else
-		echo "email address not OK"
+		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+		echo "ERROR: email address is NOT OK."
+		echo "Please change LETSENCRYPT_CERTBOT_EMAIL in .env file with your valid email"
+		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+		exit 1
+	fi
+
+	if [[ $CLOUDBEAVER_DOMAIN != "localhost" ]] ; then
+		echo "domain OK"
+	else
+		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+		echo "ERROR: domain is NOT OK."
+		echo "Please change CLOUDBEAVER_DOMAIN in .env file with your valid domain"
+		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 		exit 1
 	fi
 
