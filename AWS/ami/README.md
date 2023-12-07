@@ -32,11 +32,21 @@
 
 ### SSL certificate configuration
 
-- Replace files in `/opt/dbeaver-team-server/team-edition-deploy/compose/cbte/nginx/ssl`
+#### If you want to use official certificates from CDN services
+
+1. Get certificates for your domain from a third party service (for example [Cloudflare](https://www.cloudflare.com/learning/ssl/what-is-an-ssl-certificate/) )
+2. Replace files in `/opt/dbeaver-team-server/team-edition-deploy/compose/cbte/nginx/ssl`
    - Certificate: `fullchain.pem`  
    - Private Key: `privkey.pem`
-- Change `CLOUDBEAVER_DOMAIN=localhost` to your domain in .env file
-- Enter `dbeaver-te stop` and `dbeaver-te start` to accept new config
+3. Change `CLOUDBEAVER_DOMAIN=localhost` to your domain in .env file
+4. Enter `dbeaver-te stop` and `dbeaver-te start` to accept new config
+
+
+#### If you want use let's encrypt self-signed certificate
+
+1. Navigate to DBeaver TE server home(`/opt/dbeaver-team-server/team-edition-deploy/compose/cbte/`)
+2. Make sure you have configured the variables correctly `CLOUDBEAVER_DOMAIN` as your domain, `LETSENCRYPT_CERTBOT_EMAIL` as your email to receive notifications
+3. Run `./install.sh le`
 
 
 ### Version update procedure
