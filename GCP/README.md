@@ -128,13 +128,13 @@ How to user manager:
 4. Enter `dbeaver-te stop` and `dbeaver-te start` to accept new config.
 
 
-#### If you want use let's encrypt self-signed certificate
+#### If you want use Let's Encrypt self-signed certificate
 
-1. You must use one of the following users: `ubuntu` or `ec2-user`.
+1. You must use one of the following users: `ubuntu` (`sudo su - ubuntu`) or `ec2-user` (`sudo su - ec2-user`).
 2. Make sure you have configured the variables correctly in `.env` file at DBeaver TE server home `/opt/dbeaver-team-server/team-edition-deploy/compose/cbte/`:
   - `CLOUDBEAVER_DOMAIN` as your domain
   - `LETSENCRYPT_CERTBOT_EMAIL` as your email to receive notifications
-3. Run `dbeaver-te lecert`
+3. Run `dbeaver-te le`
 
 
 ### Version update procedure
