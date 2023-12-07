@@ -6,13 +6,15 @@ SECRET_CERT_CSR="/C=US/ST=NY/L=NYC/O=CloudBeaver Secret /OU=IT Department/CN=clo
 shopt -s expand_aliases
 set -e
 
-TE_USER=$(grep -Po 'User=\K.*' /etc/systemd/system/dbeaver-team-server.service)
-if [[ "$(whoami)" != "$TE_USER" ]] ; then
-	echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-	echo "ERROR: Wrong user"
-	echo "Please enter: sudo su $TE_USER"
-	echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-	exit 1
+if [ -f "/etc/systemd/system/dbeaver-team-server.service" ]; then
+	TE_USER=$(grep -Po 'User=\K.*' /etc/systemd/system/dbeaver-team-server.service)
+	if [[ "$(whoami)" != "$TE_USER" ]] ; then
+		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+		echo "ERROR: Wrong user"
+		echo "Please enter: sudo su $TE_USER"
+		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+		exit 1
+	fi
 fi
 
 ## Flag to replace postgres pass
