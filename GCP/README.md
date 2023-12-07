@@ -120,18 +120,19 @@ How to user manager:
 
 #### If you want to use official certificates from CDN services
 
-1. Get certificates for your domain from a third party service (for example [Cloudflare](https://www.cloudflare.com/learning/ssl/what-is-an-ssl-certificate/) )
-2. Replace files in `/opt/dbeaver-team-server/team-edition-deploy/compose/cbte/nginx/ssl` (you mast be user `ubuntu` or `ec2-user`)
+1. Get certificates for your domain from a third party service (for example [Cloudflare](https://www.cloudflare.com/learning/ssl/what-is-an-ssl-certificate/)). You need an SSL certificate file and public-private key pair.
+2. Replace files in `/opt/dbeaver-team-server/team-edition-deploy/compose/cbte/nginx/ssl`
    - Certificate: `fullchain.pem`  
    - Private Key: `privkey.pem`
-3. Change `CLOUDBEAVER_DOMAIN=localhost` to your domain in .env file
-4. Enter `dbeaver-te stop` and `dbeaver-te start` to accept new config
+3. Change `CLOUDBEAVER_DOMAIN=localhost` to your domain in .env file.
+4. Enter `dbeaver-te stop` and `dbeaver-te start` to accept new config.
+
 
 #### If you want use let's encrypt self-signed certificate
 
-1. You mast be user `ubuntu` or `ec2-user`
-2. Make sure you have configured the variables correctly in .env file at DBeaver TE server home `/opt/dbeaver-team-server/team-edition-deploy/compose/cbte/`
-  - `CLOUDBEAVER_DOMAIN` as your domain 
+1. You must use one of the following users: `ubuntu` or `ec2-user`.
+2. Make sure you have configured the variables correctly in `.env` file at DBeaver TE server home `/opt/dbeaver-team-server/team-edition-deploy/compose/cbte/`:
+  - `CLOUDBEAVER_DOMAIN` as your domain
   - `LETSENCRYPT_CERTBOT_EMAIL` as your email to receive notifications
 3. Run `dbeaver-te lecert`
 
