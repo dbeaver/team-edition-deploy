@@ -46,7 +46,7 @@ How to user manager:
 2. Enter `dbeaver-te` or `dbeaver-te help` to see the help menu.
 
 
-### [SSL certificate configuration](../SSL/READMEmd)
+### [SSL certificate configuration](../SSL/)
 
 ### Version update procedure
 
