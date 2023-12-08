@@ -32,7 +32,7 @@
 
 ### SSL certificate configuration
 
-#### If you want to use official certificates from CDN services
+#### If you want to use official certificates from Domain services
 
 1. Get certificates for your domain from a third party service (for example [Cloudflare](https://www.cloudflare.com/learning/ssl/what-is-an-ssl-certificate/)). You need an SSL certificate file and public-private key pair.
 2. Replace files in `/opt/dbeaver-team-server/team-edition-deploy/compose/cbte/nginx/ssl`
