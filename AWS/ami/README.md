@@ -30,7 +30,7 @@
 - Enter `dbeaver-te` or `dbeaver-te help` to see help menu
 
 
-### [SSL certificate configuration](../../SSL/READMEmd)
+### [SSL certificate configuration](../../SSL/)
 
 
 ### Version update procedure
