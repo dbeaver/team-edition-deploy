@@ -35,6 +35,8 @@
 
 ## Setup and control options
 
-### [Team Edition server manager](../Manager/)
+- ### [Team Edition server manager](../Manager/)
 
-### [SSL certificate configuration](../SSL/)
+- ### [SSL certificate configuration](../SSL/)
+
+- ### [Version update procedure](../Manager/README.md#version-update-procedure)
