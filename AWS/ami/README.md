@@ -22,22 +22,10 @@
 - For security reasons, it is not recommended to make the service public in security group configuration
 
 
-### How to use manager
+## Setup and control options
 
-`dbeaver-te` is a utility to manage a Team Edition server. Using this manager, you can start or stop the server, as well as update its version.
-
-- Connect to your server through the terminal. Use SSH user as `ubuntu` if you use Ubuntu distributive, or `ec2-user` if RHEL distributive.
-- Enter `dbeaver-te` or `dbeaver-te help` to see help menu
-
+### [Team Edition server manager](../../Manager/)
 
 ### [SSL certificate configuration](../../SSL/)
 
 
-### Version update procedure
-
-The update occurs with the help of the [manager](#team-edition-server-manager).
-
-1. Connect to your server through the terminal.
-2. Enter `dbeaver-te update list`
-3. Choose the version you want to update.
-4. Run this command: `dbeaver-te update %version%`
