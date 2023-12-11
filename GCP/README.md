@@ -103,26 +103,7 @@ You can change the parameters you need for deployment yourself. For detailed inf
 
 ## Setup and control options
 
-### Team Edition server manager
-
-`dbeaver-te` is a utility to manage a Team Edition server. Using this manager, you can start or stop the server, as well as update its version.
-
-How to user manager:
-
-1. Connect to your server through the terminal.
-  - If you use terminal in browser window:  
-    Enter `sudo su - ubuntu`  after open terminal if you use Ubuntu version  
-    Enter `sudo su - ec2-user`  after open terminal if you use RHEL version  
-2. Enter `dbeaver-te` or `dbeaver-te help` to see the help menu.
-
+### [Team Edition server manager](../Manager/)
 
 ### [SSL certificate configuration](../SSL/)
 
-### Version update procedure
-
-The update occurs with the help of the [manager](#team-edition-server-manager).
-
-1. Connect to your server through the terminal.
-2. Enter `dbeaver-te update list`
-3. Choose the version you want to update.
-4. Run this command: `dbeaver-te update %version%`
