@@ -103,7 +103,8 @@ You can change the parameters you need for deployment yourself. For detailed inf
 
 ## Setup and control options
 
-### [Team Edition server manager](../Manager/)
+- ### [Team Edition server manager](../Manager/)
 
-### [SSL certificate configuration](../SSL/)
+- ### [SSL certificate configuration](../SSL/)
 
+- ### [Version update procedure](../Manager/README.md#version-update-procedure)
