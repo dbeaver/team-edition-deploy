@@ -13,7 +13,7 @@
 #### If you want use Let's Encrypt self-signed certificate
 
 1. You must use one of the following users: `ubuntu` (`sudo su - ubuntu`) or `ec2-user` (`sudo su - ec2-user`).
-2. Make sure you have configured the variables correctly in `.env` file at DBeaver TE server home `/opt/dbeaver-team-server/team-edition-deploy/compose/cbte/`:
+2. Make sure you have configured the variables correctly in `.env` file at Team Edition server home `/opt/dbeaver-team-server/team-edition-deploy/compose/cbte/`:
   - `CLOUDBEAVER_DOMAIN` as your domain
   - `LETSENCRYPT_CERTBOT_EMAIL` as your email to receive notifications
 3. Run `dbeaver-te le`

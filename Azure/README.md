@@ -1,7 +1,6 @@
 - [Deployment](#deployment)
 - [Setup and control options](#setup-and-control-options)
-  - [Team Edition server manager](#team-edition-server-manager)
-  - [Version update procedure](version-update-procedure)
+
 
 ## Deployment
 
@@ -35,8 +34,6 @@
 
 ## Setup and control options
 
-- ### [Team Edition server manager](../Manager/)
-
-- ### [SSL certificate configuration](../SSL/)
-
-- ### [Version update procedure](../Manager/README.md#version-update-procedure)
+- [Team Edition server manager](../Manager/)
+- [SSL certificate configuration](../SSL/)
+- [Version update procedure](../Manager/README.md#version-update-procedure)
