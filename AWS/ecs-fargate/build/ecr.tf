@@ -1,6 +1,6 @@
 variable "ecr_repositories" {
   type = list
-  default = ["dc", "rm", "qm", "te", "db"]
+  default = ["dc", "rm", "qm", "te", "db", "tm"]
 }
 
 variable "dbeaver-aws-region" {
