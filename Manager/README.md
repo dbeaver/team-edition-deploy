@@ -6,8 +6,8 @@ How to user manager:
 
 1. Connect to your server through the terminal.
   - If you use terminal in browser window:  
-    Enter `sudo su - ubuntu`  after open terminal if you use Ubuntu version  
-    Enter `sudo su - ec2-user`  after open terminal if you use RHEL version  
+    Enter `sudo su - ubuntu`  after opening the terminal if you use the Ubuntu version  
+    Enter `sudo su - ec2-user`  after opening the terminal if you use the RHEL version  
 2. Enter `dbeaver-te` or `dbeaver-te help` to see the help menu.
 
 
@@ -16,7 +16,7 @@ How to user manager:
 The configuration occurs with the help of the [manager](#team-edition-server-manager).
 
 To configure your server, you can enter the command `dbever-te configure`.
-A `.env` file will open for you, in which you can change the parameters you need, then press Ctrl+S to save variables and Ctrl+X to exit the editor.
+This will open the `.env` file, where you can change the parameters you want, then press `Ctrl+S` to save variables and `Ctrl+X` to exit the editor.
 
 
 ### Version update procedure

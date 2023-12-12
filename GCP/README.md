@@ -6,9 +6,6 @@
     - [Step 2. Create a new instance from imported image](#step-2-create-a-new-gcp-compute-engine-instance-from-the-imported-image)
   - [Deploy with Google Cloud CLI](#deployment-with-google-cloud-cli)
 - [Setup and control options](#setup-and-control-options)
-  - [Team Edition server manager](#team-edition-server-manager)
-  - [SSL certificate configuration](#ssl-certificate-configuration)
-  - [Version update procedure](#version-update-procedure)
 
 ## Deployment
 
@@ -103,8 +100,6 @@ You can change the parameters you need for deployment yourself. For detailed inf
 
 ## Setup and control options
 
-- ### [Team Edition server manager](../Manager/)
-
-- ### [SSL certificate configuration](../SSL/)
-
-- ### [Version update procedure](../Manager/README.md#version-update-procedure)
+- [Team Edition server manager](../Manager/)
+- [SSL certificate configuration](../SSL/)
+- [Version update procedure](../Manager/README.md#version-update-procedure)
