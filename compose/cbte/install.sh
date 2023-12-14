@@ -136,10 +136,16 @@ function get_le_certs() {
 	staging=0 # Set to 1 if you're testing your setup to avoid hitting request limits
 
 	if [ -d "$data_path" ]; then
-	  read -p "Existing data found for $domain and replace existing certificate? (y/N) " decision
-	  if [ "$decision" != "Y" ] && [ "$decision" != "y" ]; then
-	    exit
-	  fi
+			read -p "Existing data found for $domain and replace existing certificate? (y/N) " decision
+			if [ "$decision" != "Y" ] && [ "$decision" != "y" ]; then
+					exit
+			else
+					TIME=$(date +"%m-%d-%y-%T")
+					BACKUP_DIR="/tmp/backup-cert-$TIME"
+					mkdir $BACKUP_DIR
+					mv $data_path/conf $BACKUP_DIR
+					echo "Old certificates have been moved to $BACKUP_DIR"
+			fi
 	fi
 
 	if [ ! -e "$data_path/conf/options-ssl-nginx.conf" ] || [ ! -e "$data_path/conf/ssl-dhparams.pem" ]; then
