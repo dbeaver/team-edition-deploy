@@ -114,7 +114,7 @@ function get_le_certs() {
 		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 		echo "ERROR: email address is NOT OK."
 		echo "Please change LETSENCRYPT_CERTBOT_EMAIL in .env file with your valid email"
-		echo "Enter "dbeaver-te configure" to easily open .env files."
+		echo "Enter 'dbeaver-te configure' to easily open .env file."
 		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 		exit 1
 	fi
@@ -125,7 +125,7 @@ function get_le_certs() {
 		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 		echo "ERROR: domain is NOT OK."
 		echo "Please change CLOUDBEAVER_DOMAIN in .env file with your valid domain"
-		echo "Enter "dbeaver-te configure" to easily open .env files."
+		echo "Enter 'dbeaver-te configure' to easily open .env file."
 		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 		exit 1
 	fi
