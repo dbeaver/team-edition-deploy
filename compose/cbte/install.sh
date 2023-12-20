@@ -88,7 +88,12 @@ if [[ $CLOUDBEAVER_SCHEME == "https" ]] || [[ -n "$1" ]] && [[ ! "$1" == "le" ]]
 then
 	if [ ! -f nginx/ssl/fullchain.pem ] || [ ! -f nginx/ssl/privkey.pem ];
 	then
-	  echo "Certificate or key not exist. Stopped"
+		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+		echo "ERROR: ${CLOUDBEAVER_SCHEME} scheme can not configured."
+	  echo "  Certificate ./nginx/ssl/fullchain.pem" 
+	  echo "  or key ./nginx/ssl/privkey.pem"
+	  echo "  not exist. Stopped"
+	  echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 	  exit 1
 	fi
 fi
