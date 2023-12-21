@@ -88,7 +88,12 @@ if [[ $CLOUDBEAVER_SCHEME == "https" ]] || [[ -n "$1" ]] && [[ ! "$1" == "le" ]]
 then
 	if [ ! -f nginx/ssl/fullchain.pem ] || [ ! -f nginx/ssl/privkey.pem ];
 	then
-	  echo "Certificate or key not exist. Stopped"
+		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+		echo "ERROR: ${CLOUDBEAVER_SCHEME} scheme can not configured."
+	  echo "  Certificate ./nginx/ssl/fullchain.pem" 
+	  echo "  or key ./nginx/ssl/privkey.pem"
+	  echo "  not exist. Stopped"
+	  echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 	  exit 1
 	fi
 fi
@@ -114,6 +119,7 @@ function get_le_certs() {
 		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 		echo "ERROR: email address is NOT OK."
 		echo "Please change LETSENCRYPT_CERTBOT_EMAIL in .env file with your valid email"
+		echo "Enter 'dbeaver-te configure' to easily open .env file."
 		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 		exit 1
 	fi
@@ -124,6 +130,7 @@ function get_le_certs() {
 		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 		echo "ERROR: domain is NOT OK."
 		echo "Please change CLOUDBEAVER_DOMAIN in .env file with your valid domain"
+		echo "Enter 'dbeaver-te configure' to easily open .env file."
 		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 		exit 1
 	fi
