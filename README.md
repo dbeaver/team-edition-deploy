@@ -14,7 +14,7 @@ or in a cloud.
     * AWS
         - [AWS AMI](AWS/ami/) - if you want to use AWS for deployment
         - [AWS ECS](AWS/ecs-fargate/) - create and deploy ECS cluster
-    * GCP
+    * Google Cloud
         - [GCP Image](GCP/) - if you want to use GCP for deployment
     * Azure
         - [Azure Image](Azure/) - if you want to use Azure for deployment
