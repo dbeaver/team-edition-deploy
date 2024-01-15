@@ -7,10 +7,14 @@ import sys
 email = sys.argv[1]
 domain = sys.argv[2]
 rsa_key_size = sys.argv[3]
-staging_arg = sys.argv[4]
+
+if len(sys.argv) > 4:
+    staging_arg = sys.argv[4]
+else:
+    staging_arg = '' 
 
 command = [
-    "docker compose", "run", "--rm", "--entrypoint",
+    "docker", "compose", "run", "--rm", "--entrypoint",
     f"certbot certonly --manual --preferred-challenges dns --email {email}  -d {domain} --rsa-key-size {rsa_key_size} {staging_arg} --agree-tos --force-renewal", "certbot"
 ]
 
