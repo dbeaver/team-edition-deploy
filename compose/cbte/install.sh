@@ -193,16 +193,8 @@ function get_le_certs() {
 	# Enable staging mode if needed
 	if [ $staging != "0" ]; then staging_arg="--staging"; fi
 
-	docker-compose run --rm --entrypoint "\
-	  certbot certonly --webroot -w /var/www/certbot \
-		--non-interactive \
-	    $staging_arg \
-	    $email_arg \
-	    $domain_args \
-	    --rsa-key-size $rsa_key_size \
-	    --agree-tos \
-	    --force-renewal" certbot
-	echo
+
+	python3 $(pwd)/helper/do_certs.py $email $domain $rsa_key_size $staging_arg
 
 	echo "### Reloading nginx ..."
 	docker-compose exec nginx nginx -s reload
