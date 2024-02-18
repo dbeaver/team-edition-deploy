@@ -46,6 +46,11 @@ else
 fi
 
 compose_ver=`docker-compose version --short`
+
+if [[ $compose_ver == v* ]]; then
+    compose_ver=${compose_ver#v}
+fi
+
 if [ "${compose_ver%%.*}" -ge 2 ]; then
 	echo "compose is actual"
 else
