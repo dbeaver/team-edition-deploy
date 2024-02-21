@@ -5,9 +5,9 @@ All you need is a Linux machine with docker.
 
 ### System requirements
 
-- Minimum 8GB RAM, > 16GB recommended
+- Minimum 16GB RAM
 - Minimum 50GB storage, > 100GB recommended
-- Linux. Ubuntu or RedHat recommended
+- Ubuntu recommended
 - [Docker](https://docs.docker.com/engine/install/ubuntu/) installed. Make sure you have chosen the right OS distro.
 - [docker-compose](https://docs.docker.com/compose/install/) binary installed and added to your PATH variable. Supported versions 2.10 and above
     - If you install `docker-compose-plugin`, you must use the `docker compose` command instead of `docker-compose`.
