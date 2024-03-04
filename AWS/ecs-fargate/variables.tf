@@ -13,9 +13,9 @@ variable "image_version" {
   default = "23.3.0"
 }
 
-variable "alb_certificate_arn" {
+variable "alb_certificate_Identifier" {
   type = string
-  default = "arn:aws:acm:${var.dbeaver-aws-region}:${var.aws_account_id}:certificate/"
+  default = ""
 }
 
 variable "dbeaver_te_default_ns" {
