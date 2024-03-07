@@ -102,7 +102,7 @@ resource "aws_ecs_task_definition" "dbeaver_db" {
   }
   container_definitions = jsonencode([{
     name        = "postgres"
-    image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/cloudbeaver-db:${var.image_version}"
+    image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/cloudbeaver-db:${var.dbeaver_te_version}"
     essential   = true
     environment = var.cloudbeaver-db-env
     mountPoints = [{
@@ -258,7 +258,7 @@ resource "aws_ecs_task_definition" "dbeaver_dc" {
   }
   container_definitions = jsonencode([{
     name        = "cloudbeaver-dc"
-    image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/cloudbeaver-dc:${var.image_version}"
+    image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/cloudbeaver-dc:${var.dbeaver_te_version}"
     essential   = true
     environment = var.cloudbeaver-dc-env
     mountPoints = [{
@@ -344,7 +344,7 @@ resource "aws_ecs_task_definition" "dbeaver_rm" {
   }
   container_definitions = jsonencode([{
     name        = "cloudbeaver-rm"
-    image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/cloudbeaver-rm:${var.image_version}"
+    image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/cloudbeaver-rm:${var.dbeaver_te_version}"
     essential   = true
     environment = var.cloudbeaver-shared-env
     mountPoints = [{
@@ -424,7 +424,7 @@ resource "aws_ecs_task_definition" "dbeaver_qm" {
 
   container_definitions = jsonencode([{
     name        = "cloudbeaver-qm"
-    image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/cloudbeaver-qm:${var.image_version}"
+    image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/cloudbeaver-qm:${var.dbeaver_te_version}"
     essential   = true
     environment = var.cloudbeaver-shared-env
     logConfiguration = {
@@ -499,7 +499,7 @@ resource "aws_ecs_task_definition" "dbeaver_tm" {
   execution_role_arn       = aws_iam_role.ecsTaskExecutionRole.arn
   container_definitions = jsonencode([{
     name        = "cloudbeaver-tm"
-    image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/cloudbeaver-tm:${var.image_version}"
+    image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/cloudbeaver-tm:${var.dbeaver_te_version}"
     essential   = true
     environment = var.cloudbeaver-shared-env
     logConfiguration = {
@@ -576,7 +576,7 @@ resource "aws_ecs_task_definition" "dbeaver_te" {
 
   container_definitions = jsonencode([{
     name        = "cloudbeaver-te"
-    image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/cloudbeaver-te:${var.image_version}"
+    image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/cloudbeaver-te:${var.dbeaver_te_version}"
     essential   = true
     environment = var.cloudbeaver-shared-env
     logConfiguration = {

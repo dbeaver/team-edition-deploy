@@ -29,6 +29,6 @@
 
 1. Navigate to the `team-edition-deploy/AWS/ecs-fargate` directory.
 
-2. Specify the desired version in  `variables.tf` in the `image_version` variable.
+2. Specify the desired version in  `variables.tf` in the `dbeaver_te_version` variable.
 
 3. Run `terraform apply` to upgrade the ECS cluster and complete the deployment.

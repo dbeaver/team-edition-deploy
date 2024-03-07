@@ -8,7 +8,7 @@ variable "aws_region" {
   default = ""
 }
 
-variable "image_version" {
+variable "dbeaver_te_version" {
   type = string
   default = "ea"
 }
