@@ -9,6 +9,7 @@ k8s/cbte/crossSsl/
 k8s/cbte/ingressSsl/
 k8s/cbte/secretSsl/
 
+AWS/ecs-fargate/build/cert
 # General
 .DS_Store
 .AppleDouble
