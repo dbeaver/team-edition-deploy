@@ -1,9 +1,12 @@
 provider "aws" {
-  region = var.dbeaver-aws-region
+  region = var.aws_region
 }
 
 resource "aws_ecs_cluster" "dbeaver_te" {
   name = "DBeaverTeamEdition"
+  depends_on = [
+    aws_ecr_repository.dbeaver_te
+  ]
 }
 
 ################################################################################
@@ -80,6 +83,10 @@ resource "aws_efs_mount_target" "cloudbeaver_dc_data_mt" {
 
 resource "aws_ecs_task_definition" "dbeaver_db" {
 
+  depends_on = [
+   aws_ecs_cluster.dbeaver_te 
+  ]
+
   family                   = "DBeaverTeamEdition-db"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
@@ -95,7 +102,7 @@ resource "aws_ecs_task_definition" "dbeaver_db" {
   }
   container_definitions = jsonencode([{
     name        = "postgres"
-    image       = "${var.aws_account_id}.dkr.ecr.${var.dbeaver-aws-region}.amazonaws.com/cloudbeaver-db:${var.image_version}"
+    image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/cloudbeaver-db:${var.image_version}"
     essential   = true
     environment = var.cloudbeaver-db-env
     mountPoints = [{
@@ -106,7 +113,7 @@ resource "aws_ecs_task_definition" "dbeaver_db" {
                 "logDriver": "awslogs"
                 "options": {
                     "awslogs-group": "DBeaverTeamEdition",
-                    "awslogs-region": "${var.dbeaver-aws-region}",
+                    "awslogs-region": "${var.aws_region}",
                     "awslogs-create-group": "true",
                     "awslogs-stream-prefix": "db"
                 }
@@ -157,6 +164,11 @@ resource "aws_ecs_service" "postgres" {
 ################################################################################
 
 resource "aws_ecs_task_definition" "kafka" {
+
+  depends_on = [
+   aws_ecs_cluster.dbeaver_te 
+  ]
+
   family                   = "DBeaverTeamEdition-kafka"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
@@ -173,7 +185,7 @@ resource "aws_ecs_task_definition" "kafka" {
                 "logDriver": "awslogs"
                 "options": {
                     "awslogs-group": "DBeaverTeamEdition",
-                    "awslogs-region": "${var.dbeaver-aws-region}",
+                    "awslogs-region": "${var.aws_region}",
                     "awslogs-create-group": "true",
                     "awslogs-stream-prefix": "kafka"
                 }
@@ -226,6 +238,11 @@ resource "aws_ecs_service" "kafka" {
 ################################################################################
 
 resource "aws_ecs_task_definition" "dbeaver_dc" {
+
+  depends_on = [
+   aws_ecs_cluster.dbeaver_te 
+  ]
+
   family                   = "DBeaverTeamEdition-dc"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
@@ -241,7 +258,7 @@ resource "aws_ecs_task_definition" "dbeaver_dc" {
   }
   container_definitions = jsonencode([{
     name        = "cloudbeaver-dc"
-    image       = "${var.aws_account_id}.dkr.ecr.${var.dbeaver-aws-region}.amazonaws.com/cloudbeaver-dc:${var.image_version}"
+    image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/cloudbeaver-dc:${var.image_version}"
     essential   = true
     environment = var.cloudbeaver-dc-env
     mountPoints = [{
@@ -252,7 +269,7 @@ resource "aws_ecs_task_definition" "dbeaver_dc" {
                 "logDriver": "awslogs"
                 "options": {
                     "awslogs-group": "DBeaverTeamEdition",
-                    "awslogs-region": "${var.dbeaver-aws-region}",
+                    "awslogs-region": "${var.aws_region}",
                     "awslogs-create-group": "true",
                     "awslogs-stream-prefix": "dc"
                 }
@@ -307,6 +324,11 @@ resource "aws_ecs_service" "dc" {
 ################################################################################
 
 resource "aws_ecs_task_definition" "dbeaver_rm" {
+
+  depends_on = [
+   aws_ecs_cluster.dbeaver_te 
+  ]
+
   family                   = "DBeaverTeamEdition-rm"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
@@ -322,7 +344,7 @@ resource "aws_ecs_task_definition" "dbeaver_rm" {
   }
   container_definitions = jsonencode([{
     name        = "cloudbeaver-rm"
-    image       = "${var.aws_account_id}.dkr.ecr.${var.dbeaver-aws-region}.amazonaws.com/cloudbeaver-rm:${var.image_version}"
+    image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/cloudbeaver-rm:${var.image_version}"
     essential   = true
     environment = var.cloudbeaver-shared-env
     mountPoints = [{
@@ -333,7 +355,7 @@ resource "aws_ecs_task_definition" "dbeaver_rm" {
                 "logDriver": "awslogs"
                 "options": {
                     "awslogs-group": "DBeaverTeamEdition",
-                    "awslogs-region": "${var.dbeaver-aws-region}",
+                    "awslogs-region": "${var.aws_region}",
                     "awslogs-create-group": "true",
                     "awslogs-stream-prefix": "rm"
                 }
@@ -388,6 +410,11 @@ resource "aws_ecs_service" "rm" {
 ################################################################################
 
 resource "aws_ecs_task_definition" "dbeaver_qm" {
+
+  depends_on = [
+   aws_ecs_cluster.dbeaver_te 
+  ]
+
   family                   = "DBeaverTeamEdition-qm"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
@@ -397,14 +424,14 @@ resource "aws_ecs_task_definition" "dbeaver_qm" {
 
   container_definitions = jsonencode([{
     name        = "cloudbeaver-qm"
-    image       = "${var.aws_account_id}.dkr.ecr.${var.dbeaver-aws-region}.amazonaws.com/cloudbeaver-qm:${var.image_version}"
+    image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/cloudbeaver-qm:${var.image_version}"
     essential   = true
     environment = var.cloudbeaver-shared-env
     logConfiguration = {
                 "logDriver": "awslogs"
                 "options": {
                     "awslogs-group": "DBeaverTeamEdition",
-                    "awslogs-region": "${var.dbeaver-aws-region}",
+                    "awslogs-region": "${var.aws_region}",
                     "awslogs-create-group": "true",
                     "awslogs-stream-prefix": "qm"
                 }
@@ -459,6 +486,11 @@ resource "aws_ecs_service" "qm" {
 ################################################################################
 
 resource "aws_ecs_task_definition" "dbeaver_tm" {
+
+  depends_on = [
+   aws_ecs_cluster.dbeaver_te 
+  ]
+
   family                   = "DBeaverTeamEdition-tm"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
@@ -467,14 +499,14 @@ resource "aws_ecs_task_definition" "dbeaver_tm" {
   execution_role_arn       = aws_iam_role.ecsTaskExecutionRole.arn
   container_definitions = jsonencode([{
     name        = "cloudbeaver-tm"
-    image       = "${var.aws_account_id}.dkr.ecr.${var.dbeaver-aws-region}.amazonaws.com/cloudbeaver-tm:${var.image_version}"
+    image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/cloudbeaver-tm:${var.image_version}"
     essential   = true
     environment = var.cloudbeaver-shared-env
     logConfiguration = {
                 "logDriver": "awslogs"
                 "options": {
                     "awslogs-group": "DBeaverTeamEdition",
-                    "awslogs-region": "${var.dbeaver-aws-region}",
+                    "awslogs-region": "${var.aws_region}",
                     "awslogs-create-group": "true",
                     "awslogs-stream-prefix": "tm"
                 }
@@ -530,6 +562,11 @@ resource "aws_ecs_service" "tm" {
 ################################################################################
 
 resource "aws_ecs_task_definition" "dbeaver_te" {
+
+  depends_on = [
+   aws_ecs_cluster.dbeaver_te 
+  ]
+
   family                   = "DBeaverTeamEdition-te"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
@@ -539,14 +576,14 @@ resource "aws_ecs_task_definition" "dbeaver_te" {
 
   container_definitions = jsonencode([{
     name        = "cloudbeaver-te"
-    image       = "${var.aws_account_id}.dkr.ecr.${var.dbeaver-aws-region}.amazonaws.com/cloudbeaver-te:${var.image_version}"
+    image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/cloudbeaver-te:${var.image_version}"
     essential   = true
     environment = var.cloudbeaver-shared-env
     logConfiguration = {
                 "logDriver": "awslogs"
                 "options": {
                     "awslogs-group": "DBeaverTeamEdition",
-                    "awslogs-region": "${var.dbeaver-aws-region}",
+                    "awslogs-region": "${var.aws_region}",
                     "awslogs-create-group": "true",
                     "awslogs-stream-prefix": "te"
                 }
