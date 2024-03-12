@@ -17,26 +17,19 @@
    - If you plane use RDS based database
       - Open `variables.tf` 
       - Change variable `rds_db` to `true`
-      - Choose `rds_db_type`, by default it is `postgres`, but cloudbeaver support also `mysql, oracle`
+      - Choose `rds_db_version` by default is `postgres:16.1`
+      - Update the credentials for database in `cloudbeaver-db-env`
 
 
 4. Configure the deployment in `variables.tf` as follows:
    - Set your `aws_account_id` same as you described in `AWS_ACC_ID`
    - Set your `aws_region` same as you described in `AWS_REGION`
-   - Ensure that the `alb_certificate_arn` variable contains the ARN of the SSL certificate corresponding to your domain specified in `CLOUDBEAVER_PUBLIC_URL`.
-   - Change all `*_PASSWORD` fields to secure values according to your security requirements.
+   - Ensure that the `alb_certificate_Identifier` variable contains the ID of the SSL certificate corresponding to your domain specified in `CLOUDBEAVER_PUBLIC_URL`.
+   - You can customize the deployment version by updating the `dbeaver_te_version` environment variable. The default version is `24.0.0`. 
 
-3. Run `terraform init` and then `terraform apply` to create the necessary repositories for the services.
+5. Run `terraform init` and then `terraform apply` to create the ECS cluster and complete the deployment.
 
-4. Execute `./build-dbeaverte.sh` to quickly build and push Docker images to the Amazon Elastic Container Registry (ECR). You can customize the deployment version by updating the `TEVERSION` environment variable. The default version is `23.3.0`.
-
-5. Make a backup of the `build/cert` directory and store it in a secure location for safekeeping.
-
-
-
-7. Run `terraform init` and then `terraform apply` to create the ECS cluster and complete the deployment.
-
-8. Cluster destruction is performed in reverse order:
+6. Cluster destruction is performed in reverse order:
     - Run `terraform destroy` in `ecs-fargate` directory to destroy ECS cluster
 
 ### Version update

@@ -29,7 +29,7 @@ variable "rds_db" {
 }
 
 variable "rds_db_type" {
-  description = "Type of RDS DB instance (postgres, mysql, oracle) https://docs.aws.amazon.com/AmazonRDS/latest/APIReference/API_CreateDBInstance.html"
+  description = "Type of RDS DB instance"
   type        = string
   default     = "postgres"
 }
