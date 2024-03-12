@@ -1,14 +1,10 @@
 #!/bin/bash
 
-AWS_REGION=""
-AWS_ACC_ID=""
+set -euo pipefail
 
 CERT_CSR="/C=US/ST=NY/L=NYC/O=CloudBeaver Security/OU=IT Department/CN=cloudbeaver.io"
 
 SECRET_CERT_CSR="/C=US/ST=NY/L=NYC/O=CloudBeaver Secret Security/OU=IT Department/CN=cloudbeaver.io"
-
-TESERVICES="dc rm qm te tm db"
-TEVERSION="23.3.0"
 
 
 aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACC_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
@@ -29,9 +25,8 @@ if [ ! -d cert ]; then
 	get_secret_cert
 fi
 
-
 for svc in $TESERVICES; do
-  echo Build $svc...
+  echo Build \"$svc\"
   docker pull dbeaver/cloudbeaver-"${svc}":${TEVERSION}
   docker build -t cloudbeaver-"${svc}" --build-arg TEVERSION=${TEVERSION} -f "${svc}".Dockerfile .
   docker tag cloudbeaver-"${svc}" ${AWS_ACC_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/cloudbeaver-"${svc}":${TEVERSION}

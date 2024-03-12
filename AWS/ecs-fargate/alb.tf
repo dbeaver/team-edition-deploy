@@ -39,7 +39,7 @@ resource "aws_lb_listener" "dbeaver-te-listener-https" {
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-TLS-1-2-2017-01"
-  certificate_arn = "arn:aws:acm:${var.dbeaver-aws-region}:${var.aws_account_id}:certificate/${var.alb_certificate_Identifier}"
+  certificate_arn = "arn:aws:acm:${var.aws_region}:${var.aws_account_id}:certificate/${var.alb_certificate_Identifier}"
 
   default_action {
     type             = "forward"

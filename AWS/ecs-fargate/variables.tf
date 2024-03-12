@@ -3,19 +3,24 @@ variable "aws_account_id" {
   default = ""
 }
 
-variable "dbeaver-aws-region" {
+variable "aws_region" {
   type    = string
   default = ""
 }
 
-variable "image_version" {
+variable "dbeaver_te_version" {
   type = string
-  default = "23.3.0"
+  default = "24.0.0"
 }
 
 variable "alb_certificate_Identifier" {
   type = string
   default = ""
+}
+
+variable "ecr_repositories" {
+  type = list
+  default = ["dc", "rm", "qm", "te", "tm", "postgres"]
 }
 
 variable "dbeaver_te_default_ns" {

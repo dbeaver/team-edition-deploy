@@ -4,7 +4,7 @@
 
 # cloudbeaver general values for all TE services
 cloudbeaver:
-  imageTag: "23.3.0"
+  imageTag: "24.0.0"
   pullPolicy: Always
   # pullCredsName - name of a secret config map that contains docker repo auths
   # pullCredsName: regcred
