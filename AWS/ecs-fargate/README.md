@@ -1,11 +1,30 @@
 ### DBeaver TE deployment for AWS ECS and Fargate with Terraform.
 
-1. First you need to configure your aws-cli, check [Environment variables to configure the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html)
+1. First you need to install and configure your aws-cli
 
-2. Update the passwords in both the `cloudbeaver-db-init.sql` file and the `variables.tf` file. Modify the following password variables:
-   - `CLOUDBEAVER_DC_BACKEND_DB_PASSWORD`
-   - `CLOUDBEAVER_QM_BACKEND_DB_PASSWORD`
-   - `CLOUDBEAVER_TM_BACKEND_DB_PASSWORD`
+ - [Install AWS CLI](https://docs.aws.amazon.com/cli/v1/userguide/cli-chap-install.html)
+
+ - [Environment variables to configure the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html)
+
+2. Next you need [install terraform](https://developer.hashicorp.com/terraform/install) 
+
+3. Choose configuration for your cluster database
+   - If you plane use intrnal Postgres container, update the passwords in both the `cloudbeaver-db-init.sql` file and the `variables.tf` file. Modify the following password variables:
+      - `CLOUDBEAVER_DC_BACKEND_DB_PASSWORD`
+      - `CLOUDBEAVER_QM_BACKEND_DB_PASSWORD`
+      - `CLOUDBEAVER_TM_BACKEND_DB_PASSWORD`
+   
+   - If you plane use RDS based database
+      - Open `variables.tf` 
+      - Change variable `rds_db` to `true`
+      - Choose `rds_db_type`, by default it is `postgres`, but cloudbeaver support also `mysql, oracle`
+
+
+4. Configure the deployment in `variables.tf` as follows:
+   - Set your `aws_account_id` same as you described in `AWS_ACC_ID`
+   - Set your `aws_region` same as you described in `AWS_REGION`
+   - Ensure that the `alb_certificate_arn` variable contains the ARN of the SSL certificate corresponding to your domain specified in `CLOUDBEAVER_PUBLIC_URL`.
+   - Change all `*_PASSWORD` fields to secure values according to your security requirements.
 
 3. Run `terraform init` and then `terraform apply` to create the necessary repositories for the services.
 
@@ -13,17 +32,12 @@
 
 5. Make a backup of the `build/cert` directory and store it in a secure location for safekeeping.
 
-6. Return to the `ecs-fargate` directory and configure the deployment in `variables.tf` as follows:
-   - Set your `aws_account_id` same as you described in `AWS_ACC_ID`
-   - Set your `aws_region` same as you described in `AWS_REGION`
-   - Ensure that the `alb_certificate_arn` variable contains the ARN of the SSL certificate corresponding to your domain specified in `CLOUDBEAVER_PUBLIC_URL`.
-   - Change all `*_PASSWORD` fields to secure values according to your security requirements.
+
 
 7. Run `terraform init` and then `terraform apply` to create the ECS cluster and complete the deployment.
 
 8. Cluster destruction is performed in reverse order:
     - Run `terraform destroy` in `ecs-fargate` directory to destroy ECS cluster
-    - Run `terraform destroy` in `ecs-fargate/build` directory to destroy Amazon Elastic Container Registry (ECR)
 
 ### Version update
 
