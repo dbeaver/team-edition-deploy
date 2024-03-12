@@ -27,6 +27,11 @@ fi
 
 for svc in $TESERVICES; do
   echo Build \"$svc\"
+
+  if [ "$svc" = "postgres" ]; then
+    TEVERSION=16 
+  fi
+
   docker pull dbeaver/cloudbeaver-"${svc}":${TEVERSION}
   docker build -t cloudbeaver-"${svc}" --build-arg TEVERSION=${TEVERSION} -f "${svc}".Dockerfile .
   docker tag cloudbeaver-"${svc}" ${AWS_ACC_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/cloudbeaver-"${svc}":${TEVERSION}

@@ -1,21 +1,57 @@
 variable "aws_account_id" {
+  description = "Your AWS account ID"
   type = string
   default = ""
 }
 
 variable "aws_region" {
+  description = "Region where you plan to deploy"
   type    = string
   default = ""
 }
 
 variable "dbeaver_te_version" {
+  description = "The version of the cluster you want to deploy"
   type = string
   default = "ea"
 }
 
 variable "alb_certificate_Identifier" {
+  description = "Your certificate ID from AWS Certificate Manager"
   type = string
   default = ""
+}
+
+variable "rds_db" {
+  description = "A boolean flag to select Amazon RDS as internal database"
+  type        = bool
+  default     = false
+}
+
+variable "rds_db_type" {
+  description = "Type of RDS DB instance (postgres, mysql, oracle) https://docs.aws.amazon.com/AmazonRDS/latest/APIReference/API_CreateDBInstance.html"
+  type        = string
+  default     = "postgres"
+}
+
+variable "rds_db_version" {
+  description = "Version of type RDS DB instance"
+  type        = string
+  default     = "16.1"
+}
+
+
+variable "cloudbeaver-db-env" {
+  description = "Paramatrs for your internal DB"
+  # type = map(string)
+  default = [
+    { "name": "POSTGRES_PASSWORD",
+     "value": "postgres"},
+    { "name": "POSTGRES_USER",
+     "value": "postgres"},
+    { "name": "POSTGRES_DB",
+     "value": "cloudbeaver"}
+  ]
 }
 
 variable "ecr_repositories" {
@@ -43,18 +79,6 @@ variable "private_subnet_cidrs" {
  type        = list(string)
  description = "Private Subnet CIDR values"
  default     = ["10.0.4.0/24", "10.0.5.0/24"]
-}
-
-variable "cloudbeaver-db-env" {
-  # type = map(string)
-  default = [
-    { "name": "POSTGRES_PASSWORD",
-     "value": "postgres"},
-    { "name": "POSTGRES_USER",
-     "value": "postgres"},
-    { "name": "POSTGRES_DB",
-     "value": "cloudbeaver"}
-  ]
 }
 
 variable "cloudbeaver-kafka-env" {
@@ -106,39 +130,51 @@ variable "cloudbeaver-dc-env" {
   },
   {
       "name": "CLOUDBEAVER_DC_BACKEND_DB_URL",
-      "value": "jdbc:postgresql://postgres:5432/cloudbeaver?currentSchema=dc"
+      "value": "jdbc:postgresql://postgres:5432/cloudbeaver"
   },
   {
-      "name": "CLOUDBEAVER_DC_BACKEND_DB_USER",
-      "value": "dc"
-  },
-  {
-      "name": "CLOUDBEAVER_QM_BACKEND_DB_URL",
-      "value": "jdbc:postgresql://postgres:5432/cloudbeaver?currentSchema=qm"
+      "name": "CLOUDBEAVER_QM_BACKEND_DB_URL", 
+      "value": "jdbc:postgresql://postgres:5432/cloudbeaver"
   },
   {
       "name": "CLOUDBEAVER_TM_BACKEND_DB_URL",
-      "value": "jdbc:postgresql://postgres:5432/cloudbeaver?currentSchema=tm"
+      "value": "jdbc:postgresql://postgres:5432/cloudbeaver"
+  },
+  {
+      "name": "CLOUDBEAVER_QM_BACKEND_DB_DRIVER",
+      "value": "postgres-jdbc"
+  },
+  {
+      "name": "CLOUDBEAVER_DC_BACKEND_DB_DRIVER",
+      "value": "postgres-jdbc"
+  },
+  {
+      "name": "CLOUDBEAVER_TM_BACKEND_DB_DRIVER",
+      "value": "postgres-jdbc"
+  },
+  {
+      "name": "CLOUDBEAVER_DC_BACKEND_DB_USER",
+      "value": "postgres"
   },
   {
       "name": "CLOUDBEAVER_QM_BACKEND_DB_USER",
-      "value": "qm"
-  },
-  {
-      "name": "CLOUDBEAVER_DC_BACKEND_DB_PASSWORD",
-      "value": "DCpassword"
+      "value": "postgres"
   },
   {
       "name": "CLOUDBEAVER_TM_BACKEND_DB_USER",
-      "value": "tm"
+      "value": "postgres"
+  },
+  {
+      "name": "CLOUDBEAVER_DC_BACKEND_DB_PASSWORD",
+      "value": "postgres"
   },
   {
       "name": "CLOUDBEAVER_TM_BACKEND_DB_PASSWORD",
-      "value": "TMpassword"
+      "value": "postgres"
   },
   {
       "name": "CLOUDBEAVER_QM_BACKEND_DB_PASSWORD",
-      "value": "QMpassword"
+      "value": "postgres"
   },
   {
       "name": "CLOUDBEAVER_DC_CERT_PATH",
