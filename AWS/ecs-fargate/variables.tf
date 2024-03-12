@@ -10,7 +10,7 @@ variable "aws_region" {
 
 variable "dbeaver_te_version" {
   type = string
-  default = "ea"
+  default = "24.0.0"
 }
 
 variable "alb_certificate_Identifier" {
