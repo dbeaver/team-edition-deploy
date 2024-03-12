@@ -154,27 +154,27 @@ variable "cloudbeaver-dc-env" {
   },
   {
       "name": "CLOUDBEAVER_DC_BACKEND_DB_USER",
-      "value": "postgres"
+      "value": "dc"
   },
   {
       "name": "CLOUDBEAVER_QM_BACKEND_DB_USER",
-      "value": "postgres"
+      "value": "qm"
   },
   {
       "name": "CLOUDBEAVER_TM_BACKEND_DB_USER",
-      "value": "postgres"
+      "value": "tm"
   },
   {
       "name": "CLOUDBEAVER_DC_BACKEND_DB_PASSWORD",
-      "value": "postgres"
+      "value": "DCpassword"
   },
   {
       "name": "CLOUDBEAVER_TM_BACKEND_DB_PASSWORD",
-      "value": "postgres"
+      "value": "TMpassword"
   },
   {
       "name": "CLOUDBEAVER_QM_BACKEND_DB_PASSWORD",
-      "value": "postgres"
+      "value": "QMpassword"
   },
   {
       "name": "CLOUDBEAVER_DC_CERT_PATH",

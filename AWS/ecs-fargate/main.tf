@@ -9,6 +9,40 @@ resource "aws_ecs_cluster" "dbeaver_te" {
   ]
 }
 
+locals {
+
+  rds_db_url = length(aws_db_instance.rds_dbeaver_db) > 0 ? "jdbc:postgresql://${try(aws_db_instance.rds_dbeaver_db[0].address, "")}:5432/cloudbeaver" : ""
+
+  cloudbeaver_dc_env_modified = [
+    for item in var.cloudbeaver-dc-env : {
+      name  = item.name
+      value = (
+        item.name == "CLOUDBEAVER_DC_BACKEND_DB_URL" && var.rds_db ? local.rds_db_url :
+        item.name == "CLOUDBEAVER_QM_BACKEND_DB_URL" && var.rds_db ? local.rds_db_url :
+        item.name == "CLOUDBEAVER_TM_BACKEND_DB_URL" && var.rds_db ? local.rds_db_url :
+        item.value
+      )
+    }
+  ]
+  
+  postgres_password = { for item in var.cloudbeaver-db-env : item.name => item.value }["POSTGRES_PASSWORD"]
+  postgres_user     = { for item in var.cloudbeaver-db-env : item.name => item.value }["POSTGRES_USER"]
+
+  updated_cloudbeaver_dc_env = [for item in local.cloudbeaver_dc_env_modified : {
+    name  = item.name
+    value = (
+      item.name == "CLOUDBEAVER_DC_BACKEND_DB_PASSWORD" ? local.postgres_password :
+      item.name == "CLOUDBEAVER_QM_BACKEND_DB_PASSWORD" ? local.postgres_password :
+      item.name == "CLOUDBEAVER_TM_BACKEND_DB_PASSWORD" ? local.postgres_password :
+      item.name == "CLOUDBEAVER_DC_BACKEND_DB_USER" ? local.postgres_user :
+      item.name == "CLOUDBEAVER_QM_BACKEND_DB_USER" ? local.postgres_user :
+      item.name == "CLOUDBEAVER_TM_BACKEND_DB_USER" ? local.postgres_user :
+      item.value
+    )
+  }]
+}
+
+
 ################################################################################
 # Namespace
 ################################################################################
@@ -239,23 +273,6 @@ resource "aws_ecs_service" "kafka" {
 # DBeaver TE DC
 ################################################################################
 
-locals {
-
-  rds_db_url = length(aws_db_instance.rds_dbeaver_db) > 0 ? "jdbc:postgresql://${try(aws_db_instance.rds_dbeaver_db[0].address, "")}:5432/cloudbeaver" : ""
-
-
-  cloudbeaver_dc_env_modified = [
-    for item in var.cloudbeaver-dc-env : {
-      name  = item.name
-      value = (
-        item.name == "CLOUDBEAVER_DC_BACKEND_DB_URL" && var.rds_db ? local.rds_db_url :
-        item.name == "CLOUDBEAVER_QM_BACKEND_DB_URL" && var.rds_db ? local.rds_db_url :
-        item.name == "CLOUDBEAVER_TM_BACKEND_DB_URL" && var.rds_db ? local.rds_db_url :
-        item.value
-      )
-    }
-  ]
-}
 
 resource "aws_ecs_task_definition" "dbeaver_dc" { 
 
@@ -281,7 +298,7 @@ resource "aws_ecs_task_definition" "dbeaver_dc" {
     name        = "cloudbeaver-dc"
     image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/cloudbeaver-dc:${var.dbeaver_te_version}"
     essential   = true
-    environment = local.cloudbeaver_dc_env_modified
+    environment = local.updated_cloudbeaver_dc_env
     mountPoints = [{
               "containerPath": "/opt/domain-controller/workspace",
               "sourceVolume": "cloudbeaver_dc_data"
