@@ -5,7 +5,8 @@ provider "aws" {
 resource "aws_ecs_cluster" "dbeaver_te" {
   name = "DBeaverTeamEdition"
   depends_on = [
-    aws_ecr_repository.dbeaver_te
+    aws_ecr_repository.dbeaver_te,
+    null_resource.build_push_dkr_img
   ]
 }
 
@@ -118,8 +119,7 @@ resource "aws_efs_mount_target" "cloudbeaver_dc_data_mt" {
 resource "aws_ecs_task_definition" "dbeaver_db" {
 
   depends_on = [
-   aws_ecs_cluster.dbeaver_te,
-   null_resource.build_push_dkr_img
+   aws_ecs_cluster.dbeaver_te
   ]
   count                    = var.rds_db ? 0 : 1
   family                   = "DBeaverTeamEdition-db"
@@ -201,8 +201,7 @@ resource "aws_ecs_service" "postgres" {
 resource "aws_ecs_task_definition" "kafka" {
 
   depends_on = [
-   aws_ecs_cluster.dbeaver_te,
-   null_resource.build_push_dkr_img
+   aws_ecs_cluster.dbeaver_te
   ]
 
   family                   = "DBeaverTeamEdition-kafka"
@@ -277,15 +276,14 @@ resource "aws_ecs_service" "kafka" {
 resource "aws_ecs_task_definition" "dbeaver_dc" { 
 
   depends_on = [
-   aws_ecs_cluster.dbeaver_te,
-   null_resource.build_push_dkr_img
+   aws_ecs_cluster.dbeaver_te
   ]
 
   family                   = "DBeaverTeamEdition-dc"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = 1024
-  memory                   = 4096
+  memory                   = 2048
   execution_role_arn       = aws_iam_role.ecsTaskExecutionRole.arn
   volume {
     name      = "cloudbeaver_dc_data"
@@ -365,8 +363,7 @@ resource "aws_ecs_task_definition" "dbeaver_rm" {
 
   depends_on = [
    aws_ecs_cluster.dbeaver_te,
-   aws_ecs_task_definition.dbeaver_dc,
-   null_resource.build_push_dkr_img
+   aws_ecs_task_definition.dbeaver_dc
   ]
 
   family                   = "DBeaverTeamEdition-rm"
@@ -453,15 +450,14 @@ resource "aws_ecs_task_definition" "dbeaver_qm" {
 
   depends_on = [
    aws_ecs_cluster.dbeaver_te,
-   aws_ecs_task_definition.dbeaver_dc,
-   null_resource.build_push_dkr_img
+   aws_ecs_task_definition.dbeaver_dc
   ]
 
   family                   = "DBeaverTeamEdition-qm"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = 2048
-  memory                   = 4096
+  cpu                      = 1024
+  memory                   = 2048
   execution_role_arn       = aws_iam_role.ecsTaskExecutionRole.arn
 
   container_definitions = jsonencode([{
@@ -532,15 +528,14 @@ resource "aws_ecs_task_definition" "dbeaver_tm" {
   depends_on = [
    aws_ecs_cluster.dbeaver_te,
    aws_ecs_task_definition.dbeaver_rm,
-   aws_ecs_task_definition.dbeaver_dc,
-   null_resource.build_push_dkr_img
+   aws_ecs_task_definition.dbeaver_dc
   ]
 
   family                   = "DBeaverTeamEdition-tm"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = 1024
-  memory                   = 2048
+  cpu                      = 2048
+  memory                   = 4096
   execution_role_arn       = aws_iam_role.ecsTaskExecutionRole.arn
   container_definitions = jsonencode([{
     name        = "cloudbeaver-tm"
@@ -611,14 +606,14 @@ resource "aws_ecs_task_definition" "dbeaver_te" {
   depends_on = [
    aws_ecs_cluster.dbeaver_te,
    aws_ecs_task_definition.dbeaver_dc,
-   null_resource.build_push_dkr_img
+   aws_ecs_task_definition.dbeaver_rm
   ]
 
   family                   = "DBeaverTeamEdition-te"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = 256
-  memory                   = 512
+  cpu                      = 4096
+  memory                   = 8192
   execution_role_arn       = aws_iam_role.ecsTaskExecutionRole.arn
 
   container_definitions = jsonencode([{

@@ -182,7 +182,7 @@ variable "cloudbeaver-dc-env" {
   },
   {
       "name": "CLOUDBEAVER_PUBLIC_URL",
-      "value": ""
+      "value": "cloudbeaver.io"
   }]
 }
 

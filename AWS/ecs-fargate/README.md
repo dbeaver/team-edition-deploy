@@ -35,6 +35,17 @@
 6. Cluster destruction is performed in reverse order:
     - Run `terraform destroy` in `ecs-fargate` directory to destroy ECS cluster
 
+### Importing an SSL Certificate in AWS
+
+   1. Open your web browser and log in to the AWS (Amazon Web Services) Console.  
+
+   2. Navigate to the `AWS Certificate Manager` service.  
+
+   3. Click on the `Import` button and fill in the necessary certificate details as prompted.  
+
+   After completing these steps, you will receive an Identifier for your newly imported certificate.
+
+
 ### Version update
 
 1. Navigate to the `team-edition-deploy/AWS/ecs-fargate` directory.
