@@ -42,7 +42,7 @@ variable "rds_db_version" {
 
 
 variable "cloudbeaver-db-env" {
-  description = "Paramatrs for your internal DB"
+  description = "Parameters for your internal database"
   # type = map(string)
   default = [
     { "name": "POSTGRES_PASSWORD",
