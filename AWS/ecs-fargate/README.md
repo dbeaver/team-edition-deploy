@@ -1,29 +1,52 @@
 ### DBeaver TE deployment for AWS ECS and Fargate with Terraform.
 
-1. First you need to configure your aws-cli, check [Environment variables to configure the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html)
+1. First you need to install and configure your AWS CLI:
 
-2. Update the passwords in both the `cloudbeaver-db-init.sql` file and the `variables.tf` file. Modify the following password variables:
-   - `CLOUDBEAVER_DC_BACKEND_DB_PASSWORD`
-   - `CLOUDBEAVER_QM_BACKEND_DB_PASSWORD`
-   - `CLOUDBEAVER_TM_BACKEND_DB_PASSWORD`
+   - [Install AWS CLI](https://docs.aws.amazon.com/cli/v1/userguide/cli-chap-install.html)
 
-3. Run `terraform init` and then `terraform apply` to create the necessary repositories for the services.
+   - [Environment variables to configure the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html)
 
-4. Execute `./build-dbeaverte.sh` to quickly build and push Docker images to the Amazon Elastic Container Registry (ECR). You can customize the deployment version by updating the `TEVERSION` environment variable. The default version is `24.0.0`.
+2. Next you need to [install Terraform](https://developer.hashicorp.com/terraform/install)
 
-5. Make a backup of the `build/cert` directory and store it in a secure location for safekeeping.
+3. Choose configuration for your cluster database:
+   - If you plan to use the PostgreSQL internal container:
+     - Update database password in `cloudbeaver-db-init.sql` file. Replace  `DCpassword`, `QMpassword`, and `TMpassword` with your database password.
+     - Update `variables.tf` file. Modify `POSTGRES_PASSWORD` field in `cloudbeaver-db-env` vatiables.
 
-6. Return to the `ecs-fargate` directory and configure the deployment in `variables.tf` as follows:
-   - Set your `aws_account_id` same as you described in `AWS_ACC_ID`
-   - Set your `aws_region` same as you described in `AWS_REGION`
-   - Ensure that the `alb_certificate_arn` variable contains the ARN of the SSL certificate corresponding to your domain specified in `CLOUDBEAVER_PUBLIC_URL`.
-   - Change all `*_PASSWORD` fields to secure values according to your security requirements.
+   - If you plan to use and RDS-based database:
+ **Note:** only [Amazon RDS for PostgreSQL](https://aws.amazon.com/rds/postgresql/) is supported.
+      - Open `variables.tf`.
+      - Change variable `rds_db` to `true`.
+      - Specify `rds_db_version`, the default is `postgres:16.1`. Only PostgreSQL version can be specified.
+      - Update the credentials for database in `cloudbeaver-db-env`.
 
-7. Run `terraform init` and then `terraform apply` to create the ECS cluster and complete the deployment.
+4. Configure the deployment in `variables.tf` file as follows:  
+   - Set your `aws_account_id`, you can get it by logging into your AWS console:
 
-8. Cluster destruction is performed in reverse order:
-    - Run `terraform destroy` in `ecs-fargate` directory to destroy ECS cluster
-    - Run `terraform destroy` in `ecs-fargate/build` directory to destroy Amazon Elastic Container Registry (ECR)
+   ![alt text](images/image.png)
+
+   - Set your `aws_region` in format `us-east-1`. For example:
+
+   ![alt text](images/image-1.png)
+
+   - Ensure that the `alb_certificate_Identifier` variable contains the ID from [AWS Certificate Manager](#importing-an-ssl-certificate-in-aws) corresponding to your domain specified in `CLOUDBEAVER_PUBLIC_URL`.
+   - You can customize the deployment version by updating the `dbeaver_te_version` environment variable. The default version is `24.0.0`.
+
+5. Run `terraform init` and then `terraform apply` in `ecs-fargate` directory to create the ECS cluster and complete the deployment.
+
+6. Cluster destruction is performed in reverse order:
+    - Run `terraform destroy` in `ecs-fargate` directory to destroy ECS cluster.
+
+### Importing an SSL Certificate in AWS
+
+   1. Open your web browser and log in to the AWS (Amazon Web Services) Console.  
+
+   2. Navigate to the `AWS Certificate Manager` service.  
+
+   3. Click on the `Import` button and fill in the necessary certificate details as prompted.  
+
+   After completing these steps, you will receive an Identifier for your newly imported certificate.
+
 
 ### Version update
 
