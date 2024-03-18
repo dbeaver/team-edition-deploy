@@ -5,9 +5,44 @@ provider "aws" {
 resource "aws_ecs_cluster" "dbeaver_te" {
   name = "DBeaverTeamEdition"
   depends_on = [
-    aws_ecr_repository.dbeaver_te
+    aws_ecr_repository.dbeaver_te,
+    null_resource.build_push_dkr_img
   ]
 }
+
+locals {
+
+  rds_db_url = length(aws_db_instance.rds_dbeaver_db) > 0 ? "jdbc:postgresql://${try(aws_db_instance.rds_dbeaver_db[0].address, "")}:5432/cloudbeaver" : ""
+
+  cloudbeaver_dc_env_modified = [
+    for item in var.cloudbeaver-dc-env : {
+      name  = item.name
+      value = (
+        item.name == "CLOUDBEAVER_DC_BACKEND_DB_URL" && var.rds_db ? local.rds_db_url :
+        item.name == "CLOUDBEAVER_QM_BACKEND_DB_URL" && var.rds_db ? local.rds_db_url :
+        item.name == "CLOUDBEAVER_TM_BACKEND_DB_URL" && var.rds_db ? local.rds_db_url :
+        item.value
+      )
+    }
+  ]
+  
+  postgres_password = { for item in var.cloudbeaver-db-env : item.name => item.value }["POSTGRES_PASSWORD"]
+  postgres_user     = { for item in var.cloudbeaver-db-env : item.name => item.value }["POSTGRES_USER"]
+
+  updated_cloudbeaver_dc_env = [for item in local.cloudbeaver_dc_env_modified : {
+    name  = item.name
+    value = (
+      item.name == "CLOUDBEAVER_DC_BACKEND_DB_PASSWORD" ? local.postgres_password :
+      item.name == "CLOUDBEAVER_QM_BACKEND_DB_PASSWORD" ? local.postgres_password :
+      item.name == "CLOUDBEAVER_TM_BACKEND_DB_PASSWORD" ? local.postgres_password :
+      item.name == "CLOUDBEAVER_DC_BACKEND_DB_USER" ? local.postgres_user :
+      item.name == "CLOUDBEAVER_QM_BACKEND_DB_USER" ? local.postgres_user :
+      item.name == "CLOUDBEAVER_TM_BACKEND_DB_USER" ? local.postgres_user :
+      item.value
+    )
+  }]
+}
+
 
 ################################################################################
 # Namespace
@@ -84,9 +119,9 @@ resource "aws_efs_mount_target" "cloudbeaver_dc_data_mt" {
 resource "aws_ecs_task_definition" "dbeaver_db" {
 
   depends_on = [
-   aws_ecs_cluster.dbeaver_te 
+   aws_ecs_cluster.dbeaver_te
   ]
-
+  count                    = var.rds_db ? 0 : 1
   family                   = "DBeaverTeamEdition-db"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
@@ -102,7 +137,7 @@ resource "aws_ecs_task_definition" "dbeaver_db" {
   }
   container_definitions = jsonencode([{
     name        = "postgres"
-    image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/cloudbeaver-db:${var.dbeaver_te_version}"
+    image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/cloudbeaver-postgres:16"
     essential   = true
     environment = var.cloudbeaver-db-env
     mountPoints = [{
@@ -130,13 +165,13 @@ resource "aws_ecs_task_definition" "dbeaver_db" {
 resource "aws_ecs_service" "postgres" {
 
   depends_on = [
-    aws_ecs_task_definition.dbeaver_db,
+    aws_ecs_task_definition.dbeaver_db[0],
     aws_security_group.dbeaver_te_private
   ]
-
+  count           = var.rds_db ? 0 : 1
   name            = "postgres"
   cluster         = aws_ecs_cluster.dbeaver_te.id
-  task_definition = aws_ecs_task_definition.dbeaver_db.arn
+  task_definition = aws_ecs_task_definition.dbeaver_db[0].arn
   launch_type     = "FARGATE"
   desired_count   = 1 # Setting the number of containers we want deployed to 3
 
@@ -166,7 +201,7 @@ resource "aws_ecs_service" "postgres" {
 resource "aws_ecs_task_definition" "kafka" {
 
   depends_on = [
-   aws_ecs_cluster.dbeaver_te 
+   aws_ecs_cluster.dbeaver_te
   ]
 
   family                   = "DBeaverTeamEdition-kafka"
@@ -237,17 +272,18 @@ resource "aws_ecs_service" "kafka" {
 # DBeaver TE DC
 ################################################################################
 
-resource "aws_ecs_task_definition" "dbeaver_dc" {
+
+resource "aws_ecs_task_definition" "dbeaver_dc" { 
 
   depends_on = [
-   aws_ecs_cluster.dbeaver_te 
+   aws_ecs_cluster.dbeaver_te
   ]
 
   family                   = "DBeaverTeamEdition-dc"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = 1024
-  memory                   = 4096
+  memory                   = 2048
   execution_role_arn       = aws_iam_role.ecsTaskExecutionRole.arn
   volume {
     name      = "cloudbeaver_dc_data"
@@ -260,7 +296,7 @@ resource "aws_ecs_task_definition" "dbeaver_dc" {
     name        = "cloudbeaver-dc"
     image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/cloudbeaver-dc:${var.dbeaver_te_version}"
     essential   = true
-    environment = var.cloudbeaver-dc-env
+    environment = local.updated_cloudbeaver_dc_env
     mountPoints = [{
               "containerPath": "/opt/domain-controller/workspace",
               "sourceVolume": "cloudbeaver_dc_data"
@@ -326,7 +362,8 @@ resource "aws_ecs_service" "dc" {
 resource "aws_ecs_task_definition" "dbeaver_rm" {
 
   depends_on = [
-   aws_ecs_cluster.dbeaver_te 
+   aws_ecs_cluster.dbeaver_te,
+   aws_ecs_task_definition.dbeaver_dc
   ]
 
   family                   = "DBeaverTeamEdition-rm"
@@ -412,14 +449,15 @@ resource "aws_ecs_service" "rm" {
 resource "aws_ecs_task_definition" "dbeaver_qm" {
 
   depends_on = [
-   aws_ecs_cluster.dbeaver_te 
+   aws_ecs_cluster.dbeaver_te,
+   aws_ecs_task_definition.dbeaver_dc
   ]
 
   family                   = "DBeaverTeamEdition-qm"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = 2048
-  memory                   = 4096
+  cpu                      = 1024
+  memory                   = 2048
   execution_role_arn       = aws_iam_role.ecsTaskExecutionRole.arn
 
   container_definitions = jsonencode([{
@@ -488,14 +526,16 @@ resource "aws_ecs_service" "qm" {
 resource "aws_ecs_task_definition" "dbeaver_tm" {
 
   depends_on = [
-   aws_ecs_cluster.dbeaver_te 
+   aws_ecs_cluster.dbeaver_te,
+   aws_ecs_task_definition.dbeaver_rm,
+   aws_ecs_task_definition.dbeaver_dc
   ]
 
   family                   = "DBeaverTeamEdition-tm"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = 1024
-  memory                   = 2048
+  cpu                      = 2048
+  memory                   = 4096
   execution_role_arn       = aws_iam_role.ecsTaskExecutionRole.arn
   container_definitions = jsonencode([{
     name        = "cloudbeaver-tm"
@@ -564,14 +604,16 @@ resource "aws_ecs_service" "tm" {
 resource "aws_ecs_task_definition" "dbeaver_te" {
 
   depends_on = [
-   aws_ecs_cluster.dbeaver_te 
+   aws_ecs_cluster.dbeaver_te,
+   aws_ecs_task_definition.dbeaver_dc,
+   aws_ecs_task_definition.dbeaver_rm
   ]
 
   family                   = "DBeaverTeamEdition-te"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = 256
-  memory                   = 512
+  cpu                      = 4096
+  memory                   = 8192
   execution_role_arn       = aws_iam_role.ecsTaskExecutionRole.arn
 
   container_definitions = jsonencode([{
