@@ -133,7 +133,7 @@ variable "cloudbeaver-dc-env" {
       "value": "jdbc:postgresql://postgres:5432/cloudbeaver"
   },
   {
-      "name": "CLOUDBEAVER_QM_BACKEND_DB_URL", 
+      "name": "CLOUDBEAVER_QM_BACKEND_DB_URL",
       "value": "jdbc:postgresql://postgres:5432/cloudbeaver"
   },
   {
