@@ -17,11 +17,7 @@ location /api/ws {
 
     access_by_lua_block {
         local cookie = ngx.var["cookie_sessionId"]
-        local servers = {
-            te1 = "http://test1-cloudbeaver-te-1:8978",
-            te2 = "http://test1-cloudbeaver-te-2:8978",
-            te3 = "http://test1-cloudbeaver-te-3:8978"
-        }
+        local servers = {%CLOUDBEAVER_TE_SERVERS%}
 
         if servers[cookie] then
             ngx.var.target = servers[cookie]
@@ -47,11 +43,7 @@ location / {
 
     access_by_lua_block {
         local cookie = ngx.var["cookie_sessionId"]
-        local servers = {
-            te1 = "http://test1-cloudbeaver-te-1:8978",
-            te2 = "http://test1-cloudbeaver-te-2:8978",
-            te3 = "http://test1-cloudbeaver-te-3:8978"
-        }
+        local servers = {%CLOUDBEAVER_TE_SERVERS%}
 
         if servers[cookie] then
             ngx.var.target = servers[cookie]
