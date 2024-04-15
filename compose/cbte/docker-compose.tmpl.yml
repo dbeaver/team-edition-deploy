@@ -17,7 +17,7 @@ networks:
 services:
   nginx:
     restart: unless-stopped
-    image: openresty/openresty:latest
+    image: nginx_lua_fcgi
     ports:
       - 80:80
       - 443:443

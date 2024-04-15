@@ -35,17 +35,17 @@ certbot_config = {
 
 
 nginx_http_volumes = [
-	"./nginx/nginx.http.conf.template:/etc/nginx/conf.d/nginx.conf",
+	"./nginx/nginx.http.conf.template:/etc/nginx/conf.d/default.conf",
 	"./nginx/cloudbeaver.locations:/etc/nginx/conf.d/cloudbeaver.locations"
 	]
 nginx_ssl_volumes = [
-	"./nginx/nginx.https.conf.template:/etc/nginx/conf.d/nginx.conf",
+	"./nginx/nginx.https.conf.template:/etc/nginx/conf.d/default.conf",
 	"./nginx/cloudbeaver.locations:/etc/nginx/conf.d/cloudbeaver.locations",
 	"./nginx/ssl:/etc/nginx/ssl"
 	]
 nginx_le_volumes = [
 	"./nginx/cloudbeaver.locations:/etc/nginx/conf.d/cloudbeaver.locations",
-	"./nginx/nginx.le.conf.template:/etc/nginx/conf.d/nginx.conf",
+	"./nginx/nginx.le.conf.template:/etc/nginx/conf.d/default.conf",
 	"./data/certbot/conf:/etc/letsencrypt",
 	"./data/certbot/www:/var/www/certbot"
 	]
