@@ -9,6 +9,10 @@ k8s/cbte/crossSsl/
 k8s/cbte/ingressSsl/
 k8s/cbte/secretSsl/
 
+AWS/ecs-fargate/build/cert
+AWS/ecs-fargate/.terraform
+AWS/ecs-fargate/.terraform*
+AWS/ecs-fargate/terraform*
 # General
 .DS_Store
 .AppleDouble
@@ -38,3 +42,4 @@ Temporary Items
 .apdisk
 .terraform*
 cloudbeaver.locations
+
