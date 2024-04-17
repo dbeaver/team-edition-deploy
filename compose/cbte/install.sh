@@ -108,6 +108,14 @@ docker run --rm \
 	--env-file=.env \
 	python:alpine sh -c "pip install PyYAML && python /compose-config-editor.py $1"
 
+touch nginx/cloudbeaver.locations
+docker run --rm \
+    -v $(pwd)/nginx/cloudbeaver.locations.template:/cloudbeaver.locations.template \
+    -v $(pwd)/nginx/cloudbeaver.locations:/cloudbeaver.locations \
+    -v $(pwd)/helper/cloudbeaver-locations-editor.py:/cloudbeaver-locations-editor.py \
+    --env-file=.env \
+    python:alpine sh -c "python /cloudbeaver-locations-editor.py"
+
 	########################## CERTBOT PART 
 function get_le_certs() {
 	echo "Start LE cert getter"
