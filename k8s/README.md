@@ -23,21 +23,22 @@
   - If you set the *HTTPS* endpoint scheme, then create a valid TLS certificate for the domain endpoint `cloudbeaverBaseDomain` and place it into `k8s/cbte/ingressSsl`:  
     Certificate: `ingressSsl/fullchain.pem`  
     Private Key: `ingressSsl/privkey.pem`
-- First you must install [Deploy NGINX Ingress Controller](#deploy-nginx-ingress-controller)
+- If you are using GKE for deployment, you first need to [create a Cloud NAT gateway to deploy in GKE.](#create-cloud-nat-gateway-to-gke-deployment)
+- First you must [deploy NGINX Ingress Controller](#deploy-nginx-ingress-controller)
 - Deploy Team Edition with Helm: `helm install cloudbeaver`
 
-### Deploy NGINX Ingress Controller
+#### Deploy NGINX Ingress Controller
 
-1.  Before you deploy the NGINX Ingress Helm chart to the GKE cluster, add the `nginx-stable` Helm repository in Cloud Shell:
+1. Add the `nginx-stable` Helm repository:
 
         helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
         helm repo update
 
-2.  Deploy an NGINX controller Deployment and Service by running the following command:
+2.  Deploy an NGINX controller Deployment and Service:
 
         helm install nginx-ingress ingress-nginx/ingress-nginx
 
-3.  Verify that the `nginx-ingress-controller` Deployment and Service are deployed to the GKE cluster:
+3.  Verify that the `nginx-ingress-controller` Deployment and Service are deployed:
 
         kubectl get deployment nginx-ingress-ingress-nginx-controller
         kubectl get service nginx-ingress-ingress-nginx-controller
@@ -52,16 +53,25 @@
         NAME                                     TYPE           CLUSTER-IP    EXTERNAL-IP     PORT(S)                      AGE
         nginx-ingress-ingress-nginx-controller   LoadBalancer   10.7.255.93   <pending>       80:30381/TCP,443:32105/TCP   13m
         
-    Wait a few moments while the Google Cloud L4 load balancer gets deployed, and then confirm that the `nginx-ingress-nginx-ingress` Service has been deployed
+    Wait a few moments while load balancer gets deployed, and then confirm that the `nginx-ingress-nginx-ingress` Service has been deployed
     and that you have an external IP address associated with the service:
 
         kubectl get service nginx-ingress-ingress-nginx-controller
 
     You may need to run this command a few times until an `EXTERNAL-IP` value is present.
 
+### Version update procedure.
+
+- Change directory to `team-edition-deploy/k8s/cbte`.
+- Change value of `imageTag` in configuration file `values.yaml` with a preferred version. Go to next step if tag `latest` set.
+- Upgrade cluster: `helm upgrade cloudbeaver` 
 
 
-### Create Cloud NAT gateway to GCP deployment
+### Cloud deployment configurations
+
+#### Create Cloud NAT gateway to GKE deployment
+
+If you plan to use GKE for deployment, it is assumed that you already have a GKE cluster.
 
 In order to provide external connectivity to GKE clusters, you need to create a [Cloud NAT gateway](https://cloud.google.com/nat/docs/overview).
 
@@ -86,13 +96,9 @@ You must have [gcloud CLI](https://cloud.google.com/sdk/gcloud) installed. The `
             --enable-logging
 
 
-### Version update procedure.
+In the end you must connect your domain from `cloudbeaverBaseDomain` to `EXTERNAL-IP`, and then you can connect to the Team Edition cluster.
 
-- Change directory to `team-edition-deploy/k8s/cbte`.
-- Change value of `imageTag` in configuration file `values.yaml` with a preferred version. Go to next step if tag `latest` set.
-- Upgrade cluster: `helm upgrade cloudbeaver` 
-
-### OpenShift deployment
+#### OpenShift deployment
 
 You need additional configuration changes
 
@@ -107,7 +113,7 @@ You need additional configuration changes
           #     fsGroupChangePolicy: "Always"
     ```
 
-### Digital Ocean proxy configuration
+#### Digital Ocean proxy configuration
 
 Edit ingress controller with:
 
