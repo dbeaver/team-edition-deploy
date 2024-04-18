@@ -1,0 +1,24 @@
+location ~ /dc(/|$) {
+    proxy_pass       http://cloudbeaver-dc:8970;
+}
+location ~ /rm(/|$) {
+    proxy_pass       http://cloudbeaver-rm:8971;
+}
+location ~ /qm(/|$) {
+    proxy_pass       http://cloudbeaver-qm:8972;
+}
+location ~ /tm(/|$) {
+    proxy_pass       http://cloudbeaver-tm:8973;
+}
+
+location /api/ws {
+    proxy_pass       http://cloudbeaver-te:8978;
+    # Allow websocket connections
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+}
+
+location / {
+    proxy_pass       http://cloudbeaver-te:8978;
+}
