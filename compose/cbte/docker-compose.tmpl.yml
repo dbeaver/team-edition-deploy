@@ -17,7 +17,7 @@ networks:
 services:
   nginx:
     restart: unless-stopped
-    image: dbeaver/cloudbeaver-te-nginx
+    image: nginx
     ports:
       - 80:80
       - 443:443
@@ -73,8 +73,6 @@ services:
     restart: unless-stopped
     hostname: cloudbeaver-te
     image: dbeaver/cloudbeaver-te:${CLOUDBEAVER_VERSION_TAG}
-    deploy:
-      replicas: ${REPLICA_COUNT_TE}
     volumes:
       - te_data:/opt/cloudbeaver/workspace
       - ./cert/public/:/opt/cloudbeaver/conf/certificates/
@@ -124,8 +122,6 @@ services:
     restart: unless-stopped
     image: dbeaver/cloudbeaver-rm:${CLOUDBEAVER_VERSION_TAG}
     hostname: cloudbeaver-rm
-    deploy:
-      replicas: ${REPLICA_COUNT_RM}
     environment:
       - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
     volumes:
@@ -142,8 +138,6 @@ services:
     restart: unless-stopped
     image: dbeaver/cloudbeaver-qm:${CLOUDBEAVER_VERSION_TAG}
     hostname: cloudbeaver-qm
-    deploy:
-      replicas: ${REPLICA_COUNT_QM}
     environment:
       - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
     volumes:
@@ -161,8 +155,6 @@ services:
     restart: unless-stopped
     image: dbeaver/cloudbeaver-tm:${CLOUDBEAVER_VERSION_TAG}
     hostname: cloudbeaver-tm
-    deploy:
-      replicas: ${REPLICA_COUNT_TM}
     environment:
       - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
     volumes:
