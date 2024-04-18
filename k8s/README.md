@@ -23,6 +23,7 @@
   - If you set the *HTTPS* endpoint scheme, then create a valid TLS certificate for the domain endpoint `cloudbeaverBaseDomain` and place it into `k8s/cbte/ingressSsl`:  
     Certificate: `ingressSsl/fullchain.pem`  
     Private Key: `ingressSsl/privkey.pem`
+- First you must install [Deploy NGINX Ingress Controller](#deploy-nginx-ingress-controller)
 - Deploy Team Edition with Helm: `helm install cloudbeaver`
 
 ### Deploy NGINX Ingress Controller
