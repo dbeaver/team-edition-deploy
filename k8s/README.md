@@ -15,11 +15,12 @@
 - `cd team-edition-deploy/k8s/cbte`
 - `cp ./values.example.yaml ./values.yaml`
 - Edit chart values in `values.yaml` (use any text editor)
-- Configure domain and SSL certificate (optional)
+- Configure domain
   - Add an A record in your DNS hosting for a value of `cloudbeaverBaseDomain` variable with load balancer IP address.
-  - Generate internal services certificates:  
-     On Linux or macOS, run the script to prepare services certificates:   
-       `./services-certs-generator.sh`
+- Generate internal services certificates:  
+  - On Linux or macOS, run the script to prepare services certificates:   
+    `./services-certs-generator.sh`
+- Configure SSL certificate (optional)
   - If you set the *HTTPS* endpoint scheme, then create a valid TLS certificate for the domain endpoint `cloudbeaverBaseDomain` and place it into `k8s/cbte/ingressSsl`:  
     Certificate: `ingressSsl/fullchain.pem`  
     Private Key: `ingressSsl/privkey.pem`
