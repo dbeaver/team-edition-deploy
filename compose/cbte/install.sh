@@ -82,6 +82,10 @@ do
 	export "$line"
 done < .env
 
+##
+mkdir -p nginx/letsencrypt
+chmod 777 nginx/letsencrypt
+
 ## Check certificate exists if scheme https 
 ## But if Let's Encrypt arg used will pass this check
 if [[ $CLOUDBEAVER_SCHEME == "https" ]]
