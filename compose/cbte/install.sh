@@ -21,16 +21,16 @@ fi
 
 ### Check docker installed
 if ! [ -x "$(command -v docker)" ]; then
-  echo 'Error: docker is not installed.' >&2
-  exit 1
+	echo 'Error: docker is not installed.' >&2
+	exit 1
 fi
 
 #### Ckech user can use docker 
 if ! docker ps  > /dev/null 2>&1; then
-  echo "You need to add $(whoami) user in to docker group." >&2
-  echo "Example: sudo gpasswd -a $(whoami) docker" >&2
-  echo "After that you must reload session - logout, login" >&2
-  exit 1
+	echo "You need to add $(whoami) user in to docker group." >&2
+	echo "Example: sudo gpasswd -a $(whoami) docker" >&2
+	echo "After that you must reload session - logout, login" >&2
+	exit 1
 fi
 
 
@@ -38,7 +38,7 @@ if docker compose > /dev/null 2>&1; then
 	echo "Docker compose plugin temporary aliased in to docker-compose"
 	alias docker-compose="docker compose"
 elif docker-compose > /dev/null 2>&1; then  
-  echo "Found docker-compose binary. "
+	echo "Found docker-compose binary. "
 else 
 	echo "docker compose plugin or docker-compose binary not installed."
 	echo "Go to Docker Compose Install Docks: https://docs.docker.com/compose/install/" 
@@ -90,19 +90,15 @@ then
 	then
 		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 		echo "ERROR: ${CLOUDBEAVER_SCHEME} scheme can not configured."
-	  echo "  Certificate ./nginx/ssl/fullchain.pem" 
-	  echo "  or key ./nginx/ssl/privkey.pem"
-	  echo "  not exist. Stopped"
-	  echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-	  exit 1
+		echo "  Certificate ./nginx/ssl/fullchain.pem" 
+		echo "  or key ./nginx/ssl/privkey.pem"
+		echo "  not exist. Stopped"
+		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+		exit 1
 	else
 		envsubst '$CLOUDBEAVER_DOMAIN' < nginx/nginx.https.conf.template | tee nginx/nginx.https.conf
 	fi
 fi
-
-##
-mkdir -p nginx/letsencrypt
-chmod 777 nginx/letsencrypt
 
 #### Untemplate compose
 # create empty compose yml file 
@@ -111,15 +107,9 @@ docker run --rm \
 	-v $(pwd)/docker-compose.yml:/docker-compose.yml \
 	-v $(pwd)/docker-compose.tmpl.yml:/docker-compose.tmpl.yml \
 	-v $(pwd)/helper/compose-config-editor.py:/compose-config-editor.py \
+	-v $(pwd)/nginx/dbeaver-te.locations:/dbeaver-te.locations \
+	-v $(pwd)/helper/cloudbeaver-locations-editor.py:/cloudbeaver-locations-editor.py \
 	--env-file=.env \
 	python:alpine sh -c "pip install PyYAML && python /compose-config-editor.py"
-
-touch nginx/dbeaver-te.locations
-docker run --rm \
-    -v $(pwd)/nginx/dbeaver-te.locations.template:/dbeaver-te.locations.template \
-    -v $(pwd)/nginx/dbeaver-te.locations:/dbeaver-te.locations \
-    -v $(pwd)/helper/cloudbeaver-locations-editor.py:/cloudbeaver-locations-editor.py \
-    --env-file=.env \
-    python:alpine sh -c "python /cloudbeaver-locations-editor.py"
 
 docker-compose pull
