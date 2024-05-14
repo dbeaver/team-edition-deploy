@@ -17,7 +17,9 @@ location /api/ws {
 
     access_by_lua_block {
         local cookie = ngx.var["cookie_sessionId"]
-        local servers = {%CLOUDBEAVER_TE_SERVERS%}
+        local servers = {
+            te1 = "http://cloudbeaver-te:8978"
+        }
 
         if servers[cookie] then
             ngx.var.target = servers[cookie]
@@ -43,7 +45,9 @@ location / {
 
     access_by_lua_block {
         local cookie = ngx.var["cookie_sessionId"]
-        local servers = {%CLOUDBEAVER_TE_SERVERS%}
+        local servers = {
+            te1 = "http://cloudbeaver-te:8978"
+        }
 
         if servers[cookie] then
             ngx.var.target = servers[cookie]
@@ -57,9 +61,5 @@ location / {
             ngx.header["Set-Cookie"] = "sessionId=" .. key .. "; Path=/; HttpOnly"
         end
     }
-
     proxy_pass $target;
-    proxy_set_header Host $host;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 }

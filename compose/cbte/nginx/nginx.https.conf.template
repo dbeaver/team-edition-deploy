@@ -1,17 +1,5 @@
 ssl_certificate /etc/nginx/ssl/fullchain.pem;
 ssl_certificate_key /etc/nginx/ssl/privkey.pem;
-ssl_protocols       TLSv1 TLSv1.1 TLSv1.2 TLSv1.3;
-ssl_ciphers         HIGH:!aNULL:!MD5;
-
-proxy_set_header X-Real-IP $remote_addr;
-proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-proxy_set_header Host $http_host;
-proxy_read_timeout 1800s;
-resolver 127.0.0.11 valid=30s;
-
-upstream backend {
-    server 0.0.0.1;
-}
 
 server {
     listen 80;
@@ -23,7 +11,5 @@ server {
     listen 443 ssl;
     server_name $CLOUDBEAVER_DOMAIN;
     
-    client_max_body_size 500M;
-
-    include /etc/nginx/conf.d/cloudbeaver.locations;
+    include /etc/nginx/conf.d/dbeaver-te.locations;
 }

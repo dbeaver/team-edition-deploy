@@ -42,4 +42,5 @@ Temporary Items
 .apdisk
 .terraform*
 cloudbeaver.locations
-
+nginx.https.conf
+letsencrypt

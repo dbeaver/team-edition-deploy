@@ -17,7 +17,7 @@ networks:
 services:
   nginx:
     restart: unless-stopped
-    image: dbeaver/cloudbeaver-te-nginx
+    image: dbeaver/cloudbeaver-te-nginx:${CLOUDBEAVER_VERSION_TAG}
     ports:
       - 80:80
       - 443:443
@@ -25,6 +25,9 @@ services:
       - CLOUDBEAVER_DOMAIN=${CLOUDBEAVER_DOMAIN}
     networks:
       - cloudbeaver-te-public-net
+    volumes:
+      - ./nginx/letsencrypt/:/etc/letsencrypt/
+      - ./nginx/dbeaver-te.locations:/etc/nginx/conf.d/dbeaver-te.locations
     depends_on:
       - cloudbeaver-te
       - cloudbeaver-dc
@@ -174,4 +177,4 @@ services:
       - 8973
     networks:
       - cloudbeaver-te-public-net
-      - cloudbeaver-te-private-net      
+      - cloudbeaver-te-private-net
