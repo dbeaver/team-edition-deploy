@@ -104,7 +104,7 @@ then
 	fi
 fi
 
-#### Untemplate compose
+#### Untemplate compose and configure endpoints to load balancer
 # create empty compose yml file 
 touch docker-compose.yml
 docker run --rm \

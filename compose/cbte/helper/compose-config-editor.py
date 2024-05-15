@@ -1,5 +1,6 @@
 #!/usr/local/bin/python
 import os
+import re
 import sys
 import yaml
 
@@ -59,3 +60,18 @@ if os.environ.get("DBEAVER_TEAM_EDITION_AMI") is not None:
 
 with open('/docker-compose.yml', 'w') as file:
     documents = yaml.dump(document, file, Dumper=IndentDumper, sort_keys=False)
+
+compose_project_name = os.environ.get("COMPOSE_PROJECT_NAME")
+replica_count_te = int(os.environ.get("REPLICA_COUNT_TE"))
+
+servers_config = "{\n            " + ",\n            ".join(
+    f'te{i} = "http://{compose_project_name}-cloudbeaver-te-{i}:8978"' for i in range(1, replica_count_te + 1)
+) + "\n        }"
+
+with open("dbeaver-te.locations", "r") as file:
+    default_content = file.read()
+
+new_content = re.sub(r'local servers = {[^}]*}', f'local servers = {servers_config}', default_content)
+
+with open("dbeaver-te.locations", "w") as file:
+    file.write(new_content)

@@ -47,7 +47,7 @@ To change an internal PostgreSQL password use [this instruction](CHANGEPWD.md#ho
 
 ### Early Access:
 
-- [Early access](https://github.com/dbeaver/team-edition-deploy/tree/ea)
+- [Early access](https://github.com/dbeaver/team-edition-deploy/tree/devel)
 
 ### Older versions:
 
