@@ -17,12 +17,13 @@ networks:
 services:
   nginx:
     restart: unless-stopped
-    image: dbeaver/cloudbeaver-te-nginx:${CLOUDBEAVER_VERSION_TAG}
+    image: dbeaver/cloudbeaver-nginx:${CLOUDBEAVER_VERSION_TAG}
     ports:
       - 80:80
       - 443:443
     environment:
       - CLOUDBEAVER_DOMAIN=${CLOUDBEAVER_DOMAIN}
+      - PRODUCT_TYPE=te
     networks:
       - cloudbeaver-te-public-net
     volumes:
