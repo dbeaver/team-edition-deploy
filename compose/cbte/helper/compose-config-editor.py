@@ -35,9 +35,7 @@ volume_local_paths = {
   "dc_data": "/var/dbeaver/domain-controller/workspace",
   "rm_data": "/var/dbeaver/resource-manager/workspace",
   "qm_data": "/var/dbeaver/query-manager/workspace",
-  "tm_data": "/var/dbeaver/task-manager/workspace",
-  "nginx_ssl_data": "/var/dbeaver/nginx/ssl",
-  "nginx_conf_data": "/var/dbeaver/nginx/conf"
+  "tm_data": "/var/dbeaver/task-manager/workspace"
 }
 
 def volumes_config(volume):
