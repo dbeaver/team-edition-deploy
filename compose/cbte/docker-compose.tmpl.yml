@@ -15,7 +15,6 @@ networks:
   cloudbeaver-te-public-net:
   cloudbeaver-te-private-net:
 
-
 services:
   nginx:
     restart: unless-stopped
@@ -28,6 +27,7 @@ services:
       - PRODUCT_TYPE=te
     networks:
       - cloudbeaver-te-public-net
+      - cloudbeaver-te-private-net
     volumes:
       - nginx_conf_data:/etc/nginx/product-conf/
       - nginx_ssl_data:/etc/letsencrypt/
@@ -37,6 +37,7 @@ services:
       - cloudbeaver-dc
       - cloudbeaver-rm
       - cloudbeaver-qm
+      - cloudbeaver-tm
 
   kafka:
     restart: unless-stopped
@@ -58,7 +59,7 @@ services:
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
       - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
     networks:
-      - cloudbeaver-te-public-net
+      - cloudbeaver-te-private-net
 
   postgres:
     restart: unless-stopped
@@ -75,26 +76,6 @@ services:
       - 5432
     networks:
       - cloudbeaver-te-private-net
-
-  cloudbeaver-te:
-    restart: unless-stopped
-    hostname: cloudbeaver-te
-    image: $IMAGE_SOURCE/cloudbeaver-te:${CLOUDBEAVER_VERSION_TAG}
-    deploy:
-      replicas: ${REPLICA_COUNT_TE}
-    volumes:
-      - te_data:/opt/cloudbeaver/workspace
-      - ./cert/public/:/opt/cloudbeaver/conf/certificates/
-    environment:
-      - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
-    expose:
-      - 8978
-    depends_on:
-      - cloudbeaver-dc
-      - cloudbeaver-rm
-      - cloudbeaver-qm
-    networks:
-      - cloudbeaver-te-public-net
 
   cloudbeaver-dc:
     restart: unless-stopped
@@ -124,7 +105,27 @@ services:
     expose:
       - 8970
     networks:
-      - cloudbeaver-te-public-net
+      - cloudbeaver-te-private-net
+
+
+  cloudbeaver-te:
+    restart: unless-stopped
+    hostname: cloudbeaver-te
+    image: $IMAGE_SOURCE/cloudbeaver-te:${CLOUDBEAVER_VERSION_TAG}
+    deploy:
+      replicas: ${REPLICA_COUNT_TE}
+    volumes:
+      - te_data:/opt/cloudbeaver/workspace
+      - ./cert/public/:/opt/cloudbeaver/conf/certificates/
+    environment:
+      - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
+    expose:
+      - 8978
+    depends_on:
+      - cloudbeaver-dc
+      - cloudbeaver-rm
+      - cloudbeaver-qm
+    networks:
       - cloudbeaver-te-private-net
 
   cloudbeaver-rm:
@@ -143,7 +144,7 @@ services:
     expose:
       - 8971
     networks:
-      - cloudbeaver-te-public-net
+      - cloudbeaver-te-private-net
 
   cloudbeaver-qm:
     restart: unless-stopped
@@ -161,7 +162,6 @@ services:
     expose:
       - 8972
     networks:
-      - cloudbeaver-te-public-net
       - cloudbeaver-te-private-net
 
   cloudbeaver-tm:
@@ -180,5 +180,4 @@ services:
     expose:
       - 8973
     networks:
-      - cloudbeaver-te-public-net
       - cloudbeaver-te-private-net
