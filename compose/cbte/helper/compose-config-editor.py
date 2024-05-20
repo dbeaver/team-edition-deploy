@@ -1,7 +1,6 @@
 #!/usr/local/bin/python
 import os
 import re
-import re
 import sys
 import yaml
 
