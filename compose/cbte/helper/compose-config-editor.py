@@ -35,9 +35,7 @@ volume_local_paths = {
   "rm_data": "/var/dbeaver/resource-manager/workspace",
   "qm_data": "/var/dbeaver/query-manager/workspace",
   "tm_data": "/var/dbeaver/task-manager/workspace",
-  "tm_data": "/var/dbeaver/task-manager/workspace",
-  "nginx_ssl_data": "/var/dbeaver/nginx/ssl",	
-  "nginx_conf_data": "/var/dbeaver/nginx/conf"
+  "tm_data": "/var/dbeaver/task-manager/workspace"
 }
 
 def volumes_config(volume):
@@ -51,9 +49,11 @@ def volumes_config(volume):
 	}
 	return volume_config
 
+volumes_without_mapping = ['kafka_data', 'nginx_ssl_data', 'nginx_conf_data']
+
 if os.environ.get("DBEAVER_TEAM_EDITION_AMI") is not None:
 	for volume in document['volumes']:
-		if volume == "kafka_data":
+		if volume in volumes_without_mapping:
 			continue
 		document['volumes'][volume] = volumes_config(volume)
 
