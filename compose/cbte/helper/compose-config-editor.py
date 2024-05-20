@@ -1,5 +1,6 @@
 #!/usr/local/bin/python
 import os
+import re
 import sys
 import yaml
 
@@ -18,8 +19,6 @@ use_external_db = os.environ.get('USE_EXTERNAL_DB', "false")
 if use_external_db.lower() == "true":
 	del document['services']['postgres']
 
-
-
 nginx_ssl_volumes = [
 	"./nginx/nginx.https.conf:/etc/nginx/conf.d/default.conf",
 	"./nginx/ssl:/etc/nginx/ssl"
@@ -27,8 +26,8 @@ nginx_ssl_volumes = [
 
 if cb_scheme == "https":
 	document['services']['nginx']['volumes'].extend(nginx_ssl_volumes)
-
-####### AWS AMI helper
+	
+	
 volume_local_paths = {
   "metadata_data": "/var/dbeaver/postgre",
   "te_data": "/var/dbeaver/cloudbeaver/workspace",
@@ -49,13 +48,37 @@ def volumes_config(volume):
 	}
 	return volume_config
 
+volumes_without_mapping = ['kafka_data', 'nginx_ssl_data', 'nginx_conf_data']
+
 if os.environ.get("DBEAVER_TEAM_EDITION_AMI") is not None:
 	for volume in document['volumes']:
-		if volume == "kafka_data":
+		if volume in volumes_without_mapping:
 			continue
 		document['volumes'][volume] = volumes_config(volume)
 
 
 
-with open('/docker-compose.yml', 'w') as file:
-    documents = yaml.dump(document, file, Dumper=IndentDumper, sort_keys=False)
+with open('/docker-compose.yml', 'w') as dcFile:
+    documents = yaml.dump(document, dcFile, Dumper=IndentDumper, sort_keys=False)
+dcFile.close()
+
+compose_project_name = os.environ.get("COMPOSE_PROJECT_NAME")
+replica_count_te = int(os.environ.get("REPLICA_COUNT_TE"))
+
+if replica_count_te > 1:
+
+	servers_config = "{\n            " + ",\n            ".join(
+		f'te{i} = "http://{compose_project_name}-cloudbeaver-te-{i}:8978"' for i in range(1, replica_count_te + 1)
+	) + "\n        }"
+
+	with open("dbeaver-te.locations", "r") as readLocationsFile:
+		default_content = readLocationsFile.read()
+	readLocationsFile.close()
+	new_content = re.sub(r'local servers = {[^}]*}', f'local servers = {servers_config}', default_content)
+
+	with open("dbeaver-te.locations", "w") as writeLocationsFile:
+		writeLocationsFile.write(new_content)
+	writeLocationsFile.close()
+elif replica_count_te <= 0:
+    print("ERROR: Replica cannot be less than 1")
+    sys.exit(1)
