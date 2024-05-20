@@ -1,6 +1,7 @@
 #!/usr/local/bin/python
 import os
 import re
+import re
 import sys
 import yaml
 
@@ -27,13 +28,14 @@ nginx_ssl_volumes = [
 if cb_scheme == "https":
 	document['services']['nginx']['volumes'].extend(nginx_ssl_volumes)
 	
-####### AWS AMI helper
+	
 volume_local_paths = {
   "metadata_data": "/var/dbeaver/postgre",
   "te_data": "/var/dbeaver/cloudbeaver/workspace",
   "dc_data": "/var/dbeaver/domain-controller/workspace",
   "rm_data": "/var/dbeaver/resource-manager/workspace",
   "qm_data": "/var/dbeaver/query-manager/workspace",
+  "tm_data": "/var/dbeaver/task-manager/workspace",
   "tm_data": "/var/dbeaver/task-manager/workspace",
   "nginx_ssl_data": "/var/dbeaver/nginx/ssl",	
   "nginx_conf_data": "/var/dbeaver/nginx/conf"
@@ -59,8 +61,24 @@ if os.environ.get("DBEAVER_TEAM_EDITION_AMI") is not None:
 
 
 with open('/docker-compose.yml', 'w') as file:
-    documents = yaml.dump(document, file, Dumper=IndentDumper, sort_keys=False)
 file.close()
+
+compose_project_name = os.environ.get("COMPOSE_PROJECT_NAME")
+replica_count_te = int(os.environ.get("REPLICA_COUNT_TE"))
+
+servers_config = "{\n            " + ",\n            ".join(
+    f'te{i} = "http://{compose_project_name}-cloudbeaver-te-{i}:8978"' for i in range(1, replica_count_te + 1)
+) + "\n        }"
+
+with open("dbeaver-te.locations", "r") as file:
+    default_content = file.read()
+file.close()
+    documents = yaml.dump(document, file, Dumper=IndentDumper, sort_keys=False)
+new_content = re.sub(r'local servers = {[^}]*}', f'local servers = {servers_config}', default_content)
+
+with open("dbeaver-te.locations", "w") as file:
+    file.write(new_content)
+file.close()file.close()
 
 compose_project_name = os.environ.get("COMPOSE_PROJECT_NAME")
 replica_count_te = int(os.environ.get("REPLICA_COUNT_TE"))
