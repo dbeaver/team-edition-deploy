@@ -80,5 +80,5 @@ if replica_count_te > 1:
 		writeLocationsFile.write(new_content)
 	writeLocationsFile.close()
 elif replica_count_te <= 0:
-    print("ERROR: REPLICA_COUNT_TE <= 0")
+    print("ERROR: Replica cannot be less than 1")
     sys.exit(1)
