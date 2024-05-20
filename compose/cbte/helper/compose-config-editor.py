@@ -65,7 +65,7 @@ dcFile.close()
 compose_project_name = os.environ.get("COMPOSE_PROJECT_NAME")
 replica_count_te = int(os.environ.get("REPLICA_COUNT_TE"))
 
-if replica_count_te != 1:
+if replica_count_te > 1:
 
 	servers_config = "{\n            " + ",\n            ".join(
 		f'te{i} = "http://{compose_project_name}-cloudbeaver-te-{i}:8978"' for i in range(1, replica_count_te + 1)
@@ -79,3 +79,6 @@ if replica_count_te != 1:
 	with open("dbeaver-te.locations", "w") as writeLocationsFile:
 		writeLocationsFile.write(new_content)
 	writeLocationsFile.close()
+elif replica_count_te <= 0:
+    print("ERROR: REPLICA_COUNT_TE <= 0")
+    sys.exit(1)
