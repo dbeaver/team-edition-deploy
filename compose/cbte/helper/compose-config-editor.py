@@ -4,63 +4,63 @@ import re
 import sys
 import yaml
 
+if len(sys.argv) > 1 and sys.argv[1] == "--only-locations":
+    pass
+else:
+	class IndentDumper(yaml.Dumper):
+	    def increase_indent(self, flow=False, indentless=False):
+	        return super(IndentDumper, self).increase_indent(flow, False)
 
-class IndentDumper(yaml.Dumper):
-    def increase_indent(self, flow=False, indentless=False):
-        return super(IndentDumper, self).increase_indent(flow, False)
+
+	cb_scheme = os.environ.get('CLOUDBEAVER_SCHEME', "http")
+
+	with open('/docker-compose.tmpl.yml') as file:
+	    document = yaml.full_load(file)
+
+	use_external_db = os.environ.get('USE_EXTERNAL_DB', "false")
+	if use_external_db.lower() == "true":
+		del document['services']['postgres']
+
+	nginx_ssl_volumes = [
+		"./nginx/nginx.https.conf:/etc/nginx/conf.d/default.conf",
+		"./nginx/ssl:/etc/nginx/ssl"
+		]
+
+	if cb_scheme == "https":
+		document['services']['nginx']['volumes'].extend(nginx_ssl_volumes)
 
 
-cb_scheme = os.environ.get('CLOUDBEAVER_SCHEME', "http")
-
-with open('/docker-compose.tmpl.yml') as file:
-    document = yaml.full_load(file)
-
-use_external_db = os.environ.get('USE_EXTERNAL_DB', "false")
-if use_external_db.lower() == "true":
-	del document['services']['postgres']
-
-nginx_ssl_volumes = [
-	"./nginx/nginx.https.conf:/etc/nginx/conf.d/default.conf",
-	"./nginx/ssl:/etc/nginx/ssl"
-	]
-
-if cb_scheme == "https":
-	document['services']['nginx']['volumes'].extend(nginx_ssl_volumes)
-	
-	
-volume_local_paths = {
-  "metadata_data": "/var/dbeaver/postgre",
-  "te_data": "/var/dbeaver/cloudbeaver/workspace",
-  "dc_data": "/var/dbeaver/domain-controller/workspace",
-  "rm_data": "/var/dbeaver/resource-manager/workspace",
-  "qm_data": "/var/dbeaver/query-manager/workspace",
-  "tm_data": "/var/dbeaver/task-manager/workspace"
-}
-
-def volumes_config(volume):
-	volume_config = {
-	    "driver": "local",
-	    "driver_opts": {
-	      	"type": "none",
-	      	"o": "bind",
-	      	"device": volume_local_paths.get(volume)
-	    }
+	volume_local_paths = {
+	  "metadata_data": "/var/dbeaver/postgre",
+	  "te_data": "/var/dbeaver/cloudbeaver/workspace",
+	  "dc_data": "/var/dbeaver/domain-controller/workspace",
+	  "rm_data": "/var/dbeaver/resource-manager/workspace",
+	  "qm_data": "/var/dbeaver/query-manager/workspace",
+	  "tm_data": "/var/dbeaver/task-manager/workspace"
 	}
-	return volume_config
 
-volumes_without_mapping = ['kafka_data', 'nginx_ssl_data', 'nginx_conf_data']
+	def volumes_config(volume):
+		volume_config = {
+		    "driver": "local",
+		    "driver_opts": {
+		      	"type": "none",
+		      	"o": "bind",
+		      	"device": volume_local_paths.get(volume)
+		    }
+		}
+		return volume_config
 
-if os.environ.get("DBEAVER_TEAM_EDITION_AMI") is not None:
-	for volume in document['volumes']:
-		if volume in volumes_without_mapping:
-			continue
-		document['volumes'][volume] = volumes_config(volume)
+	volumes_without_mapping = ['kafka_data', 'nginx_ssl_data', 'nginx_conf_data']
 
+	if os.environ.get("DBEAVER_TEAM_EDITION_AMI") is not None:
+		for volume in document['volumes']:
+			if volume in volumes_without_mapping:
+				continue
+			document['volumes'][volume] = volumes_config(volume)
 
-
-with open('/docker-compose.yml', 'w') as dcFile:
-    documents = yaml.dump(document, dcFile, Dumper=IndentDumper, sort_keys=False)
-dcFile.close()
+	with open('/docker-compose.yml', 'w') as dcFile:
+	    documents = yaml.dump(document, dcFile, Dumper=IndentDumper, sort_keys=False)
+	dcFile.close()
 
 compose_project_name = os.environ.get("COMPOSE_PROJECT_NAME")
 replica_count_te = int(os.environ.get("REPLICA_COUNT_TE"))
