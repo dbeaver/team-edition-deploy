@@ -40,7 +40,6 @@ Usage: dbeaver-te [command]
       - stop       stop DBeaver Team Edition Server
       - start      start DBeaver Team Edition Server
       - configure  open .env file for configuration
-      - le     release Let's Encrypt self-signed certificate for your domain
       - update <version>
                    update DBeaver Team Edition Server to <version>
                    <version> can't be lower than current version $TEAM_EDITION_TAG
@@ -359,10 +358,6 @@ case $1 in
 
   "update")
     updateCloudbeaver "$2"
-    ;;
-
-  "le")
-    ReleaseLeCert
     ;;
 
   "createBackup")
