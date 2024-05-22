@@ -104,7 +104,7 @@ then
 	fi
 fi
 
-#### Untemplate compose
+#### Untemplate compose and configure endpoints to load balancer
 # create empty compose yml file 
 touch docker-compose.yml
 docker run --rm \
@@ -112,7 +112,6 @@ docker run --rm \
 	-v $(pwd)/docker-compose.tmpl.yml:/docker-compose.tmpl.yml \
 	-v $(pwd)/helper/compose-config-editor.py:/compose-config-editor.py \
 	-v $(pwd)/nginx/dbeaver-te.locations:/dbeaver-te.locations \
-	-v $(pwd)/helper/cloudbeaver-locations-editor.py:/cloudbeaver-locations-editor.py \
 	--env-file=.env \
 	python:alpine sh -c "pip install PyYAML && python /compose-config-editor.py"
 
