@@ -21,7 +21,7 @@ def composeGenerator():
     
     nginx_ssl_volumes = [
         "./nginx/nginx.https.conf:/etc/nginx/conf.d/default.conf",
-        "./nginx/ssl:/etc/nginx/ssl"
+        "./nginx/ssl:/etc/letsencrypt/live/databases.team"
         ]
     
     if cb_scheme == "https":
