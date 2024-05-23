@@ -14,7 +14,7 @@ The `stop` and `start` commands will help you easily manage the state of the clu
 
 ### Configuration
 
-The configuration occurs with -mathe help of the [manager](#team-edition-servernager).
+The configuration occurs with the help of the [manager](#team-edition-server-manager).
 
 To configure your server, you can enter the command `dbever-te configure`.
 This will open the `.env` file, where you can change the parameters you want, then press `Ctrl+S` to save variables and `Ctrl+X` to exit the editor.
