@@ -88,6 +88,8 @@ If you want to use another database on your side, you can do it according to the
 
 ### Version update procedure
 
+You can use [server manager](../manager/README.md#version-update-procedure) to update Team Edition version or do the following: 
+
 1. `cd compose/cbte`
 2. Change value of `CLOUDBEAVER_VERSION_TAG` in `.env` with a preferred version. Go to next step if tag `latest` is set.
 3. Pull new docker images: `docker-compose pull` or `docker compose pull`  
