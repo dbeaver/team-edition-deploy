@@ -20,8 +20,7 @@ def composeGenerator():
         del document['services']['postgres']
     
     nginx_ssl_volumes = [
-        "./nginx/nginx.https.conf:/etc/nginx/conf.d/default.conf",
-        "./nginx/ssl:/etc/letsencrypt/live/databases.team"
+        "./nginx/nginx.https.conf:/etc/nginx/conf.d/default.conf"
         ]
     
     if cb_scheme == "https":

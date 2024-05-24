@@ -83,8 +83,21 @@ do
 done < .env
 
 ##
-mkdir -p nginx/letsencrypt
-chmod 777 nginx/letsencrypt
+
+
+
+#### Untemplate compose and configure endpoints to load balancer
+# create empty compose yml file 
+touch docker-compose.yml
+docker run --rm \
+	-v $(pwd)/docker-compose.yml:/docker-compose.yml \
+	-v $(pwd)/docker-compose.tmpl.yml:/docker-compose.tmpl.yml \
+	-v $(pwd)/helper/compose-config-editor.py:/compose-config-editor.py \
+	-v $(pwd)/nginx/dbeaver-te.locations:/dbeaver-te.locations \
+	--env-file=.env \
+	python:alpine sh -c "pip install PyYAML && python /compose-config-editor.py"
+
+docker-compose pull
 
 ## Check certificate exists if scheme https 
 ## But if Let's Encrypt arg used will pass this check
@@ -101,18 +114,13 @@ then
 		exit 1
 	else
 		envsubst '$CLOUDBEAVER_DOMAIN' < nginx/nginx.https.conf.template | tee nginx/nginx.https.conf
+		docker-compose create
+		docker run --rm -d --name temporary -v dbeaver_nginx_ssl_data:/etc/nginx/ssl/ openresty/openresty
+		docker exec temporary mkdir -p /etc/nginx/ssl/live/databases.team
+		docker cp ./nginx/ssl/fullchain.pem temporary:/etc/nginx/ssl/live/databases.team/fullchain.pem
+		docker cp ./nginx/ssl/privkey.pem temporary:/etc/nginx/ssl/live/databases.team/privkey.pem
+		docker exec --user root temporary chown -R nobody:nogroup /etc/letsencrypt
+		docker stop temporary
 	fi
 fi
 
-#### Untemplate compose and configure endpoints to load balancer
-# create empty compose yml file 
-touch docker-compose.yml
-docker run --rm \
-	-v $(pwd)/docker-compose.yml:/docker-compose.yml \
-	-v $(pwd)/docker-compose.tmpl.yml:/docker-compose.tmpl.yml \
-	-v $(pwd)/helper/compose-config-editor.py:/compose-config-editor.py \
-	-v $(pwd)/nginx/dbeaver-te.locations:/dbeaver-te.locations \
-	--env-file=.env \
-	python:alpine sh -c "pip install PyYAML && python /compose-config-editor.py"
-
-docker-compose pull
