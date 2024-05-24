@@ -119,6 +119,7 @@ then
 		docker exec temporary mkdir -p /etc/nginx/ssl/live/databases.team
 		docker cp ./nginx/ssl/fullchain.pem temporary:/etc/nginx/ssl/live/databases.team/fullchain.pem
 		docker cp ./nginx/ssl/privkey.pem temporary:/etc/nginx/ssl/live/databases.team/privkey.pem
+		docekr cp ./nginx/nginx.https.conf temporary:/etc/nginx/product-conf/cloudbeaver-te.conf
 		docker exec --user root temporary chown -R nobody:nogroup /etc/letsencrypt
 		docker stop temporary
 	fi
