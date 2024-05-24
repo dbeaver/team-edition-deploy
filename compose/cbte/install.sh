@@ -115,12 +115,15 @@ then
 	else
 		envsubst '$CLOUDBEAVER_DOMAIN' < nginx/nginx.https.conf.template | tee nginx/nginx.https.conf
 		docker-compose create
-		docker run --rm -d --name temporary -v dbeaver_nginx_ssl_data:/etc/nginx/ssl/ openresty/openresty
+		docker run --rm -d --name temporary \
+			-v "$COMPOSE_PROJECT_NAME"_nginx_ssl_data:/etc/nginx/ssl/ \
+			-v "$COMPOSE_PROJECT_NAME"_nginx_conf_data:/etc/nginx/product-conf/ \
+			openresty/openresty:alpine
 		docker exec temporary mkdir -p /etc/nginx/ssl/live/databases.team
 		docker cp ./nginx/ssl/fullchain.pem temporary:/etc/nginx/ssl/live/databases.team/fullchain.pem
 		docker cp ./nginx/ssl/privkey.pem temporary:/etc/nginx/ssl/live/databases.team/privkey.pem
-		docekr cp ./nginx/nginx.https.conf temporary:/etc/nginx/product-conf/cloudbeaver-te.conf
-		docker exec --user root temporary chown -R nobody:nogroup /etc/letsencrypt
+		docker cp ./nginx/nginx.https.conf temporary:/etc/nginx/product-conf/cloudbeaver-te.conf
+		docker exec --user root temporary chown -R nobody:nogroup /etc/nginx/ssl
 		docker stop temporary
 	fi
 fi

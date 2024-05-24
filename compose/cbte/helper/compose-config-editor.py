@@ -19,14 +19,6 @@ def composeGenerator():
     if use_external_db.lower() == "true":
         del document['services']['postgres']
     
-    nginx_ssl_volumes = [
-        "./nginx/nginx.https.conf:/etc/nginx/conf.d/default.conf"
-        ]
-    
-    if cb_scheme == "https":
-        document['services']['nginx']['volumes'].extend(nginx_ssl_volumes)
-        
-        
     volume_local_paths = {
       "metadata_data": "/var/dbeaver/postgre",
       "te_data": "/var/dbeaver/cloudbeaver/workspace",
