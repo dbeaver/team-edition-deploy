@@ -54,8 +54,8 @@ def composeGenerator():
     dcFile.close()
 
 def locationsGenerator():
-    compose_project_name = os.environ.get("COMPOSE_PROJECT_NAME")
-    replica_count_te = int(os.environ.get("REPLICA_COUNT_TE"))
+    compose_project_name = os.environ.get("COMPOSE_PROJECT_NAME", "cbte")
+    replica_count_te = int(os.environ.get("REPLICA_COUNT_TE", 1))
 
     if replica_count_te > 1:
         servers_config = "{\n            " + ",\n            ".join(
