@@ -25,6 +25,8 @@ services:
     environment:
       - CLOUDBEAVER_DOMAIN=${CLOUDBEAVER_DOMAIN}
       - PRODUCT_TYPE=te
+      - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME}
+      - NUM_NODES=${REPLICA_COUNT_TE}
     networks:
       - cloudbeaver-te-public-net
       - cloudbeaver-te-private-net
