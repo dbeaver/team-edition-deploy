@@ -19,15 +19,6 @@ def composeGenerator():
     if use_external_db.lower() == "true":
         del document['services']['postgres']
     
-    nginx_ssl_volumes = [
-        "./nginx/nginx.https.conf:/etc/nginx/conf.d/default.conf",
-        "./nginx/ssl:/etc/nginx/ssl"
-        ]
-    
-    if cb_scheme == "https":
-        document['services']['nginx']['volumes'].extend(nginx_ssl_volumes)
-        
-        
     volume_local_paths = {
       "metadata_data": "/var/dbeaver/postgre",
       "te_data": "/var/dbeaver/cloudbeaver/workspace",
@@ -63,8 +54,8 @@ def composeGenerator():
     dcFile.close()
 
 def locationsGenerator():
-    compose_project_name = os.environ.get("COMPOSE_PROJECT_NAME")
-    replica_count_te = int(os.environ.get("REPLICA_COUNT_TE"))
+    compose_project_name = os.environ.get("COMPOSE_PROJECT_NAME", "cbte")
+    replica_count_te = int(os.environ.get("REPLICA_COUNT_TE", 1))
 
     if replica_count_te > 1:
         servers_config = "{\n            " + ",\n            ".join(
