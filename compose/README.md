@@ -69,14 +69,16 @@ If you want to use another database on your side, you can do it according to the
    - You may skip this step. In this case, the cluster will be configured for localhost.  
    - Set the `CLOUDBEAVER_DOMAIN` property to the desired domain name.  
    - Create DNS records for `CLOUDBEAVER_DOMAIN`.  
-3. Configure SSL (optional)
-   - If you set the *HTTPS* endpoint scheme in `.env` then you need to create a valid TLS certificate for a domain endpoint `CLOUDBEAVER_DOMAIN` and place it into `compose/cbte/nginx/ssl`.
-   - Generate SSL certificate for a domain `CLOUDBEAVER_DOMAIN` specified in `.env` and put it to `compose/cbte/nginx/ssl/fullchain.pem` as certificate and `compose/cbte/nginx/ssl/privkey.pem` as a private key.  
-   - If you set up Team Edition in the public network, you can get a certificate from Let's Encrypt provider by starting the `install.sh` script with `le` argument.
-3. Prepare Team Edition environment
-   - `./install.sh` (default) or `./install.sh le` (if you use LetsEncrypt)
-4. Start the cluster
+3. [Configure SSL](../SSL/README.md#ssl-certificate-configuration)
+4. Prepare Team Edition environment
+   - Run `./install.sh`, it is prepare your docker-compose file, and create [DC keys](#dc-keys) for internal services.
+5. Start the cluster
    - `docker-compose up -d` or `docker compose up -d`
+
+### DC keys
+
+After running `install.sh`, internal certificates for services will be generated and put in the `cbte/cert` path.
+These are very important files that will help you decrypt user data. If you lose them, all data in your cluster will be unavailable!!!
 
 ### Services will be accessible in the next URIs
 
