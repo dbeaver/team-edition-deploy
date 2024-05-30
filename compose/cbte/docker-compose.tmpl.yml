@@ -7,7 +7,6 @@ volumes:
   rm_data: {}
   qm_data: {}
   tm_data: {}
-  kafka_data: {}
   nginx_ssl_data: {}
   nginx_conf_data: {}
 
@@ -45,8 +44,6 @@ services:
     hostname: kafka
     expose:
       - 9092
-    volumes:
-      - "kafka_data:/bitnami"
     environment:
       # KRaft settings
       - KAFKA_CFG_NODE_ID=0
