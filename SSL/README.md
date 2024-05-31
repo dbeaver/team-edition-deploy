@@ -1,14 +1,15 @@
 ## SSL certificate configuration
  
-By default, the cluster has fake HTTPS certificates and you may see an error about an insecure connection, they will be generated automatically witch running nginx image.
+By default, cluster support both http and https.
+The cluster has fake HTTPS certificates and you may see an error about an insecure connection, they will be generated automatically witch running nginx container.
 
 ### If you want to use official certificates from Domain hosting providers
 
 1. Get certificates for your domain from a third party service. You need an SSL certificate file and public-private key pair.  
-2. Replace files in `/opt/dbeaver-team-server/team-edition-deploy/compose/cbte/nginx/ssl`  
-   - Certificate: `fullchain.pem`    
+2. Replace files in `team-edition-deploy/compose/cbte/nginx/ssl` or `/opt/dbeaver-team-server/team-edition-deploy/compose/cbte/nginx/ssl` if you run an ami.  
+   - Certificate: `fullchain.pem`  
    - Private Key: `privkey.pem`  
-3. Change `CLOUDBEAVER_DOMAIN=localhost` to your domain in .env file.  
+3. Change value of var `CLOUDBEAVER_DOMAIN=localhost` to your domain in .env file.  
 4. Stop your cluster with command `dbeaver-te stop`  
 5. Run `./install.sh`script  
 6. Start your cluster with command `dbeaver-te start`  
