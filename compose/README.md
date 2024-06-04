@@ -77,8 +77,13 @@ If you want to use another database on your side, you can do it according to the
 
 ### DC keys
 
-After running `install.sh`, internal certificates for services will be generated and put in the `cbte/cert` path.
+After running `install.sh`, internal certificates for services will be generated and put in the `team-edition-deploy/compose/cbte/cert` path.
 These are very important files that will help you decrypt user data. If you lose them, all data in your cluster will be unavailable!!!
+
+#### DC keys backup 
+To ensure the safety and integrity of your data, it is recommended to create a backup. Please follow these steps:
+- Create an archive of the following directory: `team-edition-deploy/compose/cbte/cert`.  
+- Copy the archived directory from your Team Edition server to your private environment.  
 
 ### Services will be accessible in the next URIs
 
