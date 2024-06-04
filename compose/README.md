@@ -81,6 +81,7 @@ After running `install.sh`, internal certificates for services will be generated
 These are very important files that will help you decrypt user data. If you lose them, all data in your cluster will be unavailable!!!
 
 #### DC keys backup 
+
 To ensure the safety and integrity of your data, it is recommended to create a backup. Please follow these steps:
 - Create an archive of the following directory: `team-edition-deploy/compose/cbte/cert`.  
 - Copy the archived directory from your Team Edition server to your private environment.  
@@ -99,3 +100,19 @@ To ensure the safety and integrity of your data, it is recommended to create a b
 2. Change value of `CLOUDBEAVER_VERSION_TAG` in `.env` with a preferred version. Go to next step if tag `latest` is set.
 3. Pull new docker images: `docker-compose pull` or `docker compose pull`  
 4. Restart cluster: `docker-compose up -d` or `docker compose up -d`
+
+### Service scaling
+
+To scale your service within the cluster, follow these steps:
+
+- Open the .env file located at team-edition-deploy/compose/cbte/.
+- Add or modify the following environment variables to set the desired number of instances for each service:
+
+```
+REPLICA_COUNT_TE=1
+REPLICA_COUNT_TM=1
+REPLICA_COUNT_QM=1
+REPLICA_COUNT_RM=1
+```
+
+Adjust the values as needed to scale each service accordingly.
