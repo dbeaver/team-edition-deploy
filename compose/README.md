@@ -61,30 +61,32 @@ If you want to use another database on your side, you can do it according to the
 
 ### Configuring and starting Team Edition cluster
 
-1. Open configuration file
+1. Open configuration file:
     - `cd compose/cbte`
     - `cp .env.example .env`
     - Edit `.env` file to set configuration properties
-2. Configure domain name (optional)
-   - You may skip this step. In this case, the cluster will be configured for localhost.  
+2. Configure domain name (optional):
+   - You may skip this step. In this case, the cluster will be configured for `localhost`.  
    - Set the `CLOUDBEAVER_DOMAIN` property to the desired domain name.  
    - Create DNS records for `CLOUDBEAVER_DOMAIN`.  
 3. [Configure SSL](../SSL/README.md#ssl-certificate-configuration)
-4. Prepare Team Edition environment
-   - Run `./install.sh`, it is prepare your docker-compose file, and create [DC keys](#dc-keys) for internal services.
-5. Start the cluster
+4. Prepare Team Edition environment:
+   - Run `./install.sh`, it prepares your docker-compose file, and creates [Encryption keys](#dc-keys) for internal services.
+5. Start the cluster:
    - `docker-compose up -d` or `docker compose up -d`
 
-### DC keys
+### Encryption keys
 
-After running `install.sh`, internal certificates for services will be generated and put in the `team-edition-deploy/compose/cbte/cert` path.
-These are very important files that will help you decrypt user data. If you lose them, all data in your cluster will be unavailable!!!
+After running `install.sh`, Encryption keys internal for services will be generated and put in the `team-edition-deploy/compose/cbte/cert`.
 
-#### DC keys backup 
+**Important:** Encryption keys are used to decrypt user data. If you lose them, all data in your cluster will be unavailable. Please backup them and keep in a secure storage.
+
+#### Encryption keys backup
 
 To ensure the safety and integrity of your data, it is recommended to create a backup. Please follow these steps:
-- Create an archive of the following directory: `team-edition-deploy/compose/cbte/cert`.  
-- Copy the archived directory from your Team Edition server to your private environment.  
+
+1. Create an archive of the following directory: `team-edition-deploy/compose/cbte/cert`.  
+2. Copy the archived directory from your Team Edition server to your private environment.  
 
 ### Services will be accessible in the next URIs
 
@@ -105,7 +107,7 @@ To ensure the safety and integrity of your data, it is recommended to create a b
 
 To scale your service within the cluster, follow these steps:
 
-- Open the .env file located at team-edition-deploy/compose/cbte/.
+- Open the `.env` file located at `team-edition-deploy/compose/cbte/`.
 - Add or modify the following environment variables to set the desired number of instances for each service:
 
 ```

@@ -1,29 +1,25 @@
 ## SSL certificate configuration
- 
-By default, cluster support both http and https.
-The cluster has fake HTTPS certificates and you may see an error about an insecure connection, they will be generated automatically witch running nginx container.
 
-### If you want to use official certificates from Domain hosting providers
+The cluster supports HTTP and HTTPS. By default, it contains a pre-configured SSL certificate. You can change it to your own existing certificate associated with your domain, or configure an SSL certificate along with a new domain using the Team Edition Domain Manager.
 
-1. Get certificates for your domain from a third party service. You need an SSL certificate file and public-private key pair.  
-2. Replace files in `team-edition-deploy/compose/cbte/nginx/ssl` or `/opt/dbeaver-team-server/team-edition-deploy/compose/cbte/nginx/ssl` if you run an ami.  
-   - Certificate: `fullchain.pem`  
+
+### How to add certificate from your domain provider
+
+1. Get certificates for your domain from the service you use. You need two files: SSL certificate and a Private Key.  
+2. Navigate to the following directory:
+- If you deploy Team Edition with docker-compose: `team-edition-deploy/compose/cbte/nginx/ssl`
+- If you use for deployment preconfigured AMI in Amazon, Google Cloud, or Microsoft Azure:`/opt/dbeaver-team-server/team-edition-deploy/compose/cbte/nginx/ssl`
+3. Replace the content of this directory with your SSL certificate and Private Key files:
+   - SSl Certificate: `fullchain.pem`  
    - Private Key: `privkey.pem`  
-3. Change value of var `CLOUDBEAVER_DOMAIN=localhost` to your domain in .env file.  
-4. Stop your cluster with command `dbeaver-te stop`  
-5. Run `./install.sh`script  
-6. Start your cluster with command `dbeaver-te start`  
+4. Open `.env` file and change `CLOUDBEAVER_DOMAIN` parameter value to your domain.  
+5. Stop your cluster with command `dbeaver-te stop`  
+6. Run the installation script `./install.sh`
+7. Start your cluster with command `dbeaver-te start`  
 
-### If you want to use our domain service
+### How to generate domain with Team Edition domain service
 
-If you have license key you can get domain with https certificates from our domain manager service.
-
-1. During Easy Config
-  - Easy Config: During the easy configuration process, follow the prompts.
-  - Obtain Domain: The system will guide you through obtaining a domain and setting up certificates.
-  - After receiving the domain and setting up the certificates, you will be automatically redirected to the new domain.
-2. After Easy Config  
-  - Navigate to Administration.  
-  - Select Domain Manager.  
-  - Set Up Domain: Follow the instructions to set up your domain and configure certificates as needed.  
-  - After receiving the domain and setting up the certificates, you will be automatically redirected to the new domain.  
+1. Open your Team Edition instance.
+2. If you are in the process of initial server configuration, navigate to **Domain manager** tab. If your Team Edition is already configured, navigate to **Settings -> Administration -> Domain Manager**.
+3. The system will guide you through obtaining a domain and setting up certificates.
+4. After receiving the domain and setting up the certificates, you will be automatically.
