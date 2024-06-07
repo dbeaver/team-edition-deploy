@@ -13,13 +13,13 @@ The cluster supports HTTP and HTTPS. By default, it contains a pre-configured SS
    - SSl Certificate: `fullchain.pem`  
    - Private Key: `privkey.pem`  
 4. Open `.env` file and change `CLOUDBEAVER_DOMAIN` parameter value to your domain.  
-5. Stop your cluster with command `docker-compose down` in dirrectory `team-edition-deploy/compose/cbte` or `dbeaver-te stop` for preconfigured AMI.
+5. Stop your cluster with command `docker-compose down` in directory `team-edition-deploy/compose/cbte` or `dbeaver-te stop` for preconfigured AMI
 6. Run the installation script `./install.sh`
-7. Start your cluster with command `docker-compose up -d` in dirrectory `team-edition-deploy/compose/cbte` or `dbeaver-te start` for preconfigured AMI.
+7. Start your cluster with command or `docker-compose up -d` in directory `team-edition-deploy/compose/cbte` or `dbeaver-te start` for preconfigured AMI.
 
 ### How to generate domain with Team Edition domain service
 
 1. Open your Team Edition instance.
 2. If you are in the process of initial server configuration, navigate to **Domain manager** tab. If your Team Edition is already configured, navigate to **Settings -> Administration -> Domain Manager**.
 3. The system will guide you through obtaining a domain and setting up certificates.
-4. After receiving the domain and setting up the certificates, you will be automatically.
+4. After receiving the domain and setting up the certificates, you will be automatically redirected to the new domain.
