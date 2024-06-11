@@ -103,12 +103,30 @@ To ensure the safety and integrity of your data, it is recommended to create a b
 3. Pull new docker images: `docker-compose pull` or `docker compose pull`  
 4. Restart cluster: `docker-compose up -d` or `docker compose up -d`
 
+#### Version update procedure to 24.1.0 
+
+Deployment version from 24.1.0 had some changes, so to update correctly you need to follow these steps:
+
+- Navigate to `team-edition-deploy`
+- Run `git checkout --force %version%`
+- Open the `.env` file located at `team-edition-deploy/compose/cbte/` or use command `dbeaver-te configure` for preconfigured AMI.
+- Add the following environment variables
+
+```
+REPLICA_COUNT_TE=1
+REPLICA_COUNT_TM=1
+REPLICA_COUNT_QM=1
+REPLICA_COUNT_RM=1
+
+IMAGE_SOURCE=dbeaver
+```
+
 ### Service scaling
 
 To scale your service within the cluster, follow these steps:
 
-- Open the `.env` file located at `team-edition-deploy/compose/cbte/`.
-- Add or modify the following environment variables to set the desired number of instances for each service:
+- Open the `.env` file located at `team-edition-deploy/compose/cbte/` or use command `dbeaver-te configure` for preconfigured AMI.
+- Modify the following environment variables to set the desired number of instances for each service:
 
 ```
 REPLICA_COUNT_TE=1
