@@ -61,22 +61,32 @@ If you want to use another database on your side, you can do it according to the
 
 ### Configuring and starting Team Edition cluster
 
-1. Open configuration file
+1. Open configuration file:
     - `cd compose/cbte`
     - `cp .env.example .env`
     - Edit `.env` file to set configuration properties
-2. Configure domain name (optional)
-   - You may skip this step. In this case, the cluster will be configured for localhost.  
+2. Configure domain name (optional):
+   - You may skip this step. In this case, the cluster will be configured for `localhost`.  
    - Set the `CLOUDBEAVER_DOMAIN` property to the desired domain name.  
    - Create DNS records for `CLOUDBEAVER_DOMAIN`.  
-3. Configure SSL (optional)
-   - If you set the *HTTPS* endpoint scheme in `.env` then you need to create a valid TLS certificate for a domain endpoint `CLOUDBEAVER_DOMAIN` and place it into `compose/cbte/nginx/ssl`.
-   - Generate SSL certificate for a domain `CLOUDBEAVER_DOMAIN` specified in `.env` and put it to `compose/cbte/nginx/ssl/fullchain.pem` as certificate and `compose/cbte/nginx/ssl/privkey.pem` as a private key.  
-   - If you set up Team Edition in the public network, you can get a certificate from Let's Encrypt provider by starting the `install.sh` script with `le` argument.
-3. Prepare Team Edition environment
-   - `./install.sh` (default) or `./install.sh le` (if you use LetsEncrypt)
-4. Start the cluster
+3. [Configure SSL](../SSL/README.md#ssl-certificate-configuration)
+4. Prepare Team Edition environment:
+   - Run `./install.sh`, it prepares your docker-compose file, and creates [Encryption keys](#dc-keys) for internal services.
+5. Start the cluster:
    - `docker-compose up -d` or `docker compose up -d`
+
+### Encryption keys
+
+After running `install.sh`, Encryption keys internal for services will be generated and put in the `team-edition-deploy/compose/cbte/cert`.
+
+**Important:** Encryption keys are used to decrypt user data. If you lose them, all data in your cluster will be unavailable. Please backup them and keep in a secure storage.
+
+#### Encryption keys backup
+
+To ensure the safety and integrity of your data, it is recommended to create a backup. Please follow these steps:
+
+1. Create an archive of the following directory: `team-edition-deploy/compose/cbte/cert`.  
+2. Copy the archived directory from your Team Edition server to your private environment.  
 
 ### Services will be accessible in the next URIs
 
@@ -92,3 +102,19 @@ If you want to use another database on your side, you can do it according to the
 2. Change value of `CLOUDBEAVER_VERSION_TAG` in `.env` with a preferred version. Go to next step if tag `latest` is set.
 3. Pull new docker images: `docker-compose pull` or `docker compose pull`  
 4. Restart cluster: `docker-compose up -d` or `docker compose up -d`
+
+### Service scaling
+
+To scale your service within the cluster, follow these steps:
+
+- Open the `.env` file located at `team-edition-deploy/compose/cbte/`.
+- Add or modify the following environment variables to set the desired number of instances for each service:
+
+```
+REPLICA_COUNT_TE=1
+REPLICA_COUNT_TM=1
+REPLICA_COUNT_QM=1
+REPLICA_COUNT_RM=1
+```
+
+Adjust the values as needed to scale each service accordingly.
