@@ -103,12 +103,23 @@ To ensure the safety and integrity of your data, it is recommended to create a b
 3. Pull new docker images: `docker-compose pull` or `docker compose pull`  
 4. Restart cluster: `docker-compose up -d` or `docker compose up -d`
 
+### Custome image source
+
+To configure the image source into which you cloned our images for the cluster, follow these steps:
+
+- Open the `.env` file located at `team-edition-deploy/compose/cbte/` or use the command `dbeaver-te configure` for a preconfigured AMI.
+- Change the value of the `IMAGE_SOURCE` variable to the address of your registry. By default, it is set to `dbeaver`, which points to our DockerHub.
+
+```
+IMAGE_SOURCE=dbeaver
+```
+
 ### Service scaling
 
 To scale your service within the cluster, follow these steps:
 
-- Open the `.env` file located at `team-edition-deploy/compose/cbte/`.
-- Add or modify the following environment variables to set the desired number of instances for each service:
+- Open the `.env` file located at `team-edition-deploy/compose/cbte/` or use command `dbeaver-te configure` for preconfigured AMI.
+- Modify the following environment variables to set the desired number of instances for each service:
 
 ```
 REPLICA_COUNT_TE=1
