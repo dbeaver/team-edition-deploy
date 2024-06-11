@@ -30,7 +30,7 @@
    ![alt text](images/image-1.png)
 
    - Ensure that the `alb_certificate_Identifier` variable contains the ID from [AWS Certificate Manager](#importing-an-ssl-certificate-in-aws) corresponding to your domain specified in `CLOUDBEAVER_PUBLIC_URL`.
-   - You can customize the deployment version by updating the `dbeaver_te_version` environment variable. The default version is `24.0.0`.
+   - You can customize the deployment version by updating the `dbeaver_te_version` environment variable. The default version is `24.1.0`.
 
 5. Run `terraform init` and then `terraform apply` in `ecs-fargate` directory to create the ECS cluster and complete the deployment.
 
