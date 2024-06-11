@@ -103,14 +103,20 @@ To ensure the safety and integrity of your data, it is recommended to create a b
 3. Pull new docker images: `docker-compose pull` or `docker compose pull`  
 4. Restart cluster: `docker-compose up -d` or `docker compose up -d`
 
-#### Version update procedure to 24.1.0 
+#### Version update procedure to 24.1.0
 
-Deployment version from 24.1.0 had some changes, so to update correctly you need to follow these steps:
+There are significant deployment changes in version 24.1.0, so you have to follow these steps to upgrade correctly:
 
-- Navigate to `team-edition-deploy`
-- Run `git checkout --force %version%`
-- Open the `.env` file located at `team-edition-deploy/compose/cbte/` or use command `dbeaver-te configure` for preconfigured AMI.
-- Add the following environment variables
+
+##### Step 1. Get last changes and open configuration
+
+- If you deploy Team Edition with docker-compose:
+    1. Navigate to `team-edition-deploy`
+    2. Run command `git checkout --force %version%`
+    3. Open the `.env` file located at `team-edition-deploy/compose/cbte/`
+- If you use for deployment preconfigured AMI, simply run this command: `dbeaver-te configure`
+
+##### Step2. Add the following environment variables:
 
 ```
 REPLICA_COUNT_TE=1
