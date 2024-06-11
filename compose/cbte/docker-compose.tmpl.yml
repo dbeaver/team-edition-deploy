@@ -18,7 +18,7 @@ networks:
 services:
   nginx:
     restart: unless-stopped
-    image: $IMAGE_SOURCE/cloudbeaver-nginx:${CLOUDBEAVER_VERSION_TAG}
+    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-nginx:${CLOUDBEAVER_VERSION_TAG}
     ports:
       - 80:80
       - 443:443
@@ -41,7 +41,7 @@ services:
 
   kafka:
     restart: unless-stopped
-    image: $IMAGE_SOURCE/cloudbeaver-kafka:3.2
+    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-kafka:3.2
     hostname: kafka
     expose:
       - 9092
@@ -64,7 +64,7 @@ services:
   postgres:
     restart: unless-stopped
     hostname: postgres
-    image: $IMAGE_SOURCE/cloudbeaver-postgres:14
+    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-postgres:14
     volumes:
       - metadata_data:/var/lib/postgresql/data
       - ./cloudbeaver-db-init.sql:/docker-entrypoint-initdb.d/cb-init.sql
@@ -79,7 +79,7 @@ services:
 
   cloudbeaver-dc:
     restart: unless-stopped
-    image: $IMAGE_SOURCE/cloudbeaver-dc:${CLOUDBEAVER_VERSION_TAG}
+    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-dc:${CLOUDBEAVER_VERSION_TAG}
     hostname: cloudbeaver-dc
     environment:
       - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
@@ -111,9 +111,9 @@ services:
   cloudbeaver-te:
     restart: unless-stopped
     hostname: cloudbeaver-te
-    image: $IMAGE_SOURCE/cloudbeaver-te:${CLOUDBEAVER_VERSION_TAG}
+    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-te:${CLOUDBEAVER_VERSION_TAG}
     deploy:
-      replicas: ${REPLICA_COUNT_TE}
+      replicas: ${REPLICA_COUNT_TE:-1}
     volumes:
       - te_data:/opt/cloudbeaver/workspace
       - ./cert/public/:/opt/cloudbeaver/conf/certificates/
@@ -130,10 +130,10 @@ services:
 
   cloudbeaver-rm:
     restart: unless-stopped
-    image: $IMAGE_SOURCE/cloudbeaver-rm:${CLOUDBEAVER_VERSION_TAG}
+    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-rm:${CLOUDBEAVER_VERSION_TAG}
     hostname: cloudbeaver-rm
     deploy:
-      replicas: ${REPLICA_COUNT_RM}
+      replicas: ${REPLICA_COUNT_RM:-1}
     environment:
       - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
     volumes:
@@ -148,10 +148,10 @@ services:
 
   cloudbeaver-qm:
     restart: unless-stopped
-    image: $IMAGE_SOURCE/cloudbeaver-qm:${CLOUDBEAVER_VERSION_TAG}
+    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-qm:${CLOUDBEAVER_VERSION_TAG}
     hostname: cloudbeaver-qm
     deploy:
-      replicas: ${REPLICA_COUNT_QM}
+      replicas: ${REPLICA_COUNT_QM:-1}
     environment:
       - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
     volumes:
@@ -166,10 +166,10 @@ services:
 
   cloudbeaver-tm:
     restart: unless-stopped
-    image: $IMAGE_SOURCE/cloudbeaver-tm:${CLOUDBEAVER_VERSION_TAG}
+    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-tm:${CLOUDBEAVER_VERSION_TAG}
     hostname: cloudbeaver-tm
     deploy:
-      replicas: ${REPLICA_COUNT_TM}
+      replicas: ${REPLICA_COUNT_TM:-1}
     environment:
       - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
     volumes:
