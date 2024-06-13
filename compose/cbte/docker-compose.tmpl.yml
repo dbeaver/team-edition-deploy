@@ -2,12 +2,9 @@ version: "3"
 
 volumes:
   metadata_data: {}
-  te_data: {}
   dc_data: {}
   rm_data: {}
   qm_data: {}
-  tm_data: {}
-  kafka_data: {}
   nginx_ssl_data: {}
   nginx_conf_data: {}
 
@@ -45,8 +42,6 @@ services:
     hostname: kafka
     expose:
       - 9092
-    volumes:
-      - "kafka_data:/bitnami"
     environment:
       # KRaft settings
       - KAFKA_CFG_NODE_ID=0
@@ -115,7 +110,6 @@ services:
     deploy:
       replicas: ${REPLICA_COUNT_TE:-1}
     volumes:
-      - te_data:/opt/cloudbeaver/workspace
       - ./cert/public/:/opt/cloudbeaver/conf/certificates/
     environment:
       - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
@@ -173,7 +167,6 @@ services:
     environment:
       - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
     volumes:
-      - tm_data:/opt/task-manager/workspace
       - ./cert/public/:/opt/task-manager/conf/certificates/
     depends_on:
       - cloudbeaver-dc
