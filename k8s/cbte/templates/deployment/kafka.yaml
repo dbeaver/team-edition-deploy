@@ -46,13 +46,6 @@ spec:
           ports:
             - containerPort: 9092
           resources: {}
-          volumeMounts:
-            - mountPath: /bitnami
-              name: {{ .Release.Name }}-kafka-data
       hostname: kafka
       restartPolicy: Always
-      volumes:
-        - name: {{ .Release.Name }}-kafka-data
-          persistentVolumeClaim:
-            claimName: {{ .Release.Name }}-kafka-data
 status: {}

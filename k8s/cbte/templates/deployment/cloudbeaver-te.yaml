@@ -34,8 +34,6 @@ spec:
             - containerPort: 8978
           resources: {}
           volumeMounts:
-            - mountPath: /opt/cloudbeaver/workspace
-              name: {{ .Release.Name }}-te-data
             - name: cross-ssl-cert
               mountPath: /opt/cloudbeaver/conf/certificates
               readOnly: true
@@ -46,9 +44,6 @@ spec:
       hostname: cloudbeaver-te
       restartPolicy: Always
       volumes:
-        - name: {{ .Release.Name }}-te-data
-          persistentVolumeClaim:
-            claimName: {{ .Release.Name }}-te-data
         - name: cross-ssl-cert
           secret:
             secretName: {{ .Release.Name }}-crossservice-ssl

@@ -35,8 +35,6 @@ spec:
             - containerPort: 8973
           resources: {}
           volumeMounts:
-            - mountPath: /opt/task-manager/workspace
-              name: {{ .Release.Name }}-tm-data
             - name: cross-ssl-cert
               mountPath: /opt/task-manager/conf/certificates
               readOnly: true
@@ -47,9 +45,6 @@ spec:
       hostname: cloudbeaver-tm
       restartPolicy: Always
       volumes:
-        - name: {{ .Release.Name }}-tm-data
-          persistentVolumeClaim:
-            claimName: {{ .Release.Name }}-tm-data
         - name: cross-ssl-cert
           secret:
             secretName: {{ .Release.Name }}-crossservice-ssl
