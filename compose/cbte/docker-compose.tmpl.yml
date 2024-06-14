@@ -5,6 +5,7 @@ volumes:
   dc_data: {}
   rm_data: {}
   qm_data: {}
+  tm_data: {}
   nginx_ssl_data: {}
   nginx_conf_data: {}
 
@@ -167,6 +168,7 @@ services:
     environment:
       - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
     volumes:
+      - tm_data:/opt/task-manager/workspace
       - ./cert/public/:/opt/task-manager/conf/certificates/
     depends_on:
       - cloudbeaver-dc
