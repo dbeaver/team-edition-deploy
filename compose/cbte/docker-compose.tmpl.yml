@@ -4,7 +4,6 @@ volumes:
   metadata_data: {}
   dc_data: {}
   rm_data: {}
-  qm_data: {}
   tm_data: {}
   nginx_ssl_data: {}
   nginx_conf_data: {}
@@ -150,7 +149,6 @@ services:
     environment:
       - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
     volumes:
-      - qm_data:/opt/query-manager/workspace
       - ./cert/public/:/opt/query-manager/conf/certificates/
     depends_on:
       - cloudbeaver-dc

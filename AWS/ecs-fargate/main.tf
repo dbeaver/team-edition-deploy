@@ -93,22 +93,6 @@ resource "aws_efs_mount_target" "cloudbeaver_rm_data_mt" {
   security_groups = [aws_security_group.dbeaver_efs.id]
 }
 
-resource "aws_efs_file_system" "cloudbeaver_qm_data" {
-  creation_token = "cloudbeaver_qm_data"
-  performance_mode = "generalPurpose"
-  throughput_mode = "bursting"
-  encrypted = "false"
-  tags = {
-    Name = "DBeaver TE QM DATA EFS"
-  }
-}
-
-resource "aws_efs_mount_target" "cloudbeaver_qm_data_mt" {
-  count = length(aws_subnet.private_subnets)
-  file_system_id = aws_efs_file_system.cloudbeaver_qm_data.id
-  subnet_id      = aws_subnet.private_subnets[count.index].id
-  security_groups = [aws_security_group.dbeaver_efs.id]
-}
 
 resource "aws_efs_file_system" "cloudbeaver_tm_data" {
   creation_token = "cloudbeaver_tm_data"
@@ -492,22 +476,11 @@ resource "aws_ecs_task_definition" "dbeaver_qm" {
   cpu                      = 1024
   memory                   = 2048
   execution_role_arn       = aws_iam_role.ecsTaskExecutionRole.arn
-  volume {
-    name      = "cloudbeaver_qm_data"
-    efs_volume_configuration {
-      file_system_id = aws_efs_file_system.cloudbeaver_qm_data.id
-      root_directory = "/"
-    }
-  }
   container_definitions = jsonencode([{
     name        = "cloudbeaver-qm"
     image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/cloudbeaver-qm:${var.dbeaver_te_version}"
     essential   = true
     environment = var.cloudbeaver-shared-env
-    mountPoints = [{
-              "containerPath": "/opt/query-manager/workspace",
-              "sourceVolume": "cloudbeaver_qm_data"
-    }]
     logConfiguration = {
                 "logDriver": "awslogs"
                 "options": {

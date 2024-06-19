@@ -35,8 +35,6 @@ spec:
             - containerPort: 8972
           resources: {}
           volumeMounts:
-            - mountPath: /opt/query-manager/workspace
-              name: {{ .Release.Name }}-qm-data
             - name: cross-ssl-cert
               mountPath: /opt/query-manager/conf/certificates
               readOnly: true
@@ -47,9 +45,6 @@ spec:
       hostname: cloudbeaver-qm
       restartPolicy: Always
       volumes:
-        - name: {{ .Release.Name }}-qm-data
-          persistentVolumeClaim:
-            claimName: {{ .Release.Name }}-qm-data
         - name: cross-ssl-cert
           secret:
             secretName: {{ .Release.Name }}-crossservice-ssl
