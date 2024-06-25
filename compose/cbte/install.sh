@@ -15,6 +15,21 @@ if [ -f "/etc/systemd/system/dbeaver-team-server.service" ]; then
 		echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 		exit 1
 	fi
+else
+	INSTALL_DIR="$HOME/bin"
+	mkdir -p "$INSTALL_DIR"
+
+	cp "../../manager/dbeaver-te" "$INSTALL_DIR/"
+
+	chmod +x "$INSTALL_DIR/dbeaver-te"
+
+	if [[ ":$PATH:" != *":$INSTALL_DIR:"* ]]; then
+		echo "export PATH=\"$INSTALL_DIR:\$PATH\"" >> ~/.bashrc
+		source ~/.bashrc
+	fi
+
+	CURRENT_DIR=$(pwd)
+	sed -i "s|/opt/dbeaver-team-server/team-edition-deploy/compose/cbte/|$CURRENT_DIR/|g" "$INSTALL_DIR/dbeaver-te"
 fi
 
 ## Flag to replace postgres pass

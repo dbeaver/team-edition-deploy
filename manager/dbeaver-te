@@ -1,0 +1,378 @@
+#!/bin/bash
+
+set -e
+
+while read -r line
+do
+	[[ $line =~ ^#.* ]] && continue
+	[[ -z $line ]] && continue
+	export "$line"
+done < /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env
+
+ARG="$1"
+
+TEAM_EDITION_IMAGE="cloudbeaver-dc"
+TEAM_EDITION_TAG="$CLOUDBEAVER_VERSION_TAG"
+TEAM_EDITION_UPDATE_AVAILABLE=false
+case $(uname -m) in
+
+  "x86_64")
+    OS_ARCH="amd64"
+    ;;
+
+  "aarch64")
+    OS_ARCH="arm64"
+    ;;
+
+esac
+
+
+printHelp() {
+	cat << EOF
+
+DBeaver Corp.
+DBeaver Team Edition Server $TEAM_EDITION_TAG
+
+Usage: dbeaver-te [command]
+
+    commands:
+      - help       print this help
+      - stop       stop DBeaver Team Edition Server
+      - start      start DBeaver Team Edition Server
+      - configure  open .env file for configuration
+      - update <version>
+                   update DBeaver Team Edition Server to <version>
+                   <version> can't be lower than current version $TEAM_EDITION_TAG
+                   If version is not specified - tag \`latest\` will be used.
+      - update list
+                   print avialable versions for update
+      - createBackup create backup all cluster in tar archive
+      - restoreBackup <archive.tar.gz> 
+                   restor your backup in current cluster
+
+DBeaver TE server home directory: 
+    /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/
+EOF
+}
+
+
+checkInternetConnection() {
+	curl -s -o /dev/null  https://hub.docker.com
+	if [ ! $? -eq 0 ]
+	then
+	    echo "Can't update DBeaver Team Edition Server. No internet connection."
+	    exit 127
+	fi
+}
+
+getAvailableVersions() {
+	curl -s https://hub.docker.com/v2/repositories/dbeaver/"$TEAM_EDITION_IMAGE"/tags | jq '."results"[]["name"]'
+}
+
+configureenvfile()
+{
+	nano /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env
+}
+
+checkCloudBeaverUpdateVersion() {
+	checkInternetConnection
+	if [ -z "$1" ]
+	then
+		LATEST_DIGEST=$(curl -s https://hub.docker.com/v2/namespaces/dbeaver/repositories/"$TEAM_EDITION_IMAGE"/tags/latest | jq ".images[] | select(.architecture==\"${OS_ARCH}\" )| .digest ")
+		DOCKER_REG=$(curl  -s  https://hub.docker.com/v2/repositories/dbeaver/"$TEAM_EDITION_IMAGE"/tags)
+		LIST_TAGS=$(echo $DOCKER_REG | jq ".results[] | .name" | grep -E '[0-9]+\.[0-9]+\.[0-9]+' | sed 's/"//g')
+		while read -r line; do tags+=("$line"); done <<<"$LIST_TAGS"
+		for name in "${tags[@]}"; do
+			if [ $(echo $DOCKER_REG | jq ".results[] | select(.name==\"$name\") | .images[] | select(.architecture==\"$OS_ARCH\") | .digest") == $LATEST_DIGEST ] 
+			then 
+			echo "Latest version is $name"
+			LATEST_TAG=$name && break 
+			fi
+		done
+		if [ $TEAM_EDITION_TAG == $LATEST_TAG ]
+		then
+			echo "Same version already installed. Passing"
+			exit 0
+		fi
+		read -r -p "Do you want update to latest version ($LATEST_TAG) ? [y/N] " response
+		case "$response" in
+			[yY][eE][sS]|[yY])
+				updateCloudbeaver "$LATEST_TAG"
+				exit 0
+				;;
+			*)
+				exit 0
+				;;
+		esac
+	elif [ "$1" == "list" ]
+	then
+		getAvailableVersions
+		exit 0
+	elif [ "$1" == "latest" ]
+	then
+		LATEST_DIGEST=$(curl -s https://hub.docker.com/v2/namespaces/dbeaver/repositories/"$TEAM_EDITION_IMAGE"/tags/latest | jq ".images[] | select(.architecture==\"${OS_ARCH}\" )| .digest ")
+		DOCKER_REG=$(curl  -s  https://hub.docker.com/v2/repositories/dbeaver/"$TEAM_EDITION_IMAGE"/tags)
+		LIST_TAGS=$(echo $DOCKER_REG | jq ".results[] | .name" | grep -E '[0-9]+\.[0-9]+\.[0-9]+' | sed 's/"//g')
+		while read -r line; do tags+=("$line"); done <<<"$LIST_TAGS"
+		for name in "${tags[@]}"; do
+			if [ $(echo $DOCKER_REG | jq ".results[] | select(.name==\"$name\") | .images[] | select(.architecture==\"$OS_ARCH\") | .digest") == $LATEST_DIGEST ] 
+			then 
+			echo "Latest version is $name"
+			LATEST_TAG=$name && break 
+			fi
+		done
+		TEAM_EDITION_NEW_TAG=$LATEST_TAG
+		if [ $TEAM_EDITION_TAG == $TEAM_EDITION_NEW_TAG ]
+		then
+			echo "Same version already installed. Passing"
+			exit 0
+		fi
+		TEAM_EDITION_UPDATE_AVAILABLE=true
+	else
+		TEAM_EDITION_NEW_TAG="$1"
+		if [ $TEAM_EDITION_TAG == $TEAM_EDITION_NEW_TAG ]
+		then
+			echo "Same version already installed. Passing"
+			exit 0
+		fi
+
+		echo -n "Check version $TEAM_EDITION_NEW_TAG available..."
+		NEW_TAG_AVAILABLE_RESPONSE=$(curl -sI https://hub.docker.com/v2/repositories/dbeaver/"$TEAM_EDITION_IMAGE"/tags/"$TEAM_EDITION_NEW_TAG" 2>/dev/null | head -n 1|cut -d$' ' -f2)
+		if [ "$NEW_TAG_AVAILABLE_RESPONSE" == "200" ]
+		then
+			echo "...ok"
+			if [ $TEAM_EDITION_TAG == "ea" ]
+			then
+					TEAM_EDITION_TAG_int=99999
+			else
+					TEAM_EDITION_TAG_int=$(echo "$TEAM_EDITION_TAG" | sed 's/\.//g')
+			fi
+			if [ $TEAM_EDITION_NEW_TAG == "ea" ]
+			then
+					TEAM_EDITION_NEW_TAG_int=99999
+			else
+					TEAM_EDITION_NEW_TAG_int=$(echo "$TEAM_EDITION_NEW_TAG" | sed 's/\.//g')
+			fi
+
+			if [ $TEAM_EDITION_TAG_int -gt $TEAM_EDITION_NEW_TAG_int ]
+			then
+				echo "DBeaver team does not recommend to downgrading the DBeaver Team Edition Server due to the enhancements and fixes."
+				read -r -p "Are you sure to downgrade DBeaver Team Edition Server? [y/N] " response
+				case "$response" in
+				    [yY][eE][sS]|[yY])
+				        TEAM_EDITION_UPDATE_AVAILABLE=true
+				        ;;
+				    *)
+				        exit 0
+				        ;;
+				esac
+			fi
+		    TEAM_EDITION_UPDATE_AVAILABLE=true
+		else
+			echo -n "...ERROR"
+		    echo -e "\nCan't update CloudBeaver: wrong version <$TEAM_EDITION_NEW_TAG>"
+		    echo "Available version:"
+		    getAvailableVersions
+		    exit 127
+		fi
+	fi
+	echo "Updating to version: $TEAM_EDITION_NEW_TAG"
+}
+
+TEAM_EDITION_STATUS=false
+checkCloudBeaverStatus() {
+	CB_STATUS_RESULT=$(curl -Iq -k https://localhost 2>/dev/null | head -n 1|cut -d$' ' -f2)
+	if [ "$CB_STATUS_RESULT" == "200" ]
+	then
+		TEAM_EDITION_STATUS=true
+	fi
+}
+
+
+
+startCloudbeaver() {
+	checkCloudBeaverStatus
+	if [ "$TEAM_EDITION_STATUS" == false ]
+	then
+		docker compose -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml --env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env --project-directory /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ up -d 
+
+		TEAM_EDITION_STATUS_RETRY=300
+		until [ $TEAM_EDITION_STATUS_RETRY -lt 0 ]
+		do
+			checkCloudBeaverStatus
+			if [ "$TEAM_EDITION_STATUS" == true ]
+			then
+				echo -e "\nDBeaver Team Edition Server started."
+				break
+			fi
+			echo -n "."
+			let "TEAM_EDITION_STATUS_RETRY-=1"
+			sleep 1
+		done
+	else
+		echo "DBeaver Team Edition Server already up."
+	fi
+
+}
+
+stopCloudbeaver() {
+	checkCloudBeaverStatus
+	docker compose -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml down 
+	echo "DBeaver Team Edition Server stopped."
+}
+
+updateCloudbeaver() {
+	[ "$(docker ps -a | grep $TEAM_EDITION_IMAGE)" ]
+	checkCloudBeaverUpdateVersion "$1"
+	if [ "$TEAM_EDITION_UPDATE_AVAILABLE" == true ]
+	then
+		sed -i "s/CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_TAG/CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_NEW_TAG/g" /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env 
+		rm /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml
+		cd /opt/dbeaver-team-server/team-edition-deploy/ && git fetch &&  git checkout --force $TEAM_EDITION_NEW_TAG
+		sed -i 's|docker-compose pull|docker compose --env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env --project-directory /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ up -d --remove-orphans  |g' /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/install.sh
+		cd /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ && ./install.sh
+	fi
+}
+
+
+createBackup(){
+    PROJECT_NAME=$COMPOSE_PROJECT_NAME
+    BACKUP_PATH="./backup/$PROJECT_NAME"_$(date +%d%m%Y)
+    mkdir -p $BACKUP_PATH
+    services="cloudbeaver-dc cloudbeaver-qm cloudbeaver-rm cloudbeaver-te"
+
+    skip_db=false
+    include_certs=false
+
+    for arg in "$@"; do
+        case "$arg" in
+            --skip-db-service)
+                skip_db=true
+                ;;
+            --include-certs)
+                include_certs=true
+                ;;
+        esac
+    done
+
+    for SERVICE in $services; do
+        VOLUME_PATH=$(docker inspect -f '{{ range .Mounts }}{{ if eq .Type "volume" }}{{ println .Destination }}{{ end }}{{ end }}' $PROJECT_NAME-"$SERVICE"-1 | head -1)
+		docker compose exec -T $SERVICE tar -czf - -C ${VOLUME_PATH} . > $BACKUP_PATH/"$SERVICE".tar.gz
+
+    done
+
+    if [ "$skip_db" = false ]; then
+        PG_SERVICE="postgres"
+        DB_NAME="cloudbeaver"
+        docker exec $PROJECT_NAME-"$PG_SERVICE"-1 pg_dump $DB_NAME --username $CLOUDBEAVER_DB_USER --format c > $BACKUP_PATH/"$PG_SERVICE".backup
+    fi
+
+    if [ "$include_certs" = true ]; then
+        CERT_BASE_PATH=$(docker inspect -f '{{ range .Mounts }}{{ if and (eq .Type "bind") (eq .Destination "/opt/cloudbeaver/conf/certificates") }}{{ .Source }}{{ end }}{{ end }}' $PROJECT_NAME-cloudbeaver-te-1)
+        CERT_PATH="${CERT_BASE_PATH%/*}" 
+        tar -czf $BACKUP_PATH/"cert.tar.gz" -C "$CERT_PATH" .
+    fi
+
+    tar -czf "$BACKUP_PATH".tar.gz $BACKUP_PATH
+}
+
+restoreBackup(){
+    ARCHIVE_PATH=$1 
+	PROJECT_NAME=$COMPOSE_PROJECT_NAME
+    TEMP_DIR="./temp_restore"
+    mkdir -p $TEMP_DIR
+
+    tar -xzvf $ARCHIVE_PATH -C $TEMP_DIR
+
+    ARCHIVE_NAME=$(basename $ARCHIVE_PATH)
+    BACKUP_FOLDER_NAME="${ARCHIVE_NAME%.tar.gz}"
+    BACKUP_DIR="$TEMP_DIR/backup/$BACKUP_FOLDER_NAME"
+    ARCHIVE_DATE=$(echo $ARCHIVE_NAME | grep -o '[0-9]\{8\}')
+
+    services="cloudbeaver-dc cloudbeaver-qm cloudbeaver-rm cloudbeaver-te"
+    for SERVICE in $services; do
+        BACKUP_ARCHIVE_PATH="$BACKUP_DIR/${SERVICE}.tar.gz"
+        VOLUME_PATH=$(docker inspect -f '{{ range .Mounts }}{{ if eq .Type "volume" }}{{ println .Destination }}{{ end }}{{ end }}' $PROJECT_NAME-"$SERVICE"-1 | head -1)
+        if [ -f "$BACKUP_ARCHIVE_PATH" ]; then
+            echo "Restoring $SERVICE..."
+			docker cp $BACKUP_ARCHIVE_PATH $PROJECT_NAME-"$SERVICE"-1:/tmp/${SERVICE}.tar.gz
+			docker compose exec -T $SERVICE tar -xzvf /tmp/${SERVICE}.tar.gz -C $VOLUME_PATH
+			docker compose exec -T $SERVICE rm /tmp/${SERVICE}.tar.gz
+        else
+            echo "Backup archive $BACKUP_ARCHIVE_PATH not found."
+        fi
+    done
+
+    DB_BACKUP="$BACKUP_DIR/postgres.backup"
+    if [ -f "$DB_BACKUP" ]; then
+        echo "Restoring PostgreSQL database..."
+        docker exec -i $PROJECT_NAME-"postgres"-1 pg_restore --dbname cloudbeaver --username $CLOUDBEAVER_DB_USER --clean --if-exists < "$DB_BACKUP"
+    else
+        echo "PostgreSQL backup file not found."
+    fi
+
+    CERT_BASE_PATH=$(docker inspect -f '{{ range .Mounts }}{{ if and (eq .Type "bind") (eq .Destination "/opt/cloudbeaver/conf/certificates") }}{{ .Source }}{{ end }}{{ end }}' $PROJECT_NAME-cloudbeaver-te-1)
+    CERT_PATH="${CERT_BASE_PATH%/*}"  
+    CERT_ARCHIVE_PATH="$BACKUP_DIR/cert.tar.gz"
+    if [ -f "$CERT_ARCHIVE_PATH" ]; then
+        echo "Restoring certificates to $CERT_PATH"
+        tar -xzvf $CERT_ARCHIVE_PATH -C $CERT_PATH
+    else
+        echo "Certificates backup $CERT_ARCHIVE_PATH not found."
+    fi
+
+    rm -rf $TEMP_DIR
+	docker compose -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml down 
+	docker compose -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml --env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env --project-directory /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ up -d 
+}
+
+case $1 in
+
+  "help")
+    printHelp
+    ;;
+
+  "start")
+		docker ps -a -q \
+			--filter "name=cbte-cloudbeaver-tm-1"  \
+			--filter "status=exited" | \
+			grep -q . \
+			&& docker rm -f "cbte-cloudbeaver-tm-1"
+    startCloudbeaver
+    ;;
+
+  "stop")
+    stopCloudbeaver > /dev/null
+    ;;
+
+  "project")
+    cdtoprojectdir
+    ;;
+
+  "configure")
+    configureenvfile
+    ;;
+
+  "update")
+    updateCloudbeaver "$2"
+    ;;
+
+  "createBackup")
+    createBackup "$2" "$3"
+    ;;
+
+  "restoreBackup")
+    restoreBackup "$2"
+    ;;
+
+  *)
+	if [ -z "$1" ]
+	  then
+	  	printHelp
+	  	echo ""
+	    echo "---No argument supplied---"
+	else
+		printHelp
+	fi
+    ;;
+esac
