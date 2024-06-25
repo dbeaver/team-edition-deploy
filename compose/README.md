@@ -125,6 +125,18 @@ REPLICA_COUNT_RM=1
 IMAGE_SOURCE=dbeaver
 ```
 
+##### Step 3.
+
+Execute the command:
+
+`docker volume rm dbeaver_nginx_conf_data` 
+
+##### Step 4.
+
+1. Stop your cluster with command `docker-compose down` in directory `team-edition-deploy/compose/cbte` or `dbeaver-te stop` for preconfigured AMI
+2. Run the installation script `./install.sh`
+3. Start your cluster with command or `docker-compose up -d` in directory `team-edition-deploy/compose/cbte` or `dbeaver-te start` for preconfigured AMI.
+
 ### Custome image source
 
 To configure the image source into which you cloned our images for the cluster, follow these steps:
