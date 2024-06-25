@@ -97,8 +97,11 @@ do
 	export "$line"
 done < .env
 
-##
-
+# Set COMPOSE_PROJECT_NAME if not exist
+if [ -z "$COMPOSE_PROJECT_NAME" ]; then
+  CURRENT_DIR=$(basename "$PWD")
+  export COMPOSE_PROJECT_NAME=$CURRENT_DIR
+fi
 
 
 #### Untemplate compose and configure endpoints to load balancer
