@@ -138,16 +138,27 @@ CLOUDBEAVER_VERSION_TAG=24.1.0
 3. Start your cluster with command or `docker-compose up -d` in directory `team-edition-deploy/compose/cbte` or `dbeaver-te start` for preconfigured AMI.
 
 
-#### Bugtracking 
+#### Bug fixes 
 
-If you experience errors when updating your cluster, follow these steps:
+If you experience errors when updating your cluster, like that:
+```
+Error response from daemon: Could not find the file /etc/nginx/product-base in container temporary
+```
 
-1. Remove nginx config volume
+Follow the next steps:
+
+
+1. Stop your cluster with command `docker-compose down` in directory `team-edition-deploy/compose/cbte` or `dbeaver-te stop` for preconfigured AMI
+
+2. Remove nginx config volume
 ```
 docker volume rm cbte_nginx_conf_data
 ```
+3. Make sure you have given enough permission to your certificates so that they can be read and copied.
 
-2. Go back to [Step 3](#step-3)
+4. Run the installation script `./install.sh`
+
+5. Start your cluster with command or `docker-compose up -d` in directory `team-edition-deploy/compose/cbte` or `dbeaver-te start` for preconfigured AMI.
 
 
 ### Custome image source
