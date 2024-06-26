@@ -125,17 +125,30 @@ REPLICA_COUNT_RM=1
 IMAGE_SOURCE=dbeaver
 ```
 
+and change version tag to
+
+```
+CLOUDBEAVER_VERSION_TAG=24.1.0
+```
+
 ##### Step 3.
-
-Execute the command:
-
-`docker volume rm dbeaver_nginx_conf_data` 
-
-##### Step 4.
 
 1. Stop your cluster with command `docker-compose down` in directory `team-edition-deploy/compose/cbte` or `dbeaver-te stop` for preconfigured AMI
 2. Run the installation script `./install.sh`
 3. Start your cluster with command or `docker-compose up -d` in directory `team-edition-deploy/compose/cbte` or `dbeaver-te start` for preconfigured AMI.
+
+
+#### Bugtracking 
+
+If you experience errors when updating your cluster, follow these steps:
+
+1. Remove nginx config volume
+```
+docker volume rm cbte_nginx_conf_data
+```
+
+2. Go back to [Step 3](#step-3)
+
 
 ### Custome image source
 
