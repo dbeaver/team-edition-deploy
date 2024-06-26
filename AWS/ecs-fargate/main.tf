@@ -94,6 +94,23 @@ resource "aws_efs_mount_target" "cloudbeaver_rm_data_mt" {
 }
 
 
+resource "aws_efs_file_system" "cloudbeaver_tm_data" {
+  creation_token = "cloudbeaver_tm_data"
+  performance_mode = "generalPurpose"
+  throughput_mode = "bursting"
+  encrypted = "false"
+  tags = {
+    Name = "DBeaver TE TM DATA EFS"
+  }
+}
+
+resource "aws_efs_mount_target" "cloudbeaver_tm_data_mt" {
+  count = length(aws_subnet.private_subnets)
+  file_system_id = aws_efs_file_system.cloudbeaver_tm_data.id
+  subnet_id      = aws_subnet.private_subnets[count.index].id
+  security_groups = [aws_security_group.dbeaver_efs.id]
+}
+
 resource "aws_efs_file_system" "cloudbeaver_dc_data" {
   creation_token = "cloudbeaver_dc_data"
   performance_mode = "generalPurpose"
@@ -459,7 +476,6 @@ resource "aws_ecs_task_definition" "dbeaver_qm" {
   cpu                      = 1024
   memory                   = 2048
   execution_role_arn       = aws_iam_role.ecsTaskExecutionRole.arn
-
   container_definitions = jsonencode([{
     name        = "cloudbeaver-qm"
     image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/cloudbeaver-qm:${var.dbeaver_te_version}"
@@ -537,11 +553,22 @@ resource "aws_ecs_task_definition" "dbeaver_tm" {
   cpu                      = 2048
   memory                   = 4096
   execution_role_arn       = aws_iam_role.ecsTaskExecutionRole.arn
+  volume {
+    name      = "cloudbeaver_tm_data"
+    efs_volume_configuration {
+      file_system_id = aws_efs_file_system.cloudbeaver_tm_data.id
+      root_directory = "/"
+    }
+  }
   container_definitions = jsonencode([{
     name        = "cloudbeaver-tm"
     image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/cloudbeaver-tm:${var.dbeaver_te_version}"
     essential   = true
     environment = var.cloudbeaver-shared-env
+    mountPoints = [{
+              "containerPath": "/opt/task-manager/workspace",
+              "sourceVolume": "cloudbeaver_tm_data"
+    }]
     logConfiguration = {
                 "logDriver": "awslogs"
                 "options": {
