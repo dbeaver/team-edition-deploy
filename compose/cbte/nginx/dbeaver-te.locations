@@ -15,24 +15,7 @@ location ~ /tm(/|$) {
 location /api/ws {
     set $target ''; 
 
-    access_by_lua_block {
-        local cookie = ngx.var["cookie_sessionId"]
-        local servers = {
-            te1 = "http://cloudbeaver-te:8978"
-        }
-
-        if servers[cookie] then
-            ngx.var.target = servers[cookie]
-        else
-            local keys = {}
-            for key, _ in pairs(servers) do
-                table.insert(keys, key)
-            end
-            local key = keys[math.random(#keys)]
-            ngx.var.target = servers[key]
-            ngx.header["Set-Cookie"] = "sessionId=" .. key .. "; Path=/; HttpOnly"
-        end
-    }
+    access_by_lua_file /etc/nginx/lua/loadbalancer.lua;
 
     proxy_pass $target;
     proxy_http_version 1.1;
@@ -43,23 +26,7 @@ location /api/ws {
 location / {
     set $target ''; 
 
-    access_by_lua_block {
-        local cookie = ngx.var["cookie_sessionId"]
-        local servers = {
-            te1 = "http://cloudbeaver-te:8978"
-        }
+    access_by_lua_file /etc/nginx/lua/loadbalancer.lua;
 
-        if servers[cookie] then
-            ngx.var.target = servers[cookie]
-        else
-            local keys = {}
-            for key, _ in pairs(servers) do
-                table.insert(keys, key)
-            end
-            local key = keys[math.random(#keys)]
-            ngx.var.target = servers[key]
-            ngx.header["Set-Cookie"] = "sessionId=" .. key .. "; Path=/; HttpOnly"
-        end
-    }
     proxy_pass $target;
 }
