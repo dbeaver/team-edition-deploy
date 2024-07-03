@@ -22,12 +22,8 @@ services:
     ports:
       - 80:80
       - 443:443
-    environment:
-      - CLOUDBEAVER_DOMAIN=${CLOUDBEAVER_DOMAIN}
-      - PRODUCT_TYPE=te
-      - REPLICA_COUNT_TE=${REPLICA_COUNT_TE}
-      - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME}
-      - SERVICE_PORT=8978
+    env_file:
+      - path: .env  
     networks:
       - cloudbeaver-te-public-net
       - cloudbeaver-te-private-net
