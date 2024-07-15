@@ -19,9 +19,8 @@ services:
     ports:
       - 80:80
       - 443:443
-    environment:
-      - CLOUDBEAVER_DOMAIN=${CLOUDBEAVER_DOMAIN}
-      - PRODUCT_TYPE=te
+    env_file:
+      - path: .env  
     networks:
       - cloudbeaver-te-public-net
       - cloudbeaver-te-private-net
@@ -114,7 +113,7 @@ services:
     environment:
       - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
     expose:
-      - 8978
+      - ${CLOUDBEAVER_SERVICE_PORT:-8978}
     depends_on:
       - cloudbeaver-dc
       - cloudbeaver-rm
