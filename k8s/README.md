@@ -46,6 +46,52 @@ You need additional configuration changes
           #     fsGroupChangePolicy: "Always"
     ```
 
+### AWS ALB configuration  
+
+Install `AWS CLI`: If `AWS CLI` is not installed yet, install it by following the instructions on the [official AWS CLI website](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html).  
+
+Install `eksctl`: `eksctl` is a command-line utility for creating and managing EKS clusters. Install eksctl by following the instructions on the [official eksctl website](https://eksctl.io/installation/).  
+
+
+1. OIDC Provider Association:  
+
+```
+eksctl utils associate-iam-oidc-provider --region=<your-region> --cluster=<your-cluster-name> --approve
+```
+
+2. Create IAM role and link policy:  
+
+Create policy IAM:  
+```
+curl -o iam_policy.json https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/main/docs/install/iam_policy.json
+aws iam create-policy --policy-name AWSLoadBalancerControllerIAMPolicy --policy-document file://iam_policy.json
+```
+
+Create IAM role and link policy:  
+```
+eksctl create iamserviceaccount \
+  --cluster <your-cluster-name> \
+  --namespace kube-system \
+  --name aws-load-balancer-controller \
+  --attach-policy-arn arn:aws:iam::<your-account-id>:policy/AWSLoadBalancerControllerIAMPolicy \
+  --approve
+```
+
+3. Installing AWS Load Balancer Controller using Helm:  
+
+```
+helm repo add eks https://aws.github.io/eks-charts
+helm repo update
+
+helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
+  -n kube-system \
+  --set clusterName=<your-cluster-name> \
+  --set serviceAccount.create=false \
+  --set region=<your-region> \
+  --set vpcId=<your-vpc-id> \
+  --set serviceAccount.name=aws-load-balancer-controller
+```
+
 ### Digital Ocean proxy configuration
 
 Edit ingress controller with:

@@ -10,7 +10,7 @@ cloudbeaver:
   # pullCredsName: regcred
 
 # Ingress Values
-# Supported ingress controllers: nginx, haproxy
+# Supported ingress controllers: aws-alb, nginx, haproxy
 ingressController: nginx
 # Domain name for ingress endpoint
 cloudbeaverBaseDomain: "cloudbeaver.local"
