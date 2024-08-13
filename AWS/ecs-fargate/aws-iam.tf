@@ -76,8 +76,8 @@ resource "aws_iam_role_policy_attachment" "ecsTaskExecutionRole_policy" {
 }
 
 resource "aws_iam_role_policy_attachment" "ecs_mount_efs_policy_attachment" {
-  role       = aws_iam_role.ecsTaskExecutionRole.name
-  policy_arn = aws_iam_policy.ecs_mount_efs_policy.arn
+  role       = "${aws_iam_role.ecsTaskExecutionRole.name}"
+  policy_arn = "${aws_iam_policy.ecs_mount_efs_policy.arn}"
 }
 resource "aws_iam_role_policy_attachment" "logs_policy_attachment" {
   role       = "${aws_iam_role.ecsTaskExecutionRole.name}"
