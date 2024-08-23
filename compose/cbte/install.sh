@@ -67,7 +67,6 @@ fi
 
 #### Untemplate compose and configure endpoints to load balancer
 # create empty compose yml file 
-touch docker-compose.yml
 docker run --rm \
 	-v $(pwd)/docker-compose.yml:/docker-compose.yml \
 	-v $(pwd)/helper/compose-config-editor.py:/compose-config-editor.py \
