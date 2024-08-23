@@ -230,7 +230,7 @@ resource "aws_ecs_task_definition" "kafka" {
 
   container_definitions = jsonencode([{
     name        = "kafka"
-    image       = "dbeaver/cloudbeaver-kafka:3.2"
+    image       = "dbeaver/cloudbeaver-kafka:3.8"
     essential   = true
     environment = var.cloudbeaver-kafka-env
     logConfiguration = {
