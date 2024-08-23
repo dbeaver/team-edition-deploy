@@ -37,7 +37,7 @@ services:
 
   kafka:
     restart: unless-stopped
-    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-kafka:3.8.0
+    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-kafka:3.8
     hostname: kafka
     expose:
       - 9092
