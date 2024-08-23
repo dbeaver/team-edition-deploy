@@ -1,6 +1,6 @@
-compose/cbte/cert
+compose/cbte/cert/*/*.key
+compose/cbte/cert/*/*.crt
 compose/cbte/.env
-compose/cbte/docker-compose.yml
 compose/cbte/nginx/ssl
 k8s/cbte/values.yaml
 

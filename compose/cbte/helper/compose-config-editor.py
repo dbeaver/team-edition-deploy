@@ -10,9 +10,8 @@ class IndentDumper(yaml.Dumper):
 
 
 def composeGenerator():
-    cb_scheme = os.environ.get('CLOUDBEAVER_SCHEME', "http")
     
-    with open('/docker-compose.tmpl.yml') as file:
+    with open('/docker-compose.yml') as file:
         document = yaml.full_load(file)
     
     use_external_db = os.environ.get('USE_EXTERNAL_DB', "false")
@@ -53,29 +52,6 @@ def composeGenerator():
         documents = yaml.dump(document, dcFile, Dumper=IndentDumper, sort_keys=False)
     dcFile.close()
 
-def locationsGenerator():
-    compose_project_name = os.environ.get("COMPOSE_PROJECT_NAME", "cbte")
-    replica_count_te = int(os.environ.get("REPLICA_COUNT_TE", 1))
-
-    if replica_count_te > 1:
-        servers_config = "{\n            " + ",\n            ".join(
-            f'te{i} = "http://{compose_project_name}-cloudbeaver-te-{i}:8978"' for i in range(1, replica_count_te + 1)
-        ) + "\n        }"
-
-        with open("dbeaver-te.locations", "r") as readLocationsFile:
-            default_content = readLocationsFile.read()
-        readLocationsFile.close()
-        new_content = re.sub(r'local servers = {[^}]*}', f'local servers = {servers_config}', default_content)
-
-        with open("dbeaver-te.locations", "w") as writeLocationsFile:
-            writeLocationsFile.write(new_content)
-        writeLocationsFile.close()
-    elif replica_count_te <= 0:
-        print("ERROR: Replica cannot be less than 1")
-        sys.exit(1)
-
-
 if __name__ == '__main__':
-    locationsGenerator()
     if len(sys.argv) <= 1 or sys.argv[1] != "--only-locations":
         composeGenerator()
