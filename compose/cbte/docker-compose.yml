@@ -17,6 +17,10 @@ services:
       - 443:443
     environment:
       - PRODUCT_TYPE=te
+      - REPLICA_COUNT_TE=${REPLICA_COUNT_TE}
+      - REPLICA_COUNT_TM=${REPLICA_COUNT_TM}
+      - REPLICA_COUNT_QM=${REPLICA_COUNT_QM}
+      - REPLICA_COUNT_RM=${REPLICA_COUNT_RM}
     networks:
       - cloudbeaver-te-private-net
     volumes:
