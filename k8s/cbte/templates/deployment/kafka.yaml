@@ -21,7 +21,7 @@ spec:
         runAsUser: 1001
         fsGroup: 1001
       containers:
-        - image: dbeaver/cloudbeaver-kafka:3.2
+        - image: dbeaver/cloudbeaver-kafka:3.8
           imagePullPolicy: "IfNotPresent"
           name: kafka
           env:
