@@ -20,6 +20,7 @@ services:
     networks:
       - cloudbeaver-te-private-net
     volumes:
+      - ./nginx/dbeaver-te.locations:/etc/nginx/conf.d/dbeaver-te.locations
       - nginx_conf_data:/etc/nginx/product-conf/
       - nginx_ssl_data:/etc/nginx/ssl/
     depends_on:
@@ -84,6 +85,7 @@ services:
     volumes:
       - dc_data:/opt/domain-controller/workspace
       - ./cert/private/:/opt/domain-controller/conf/certificates/
+      - ./cert/public/:/opt/domain-controller/conf/certificates/public/
     expose:
       - 8970
     networks:
@@ -95,7 +97,7 @@ services:
     deploy:
       replicas: ${REPLICA_COUNT_TE:-1}
     volumes:
-      - ./cert/:/opt/cloudbeaver/conf/certificates/
+      - ./cert/public/:/opt/cloudbeaver/conf/certificates/
     environment:
       - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
     expose:
