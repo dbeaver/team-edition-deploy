@@ -11,6 +11,8 @@ The cluster supports HTTP and HTTPS. By default, it contains a pre-configured SS
 4. The system will guide you in setting up certificates.
 5. Point your domain to the IP address of your server.
 
+Learn more in [Domain manager documentation](https://dbeaver.com/docs/cloudbeaver/Domain-Manager/)
+
 ### How to generate domain with Team Edition domain service
 
 1. Open your Team Edition instance.
@@ -18,3 +20,5 @@ The cluster supports HTTP and HTTPS. By default, it contains a pre-configured SS
 3. Choose **Generate automatically**.
 4. The system will guide you through obtaining a domain and setting up certificates.
 5. After receiving the domain and setting up the certificates, you will be automatically redirected to the new domain.
+
+Learn more in [Domain manager documentation](https://dbeaver.com/docs/cloudbeaver/Domain-Manager/)
