@@ -229,8 +229,7 @@ updateCloudbeaver() {
 		sed -i "s/CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_TAG/CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_NEW_TAG/g" /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env 
 		rm /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml
 		cd /opt/dbeaver-team-server/team-edition-deploy/ && git fetch &&  git checkout --force $TEAM_EDITION_NEW_TAG
-		sed -i 's|docker-compose pull|docker compose --env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env --project-directory /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ up -d --remove-orphans  |g' /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/install.sh
-		cd /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ && ./install.sh
+		docker compose -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml --env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env --project-directory /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ up -d --remove-orphans
 	fi
 }
 

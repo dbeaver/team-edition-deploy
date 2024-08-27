@@ -70,14 +70,12 @@ If you want to use another database on your side, you can do it according to the
    - Set the `CLOUDBEAVER_DOMAIN` property to the desired domain name.  
    - Create DNS records for `CLOUDBEAVER_DOMAIN`.  
 3. [Configure SSL](../SSL/README.md#ssl-certificate-configuration)
-4. Prepare Team Edition environment:
-   - Run `./install.sh`, it prepares your docker-compose file, and creates [Encryption keys](#dc-keys) for internal services.
-5. Start the cluster:
+4. Start the cluster:
    - `docker-compose up -d` or `docker compose up -d`
 
 ### Encryption keys
 
-After running `install.sh`, Encryption keys internal for services will be generated and put in the `team-edition-deploy/compose/cbte/cert`.
+After running `docker compose up -d`, Encryption keys for internal services will be generated and put in the `team-edition-deploy/compose/cbte/cert`.
 
 **Important:** Encryption keys are used to decrypt user data. If you lose them, all data in your cluster will be unavailable. Please backup them and keep in a secure storage.
 
@@ -102,6 +100,19 @@ To ensure the safety and integrity of your data, it is recommended to create a b
 2. Change value of `CLOUDBEAVER_VERSION_TAG` in `.env` with a preferred version. Go to next step if tag `latest` is set.
 3. Pull new docker images: `docker-compose pull` or `docker compose pull`  
 4. Restart cluster: `docker-compose up -d` or `docker compose up -d`
+
+#### Team Edition manager
+
+This repository includes a script manager that facilitates managing various tasks when using the Team Edition cluster. This is optional, you can use the usual docker compose commands instead.
+
+Manager installation:
+
+1. Navigate to the `team-edition-deploy/manager` directory.
+2. Run the `./install-manager.sh` script.
+
+Now you can use `dbeaver-te` command to start manager.
+
+For detailed instructions on how to use the script manager, refer to [manager doucmentation](../manager/README.md).
 
 #### Version update procedure to 24.1.0
 
@@ -133,12 +144,15 @@ CLOUDBEAVER_VERSION_TAG=24.1.0
 
 ##### Step 3.
 
-1. Stop your cluster with command `docker-compose down` in directory `team-edition-deploy/compose/cbte` or `dbeaver-te stop` for preconfigured AMI
-2. Run the installation script `./install.sh`
-3. Start your cluster with command or `docker-compose up -d` in directory `team-edition-deploy/compose/cbte` or `dbeaver-te start` for preconfigured AMI.
+1. Stop your cluster:
+- run `dbeaver-te stop` if you use script manager
+- or navigate to the directory `team-edition-deploy/compose/cbte` and run `docker-compose down`
+2. Start your cluster:
+- run `dbeaver-te start` if you use script manager
+- or navigate to the directory `team-edition-deploy/compose/cbte` and run `docker-compose up -d`  
 
 
-#### Bug fixes 
+#### Bug fixes
 
 If you experience errors when updating your cluster, like that:
 ```
@@ -148,7 +162,9 @@ Error response from daemon: Could not find the file /etc/nginx/product-base in c
 Follow the next steps:
 
 
-1. Stop your cluster with command `docker-compose down` in directory `team-edition-deploy/compose/cbte` or `dbeaver-te stop` for preconfigured AMI
+1. Stop your cluster:
+- run `dbeaver-te stop` if you use script manager
+- or navigate to the directory `team-edition-deploy/compose/cbte` and run `docker-compose down`
 
 2. Remove nginx config volume
 ```
@@ -156,16 +172,16 @@ docker volume rm cbte_nginx_conf_data
 ```
 3. Make sure you have given enough permission to your certificates so that they can be read and copied.
 
-4. Run the installation script `./install.sh`
-
-5. Start your cluster with command or `docker-compose up -d` in directory `team-edition-deploy/compose/cbte` or `dbeaver-te start` for preconfigured AMI.
+4. Start your cluster:
+- run `dbeaver-te start` if you use script manager
+- or navigate to the directory `team-edition-deploy/compose/cbte` and run `docker-compose up -d`
 
 
 ### Custome image source
 
 To configure the image source into which you cloned our images for the cluster, follow these steps:
 
-- Open the `.env` file located at `team-edition-deploy/compose/cbte/` or use the command `dbeaver-te configure` for a preconfigured AMI.
+- Open the `.env` file located at `team-edition-deploy/compose/cbte/` or use the command `dbeaver-te configure`
 - Change the value of the `IMAGE_SOURCE` variable to the address of your registry. By default, it is set to `dbeaver`, which points to our DockerHub.
 
 ```
@@ -176,7 +192,7 @@ IMAGE_SOURCE=dbeaver
 
 To scale your service within the cluster, follow these steps:
 
-- Open the `.env` file located at `team-edition-deploy/compose/cbte/` or use command `dbeaver-te configure` for preconfigured AMI.
+- Open the `.env` file located at `team-edition-deploy/compose/cbte/` or use command `dbeaver-te configure`
 - Modify the following environment variables to set the desired number of instances for each service:
 
 ```
