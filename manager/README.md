@@ -4,7 +4,7 @@
 
 ### Instalation
 
-`dbeaver-te` will be installed automatically when using `install.sh` script
+`dbeaver-te` will be installed automatically when using `install-manager.sh` script
 
 ## How to use manager
 
