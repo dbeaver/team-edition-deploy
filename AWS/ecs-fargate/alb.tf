@@ -141,6 +141,11 @@ resource "aws_lb_target_group" "dbeaver_te" {
     enabled = true
     path    = "/"
   }
+  stickiness {
+    enabled = true
+    type    = "lb_cookie" 
+    cookie_duration = 86400
+  }
 }
 
 resource "aws_lb_target_group" "dbeaver_qm" {
