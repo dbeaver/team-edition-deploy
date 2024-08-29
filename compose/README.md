@@ -23,7 +23,7 @@ By default, Team Edition stores all data in an internal PostgreSQL database. If 
 
 If you want to use another database on your side, you can do it according to these instructions.
 
-1. Go to the `compose/cbte` folder, and open `.env.example` file.
+1. Navigate to `team-edition-deploy/compose/cbte` folder, and open `.env.example` file.
 2. Change `USE_EXTERNAL_DB` to `true` value.
 3. Change `CLOUDBEAVER_DB_DRIVER` to driver for a database you want to use, for example: `postgres-jdbc`/`mysql8`/`oracle_thin`
 4. Enter the authentication data for your database in the fields `CLOUDBEAVER_DB_URL` `CLOUDBEAVER_DB_USER` `CLOUDBEAVER_DB_PASSWORD`
@@ -62,8 +62,8 @@ If you want to use another database on your side, you can do it according to the
 ### Configuring and starting Team Edition cluster
 
 1. Open configuration file:
-    - `cd compose/cbte`
-    - `cp .env.example .env`
+    - Navigate to `team-edition-deploy/compose/cbte`
+    - Copy `.env.example` to `.env`
     - Edit `.env` file to set configuration properties
 2. Configure domain name (optional):
    - You may skip this step. In this case, the cluster will be configured for `localhost`.  
@@ -96,7 +96,7 @@ To ensure the safety and integrity of your data, it is recommended to create a b
 
 ### Version update procedure
 
-1. `cd compose/cbte`
+1. Navigate to `team-edition-deploy/compose/cbte`
 2. Change value of `CLOUDBEAVER_VERSION_TAG` in `.env` with a preferred version. Go to next step if tag `latest` is set.
 3. Pull new docker images: `docker-compose pull` or `docker compose pull`  
 4. Restart cluster: `docker-compose up -d` or `docker compose up -d`
