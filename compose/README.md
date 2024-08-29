@@ -96,7 +96,7 @@ To ensure the safety and integrity of your data, it is recommended to create a b
 
 ### Version update procedure
 
-1. `cd compose/cbte`
+1. Navigate to `team-edition-deploy/compose/cbte`
 2. Change value of `CLOUDBEAVER_VERSION_TAG` in `.env` with a preferred version. Go to next step if tag `latest` is set.
 3. Pull new docker images: `docker-compose pull` or `docker compose pull`  
 4. Restart cluster: `docker-compose up -d` or `docker compose up -d`
