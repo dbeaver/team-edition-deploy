@@ -26,7 +26,6 @@ services:
     networks:
       - cloudbeaver-te-private-net
     volumes:
-      - ./nginx/dbeaver-te.locations:/etc/nginx/conf.d/dbeaver-te.locations
       - nginx_conf_data:/etc/nginx/product-conf/
       - nginx_ssl_data:/etc/nginx/ssl/
     depends_on:
