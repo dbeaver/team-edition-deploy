@@ -22,6 +22,12 @@ variable "alb_certificate_Identifier" {
   default = ""
 }
 
+variable "environment" {
+  description = "The environment name (e.g., dev, test, prod)"
+  type        = string
+  default     = "prod"
+}
+
 variable "rds_db" {
   description = "A boolean flag to select Amazon RDS as internal database"
   type        = bool
