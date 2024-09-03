@@ -1,16 +1,15 @@
-
 ################################################################################
 # ALB
 ################################################################################
 
 resource "aws_lb" "dbeaver_te_lb" {
-  name               = "DBeaverTE-ALB"
+  name               = "${var.environment}-DBeaverTE-ALB"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.dbeaver_alb.id]
   subnets            = aws_subnet.public_subnets[*].id
   tags = {
-    env = "dev"
+    env = var.environment
   }
 }
 
@@ -32,6 +31,7 @@ resource "aws_lb_listener" "dbeaver-te-listener" {
     }
   }
 }
+
 # This resources must be edited if HTTPS not used
 resource "aws_lb_listener" "dbeaver-te-listener-https" {
 
@@ -114,7 +114,7 @@ resource "aws_lb_listener_rule" "forward_to_service_uri_tm" {
 
 
 resource "aws_lb_target_group" "dbeaver_dc" {
-  name        = "DBeaverTE-dc"
+  name        = "${var.environment}-DBeaverTE-dc"
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
@@ -129,7 +129,7 @@ resource "aws_lb_target_group" "dbeaver_dc" {
 }
 
 resource "aws_lb_target_group" "dbeaver_te" {
-  name        = "DBeaverTE"
+  name        = "${var.environment}-DBeaverTE"
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
@@ -149,7 +149,7 @@ resource "aws_lb_target_group" "dbeaver_te" {
 }
 
 resource "aws_lb_target_group" "dbeaver_qm" {
-  name        = "DBeaverTE-qm"
+  name        = "${var.environment}-DBeaverTE-qm"
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
@@ -164,7 +164,7 @@ resource "aws_lb_target_group" "dbeaver_qm" {
 }
 
 resource "aws_lb_target_group" "dbeaver_rm" {
-  name        = "DBeaverTE-rm"
+  name        = "${var.environment}-DBeaverTE-rm"
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
@@ -179,7 +179,7 @@ resource "aws_lb_target_group" "dbeaver_rm" {
 }
 
 resource "aws_lb_target_group" "dbeaver_tm" {
-  name        = "DBeaverTE-tm"
+  name        = "${var.environment}-DBeaverTE-tm"
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
@@ -192,8 +192,3 @@ resource "aws_lb_target_group" "dbeaver_tm" {
     path    = "/tm/health"
   }
 }
-
-
-
-
-

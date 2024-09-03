@@ -23,9 +23,9 @@ variable "alb_certificate_Identifier" {
 }
 
 variable "environment" {
-  description = "The environment name (e.g., dev, test, prod)"
+  description = "The environment name (e.g., Dev, Test, Prod)"
   type        = string
-  default     = "prod"
+  default     = "Prod"
 }
 
 variable "rds_db" {
@@ -188,7 +188,7 @@ variable "cloudbeaver-dc-env" {
   },
   {
       "name": "CLOUDBEAVER_PUBLIC_URL",
-      "value": "cloudbeaver.io"
+      "value": "https://cloudbeaver.io"
   }]
 }
 

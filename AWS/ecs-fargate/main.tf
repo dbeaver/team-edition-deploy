@@ -21,6 +21,20 @@ locals {
         item.name == "CLOUDBEAVER_DC_BACKEND_DB_URL" && var.rds_db ? local.rds_db_url :
         item.name == "CLOUDBEAVER_QM_BACKEND_DB_URL" && var.rds_db ? local.rds_db_url :
         item.name == "CLOUDBEAVER_TM_BACKEND_DB_URL" && var.rds_db ? local.rds_db_url :
+        item.name == "CLOUDBEAVER_DC_SERVER_URL" ? format("http://%s-cloudbeaver-dc:8970/dc", var.environment) :
+        item.name == "CLOUDBEAVER_QM_SERVER_URL" ? format("http://%s-cloudbeaver-qm:8972/qm", var.environment) :
+        item.name == "CLOUDBEAVER_RM_SERVER_URL" ? format("http://%s-cloudbeaver-rm:8971/rm", var.environment) :
+        item.name == "CLOUDBEAVER_TM_SERVER_URL" ? format("http://%s-cloudbeaver-tm:8973/tm", var.environment) :
+        item.value
+      )
+    }
+  ]
+
+  cloudbeaver_shared_env_modified = [
+    for item in var.cloudbeaver-shared-env : {
+      name  = item.name
+      value = (
+        item.name == "CLOUDBEAVER_DC_SERVER_URL" ? format("http://%s-cloudbeaver-dc:8970/dc", var.environment) :
         item.value
       )
     }
@@ -157,7 +171,7 @@ resource "aws_ecs_task_definition" "dbeaver_db" {
   }
   container_definitions = jsonencode([{
     name        = "${var.environment}-postgres"
-    image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/cloudbeaver-postgres:16"
+    image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/${var.environment}-cloudbeaver-postgres:16"
     essential   = true
     environment = var.cloudbeaver-db-env
     mountPoints = [{
@@ -323,7 +337,7 @@ resource "aws_ecs_task_definition" "dbeaver_dc" {
   }
   container_definitions = jsonencode([{
     name        = "${var.environment}-cloudbeaver-dc"
-    image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/cloudbeaver-dc:${var.dbeaver_te_version}"
+    image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/${var.environment}-cloudbeaver-dc:${var.dbeaver_te_version}"
     essential   = true
     environment = local.updated_cloudbeaver_dc_env
     mountPoints = [{
@@ -415,9 +429,9 @@ resource "aws_ecs_task_definition" "dbeaver_rm" {
   }
   container_definitions = jsonencode([{
     name        = "${var.environment}-cloudbeaver-rm"
-    image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/cloudbeaver-rm:${var.dbeaver_te_version}"
+    image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/${var.environment}-cloudbeaver-rm:${var.dbeaver_te_version}"
     essential   = true
-    environment = var.cloudbeaver-shared-env
+    environment = local.cloudbeaver_shared_env_modified
     mountPoints = [{
       containerPath = "/opt/resource-manager/workspace"
       sourceVolume  = "${var.environment}-cloudbeaver_rm_data"
@@ -500,9 +514,9 @@ resource "aws_ecs_task_definition" "dbeaver_qm" {
   execution_role_arn       = aws_iam_role.ecsTaskExecutionRole.arn
   container_definitions = jsonencode([{
     name        = "${var.environment}-cloudbeaver-qm"
-    image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/cloudbeaver-qm:${var.dbeaver_te_version}"
+    image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/${var.environment}-cloudbeaver-qm:${var.dbeaver_te_version}"
     essential   = true
-    environment = var.cloudbeaver-shared-env
+    environment = local.cloudbeaver_shared_env_modified
     logConfiguration = {
       logDriver = "awslogs"
       options = {
@@ -590,9 +604,9 @@ resource "aws_ecs_task_definition" "dbeaver_tm" {
   }
   container_definitions = jsonencode([{
     name        = "${var.environment}-cloudbeaver-tm"
-    image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/cloudbeaver-tm:${var.dbeaver_te_version}"
+    image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/${var.environment}-cloudbeaver-tm:${var.dbeaver_te_version}"
     essential   = true
-    environment = var.cloudbeaver-shared-env
+    environment = local.cloudbeaver_shared_env_modified
     mountPoints = [{
       containerPath = "/opt/task-manager/workspace"
       sourceVolume  = "${var.environment}-cloudbeaver_tm_data"
@@ -677,9 +691,9 @@ resource "aws_ecs_task_definition" "dbeaver_te" {
 
   container_definitions = jsonencode([{
     name        = "${var.environment}-cloudbeaver-te"
-    image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/cloudbeaver-te:${var.dbeaver_te_version}"
+    image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/${var.environment}-cloudbeaver-te:${var.dbeaver_te_version}"
     essential   = true
-    environment = var.cloudbeaver-shared-env
+    environment = local.cloudbeaver_shared_env_modified
     logConfiguration = {
       logDriver = "awslogs"
       options = {
