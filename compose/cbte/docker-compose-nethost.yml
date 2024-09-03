@@ -64,7 +64,7 @@ services:
     image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-dc:${CLOUDBEAVER_VERSION_TAG}
     environment:
       - CLOUDBEAVER_KAFKA_BROKERS=127.0.0.1:9092
-      - CLOUDBEAVER_NGINX_URL=http://127.0.0.1:11000
+      - CLOUDBEAVER_DMSVC_URL=http://127.0.0.1:11000
       - CLOUDBEAVER_DC_SERVER_URL=http://127.0.0.1:8970/dc
       - CLOUDBEAVER_RM_SERVER_URL=http://127.0.0.1:8971/rm
       - CLOUDBEAVER_QM_SERVER_URL=http://127.0.0.1:8972/qm
