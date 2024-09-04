@@ -23,9 +23,9 @@ variable "alb_certificate_Identifier" {
 }
 
 variable "environment" {
-  description = "The environment name (e.g., Dev, Test, Prod)"
+  description = "The environment name (e.g., dev, test, prod)"
   type        = string
-  default     = "Prod"
+  default     = "prod"
 }
 
 variable "rds_db" {
