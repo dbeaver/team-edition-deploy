@@ -110,7 +110,7 @@ resource "aws_efs_mount_target" "cloudbeaver_rm_data_mt" {
 }
 
 resource "aws_efs_file_system" "cloudbeaver_tm_data" {
-  creation_token  = "${var.environment}-cloudbeaver_tm_data"
+  creation_token   = "${var.environment}-cloudbeaver_tm_data"
   performance_mode = "generalPurpose"
   throughput_mode  = "bursting"
   encrypted        = "false"
@@ -128,7 +128,7 @@ resource "aws_efs_mount_target" "cloudbeaver_tm_data_mt" {
 }
 
 resource "aws_efs_file_system" "cloudbeaver_dc_data" {
-  creation_token  = "${var.environment}-cloudbeaver_dc_data"
+  creation_token   = "${var.environment}-cloudbeaver_dc_data"
   performance_mode = "generalPurpose"
   throughput_mode  = "bursting"
   encrypted        = "false"
@@ -188,7 +188,7 @@ resource "aws_ecs_task_definition" "dbeaver_db" {
                 }
     }
     portMappings = [{
-      name = "${var.environment}-postgres"
+      name          = "${var.environment}-postgres"
       protocol      = "tcp"
       containerPort = 5432
       hostPort      = 5432
@@ -295,7 +295,7 @@ resource "aws_ecs_service" "kafka" {
     enabled   = true
     namespace = aws_service_discovery_private_dns_namespace.dbeaver.arn
     service {
-      port_name = "${var.environment}-kafka"
+      port_name  = "${var.environment}-kafka"
       client_alias {
         dns_name = "${var.environment}-kafka"
         port     = 9092
@@ -549,8 +549,8 @@ resource "aws_ecs_service" "qm" {
   desired_count   = 1
 
   network_configuration {
-    security_groups = [aws_security_group.dbeaver_te.id]
-    subnets         = aws_subnet.private_subnets[*].id
+    security_groups  = [aws_security_group.dbeaver_te.id]
+    subnets          = aws_subnet.private_subnets[*].id
     assign_public_ip = false
   }
   service_connect_configuration {
@@ -643,8 +643,8 @@ resource "aws_ecs_service" "tm" {
   desired_count   = 1
 
   network_configuration {
-    security_groups = [aws_security_group.dbeaver_te.id]
-    subnets         = aws_subnet.private_subnets[*].id
+    security_groups  = [aws_security_group.dbeaver_te.id]
+    subnets          = aws_subnet.private_subnets[*].id
     assign_public_ip = false
   }
   service_connect_configuration {

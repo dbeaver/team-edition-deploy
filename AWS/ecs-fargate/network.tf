@@ -52,7 +52,6 @@ resource "aws_internet_gateway" "dbeaver_gw" {
   depends_on = [aws_vpc.dbeaver_net]
 }
 
-
 resource "aws_route" "dbeaver_vpc_main_gw" {
   route_table_id = aws_vpc.dbeaver_net.main_route_table_id
 
