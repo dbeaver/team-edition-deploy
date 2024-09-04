@@ -1,31 +1,43 @@
 variable "aws_account_id" {
   description = "Your AWS account ID"
-  type = string
-  default = ""
+  type        = string
+  default     = ""
 }
 
 variable "aws_region" {
   description = "Region where you plan to deploy"
-  type    = string
-  default = ""
+  type        = string
+  default     = ""
 }
 
 variable "dbeaver_te_version" {
   description = "The version of the cluster you want to deploy"
-  type = string
-  default = "24.1.0"
+  type        = string
+  default     = "24.1.0"
 }
 
 variable "alb_certificate_Identifier" {
   description = "Your certificate ID from AWS Certificate Manager"
-  type = string
-  default = ""
+  type        = string
+  default     = ""
 }
 
 variable "environment" {
   description = "The environment name (e.g., dev, test, prod)"
   type        = string
   default     = "prod"
+}
+
+variable "desired_count" {
+  description = "Number of replicas for services"
+  type        = map(number)
+  default     = {
+    te = 1
+    rm = 1
+    dc = 1
+    qm = 1
+    tm = 1
+  }
 }
 
 variable "rds_db" {
@@ -61,17 +73,17 @@ variable "cloudbeaver-db-env" {
 }
 
 variable "ecr_repositories" {
-  type = list
+  type    = list
   default = ["dc", "rm", "qm", "te", "tm", "postgres"]
 }
 
 variable "dbeaver_te_default_ns" {
-  type = string
+  type    = string
   default = "dbeaver-te.local"
 }
 
 variable "vpc_cidr" {
-  type = string
+  type    = string
   default = "10.0.0.0/16"
 }
 

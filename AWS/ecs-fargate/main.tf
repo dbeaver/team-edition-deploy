@@ -373,7 +373,7 @@ resource "aws_ecs_service" "dc" {
   cluster         = aws_ecs_cluster.dbeaver_te.id
   task_definition = aws_ecs_task_definition.dbeaver_dc.arn
   launch_type     = "FARGATE"
-  desired_count   = 1
+  desired_count   = var.desired_count["dc"]
 
   network_configuration {
     security_groups = [aws_security_group.dbeaver_te.id]
@@ -465,7 +465,7 @@ resource "aws_ecs_service" "rm" {
   cluster         = aws_ecs_cluster.dbeaver_te.id
   task_definition = aws_ecs_task_definition.dbeaver_rm.arn
   launch_type     = "FARGATE"
-  desired_count   = 1
+  desired_count   = var.desired_count["rm"]
 
   network_configuration {
     security_groups = [aws_security_group.dbeaver_te.id]
@@ -546,7 +546,7 @@ resource "aws_ecs_service" "qm" {
   cluster         = aws_ecs_cluster.dbeaver_te.id
   task_definition = aws_ecs_task_definition.dbeaver_qm.arn
   launch_type     = "FARGATE"
-  desired_count   = 1
+  desired_count   = var.desired_count["qm"]
 
   network_configuration {
     security_groups  = [aws_security_group.dbeaver_te.id]
@@ -640,7 +640,7 @@ resource "aws_ecs_service" "tm" {
   cluster         = aws_ecs_cluster.dbeaver_te.id
   task_definition = aws_ecs_task_definition.dbeaver_tm.arn
   launch_type     = "FARGATE"
-  desired_count   = 1
+  desired_count   = var.desired_count["tm"]
 
   network_configuration {
     security_groups  = [aws_security_group.dbeaver_te.id]
@@ -724,7 +724,7 @@ resource "aws_ecs_service" "te" {
   cluster         = aws_ecs_cluster.dbeaver_te.id
   task_definition = aws_ecs_task_definition.dbeaver_te.arn
   launch_type     = "FARGATE"
-  desired_count   = 1
+  desired_count   = var.desired_count["te"]
 
   network_configuration {
     security_groups = [aws_security_group.dbeaver_te.id]
