@@ -1,7 +1,7 @@
 resource "aws_security_group" "dbeaver_alb" {
-  name   = "DBeaverTE-sg-alb"
-  vpc_id = aws_vpc.dbeaver_net.id
-  description = "DBeaverTE EKS Default SG"
+  name        = "DBeaverTE-${var.deployment_id}-sg-alb"
+  vpc_id      = aws_vpc.dbeaver_net.id
+  description = "DBeaverTE ${var.deployment_id} EKS Default SG"
 
   ingress {
    protocol         = "tcp"
@@ -29,9 +29,9 @@ resource "aws_security_group" "dbeaver_alb" {
 }
 
 resource "aws_security_group" "dbeaver_efs" {
-  name   = "ecs-DBeaverTE-efs-sg"
-  vpc_id = aws_vpc.dbeaver_net.id
-  description = "DBeaverTE efs SG"
+  name        = "DBeaverTE-${var.deployment_id}-ecs-efs-sg"
+  vpc_id      = aws_vpc.dbeaver_net.id
+  description = "DBeaverTE ${var.deployment_id} efs SG"
 
   ingress {
    protocol         = "tcp"
@@ -50,9 +50,9 @@ resource "aws_security_group" "dbeaver_efs" {
 }
 
 resource "aws_security_group" "dbeaver_te_private" {
-  name   = "ecs-DBeaverTE-service-postgres"
-  vpc_id = aws_vpc.dbeaver_net.id
-  description = "DBeaverTE ECS Postgres SG"
+  name        = "DBeaverTE-${var.deployment_id}-ecs-service-postgres"
+  vpc_id      = aws_vpc.dbeaver_net.id
+  description = "DBeaverTE ${var.deployment_id} ECS Postgres SG"
 
   ingress {
     protocol         = "tcp"
@@ -77,11 +77,10 @@ resource "aws_security_group" "dbeaver_te_private" {
   }
 }
 
-
 resource "aws_security_group" "dbeaver_te" {
-  name   = "ecs-DBeaverTE-service-dbeaver-te"
-  vpc_id = aws_vpc.dbeaver_net.id
-  description = "DBeaverTE ECS DBeaverTE SG"
+  name        = "DBeaverTE-${var.deployment_id}-ecs-service-dbeaver-te"
+  vpc_id      = aws_vpc.dbeaver_net.id
+  description = "DBeaverTE ${var.deployment_id} ECS DBeaverTE SG"
 
   ingress {
    protocol         = "tcp"

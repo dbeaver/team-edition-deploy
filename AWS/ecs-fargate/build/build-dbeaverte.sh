@@ -34,6 +34,6 @@ for svc in $TESERVICES; do
 
   docker pull dbeaver/cloudbeaver-"${svc}":${TEVERSION}
   docker build -t cloudbeaver-"${svc}" --build-arg TEVERSION=${TEVERSION} -f "${svc}".Dockerfile .
-  docker tag cloudbeaver-"${svc}" ${AWS_ACC_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/cloudbeaver-"${svc}":${TEVERSION}
-  docker push ${AWS_ACC_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/cloudbeaver-"${svc}":${TEVERSION}
+  docker tag cloudbeaver-"${svc}" ${AWS_ACC_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${DEPLOYMENT_ID}-cloudbeaver-"${svc}":${TEVERSION}
+  docker push ${AWS_ACC_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${DEPLOYMENT_ID}-cloudbeaver-"${svc}":${TEVERSION}
  done
