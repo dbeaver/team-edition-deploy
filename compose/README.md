@@ -114,9 +114,9 @@ Now you can use `dbeaver-te` command to start manager.
 
 For detailed instructions on how to use the script manager, refer to [manager doucmentation](../manager/README.md).
 
-#### Version update procedure to 24.1.0
+#### Version update procedure to 24.2.0
 
-There are significant deployment changes in version 24.1.0, so you have to follow these steps to upgrade correctly:
+There are significant deployment changes in version 24.2.0, so you have to follow these steps to upgrade correctly:
 
 ##### Step 1. Get last changes and open configuration
 
@@ -139,7 +139,7 @@ IMAGE_SOURCE=dbeaver
 and change version tag to
 
 ```
-CLOUDBEAVER_VERSION_TAG=24.1.0
+CLOUDBEAVER_VERSION_TAG=24.2.0
 ```
 
 ##### Step 3.
