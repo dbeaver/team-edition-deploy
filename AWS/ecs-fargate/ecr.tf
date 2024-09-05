@@ -1,6 +1,6 @@
 resource "aws_ecr_repository" "dbeaver_te" {
   count = length(var.ecr_repositories)
-  name  = "${var.environment}-cloudbeaver-${element(var.ecr_repositories, count.index)}"
+  name  = "${var.deployment_id}-cloudbeaver-${element(var.ecr_repositories, count.index)}"
   image_tag_mutability = "MUTABLE"
   force_delete = "true"
 
@@ -17,7 +17,7 @@ locals {
 
           export AWS_REGION="${var.aws_region}"
           export AWS_ACC_ID="${var.aws_account_id}"
-          export ENVIRONMENT="${var.environment}"
+          export DEPLOYMENT_ID="${var.deployment_id}"
 
           export TESERVICES="${join(" ", [for s in var.ecr_repositories : format("%q", s)])}"
           export TEVERSION="${var.dbeaver_te_version}"

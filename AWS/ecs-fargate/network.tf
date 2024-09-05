@@ -4,7 +4,7 @@ resource "aws_vpc" "dbeaver_net" {
   enable_dns_hostnames = true
 
   tags = {
-    Env  = var.environment
+    Env  = var.deployment_id
     Name = "DBeaverTeamEdition"
   }
 }
@@ -21,7 +21,7 @@ resource "aws_subnet" "public_subnets" {
   map_public_ip_on_launch = true
 
   tags = {
-    Env  = var.environment
+    Env  = var.deployment_id
     Name = "DBeaverTE Public Subnet ${count.index + 1}"
   }
 
@@ -35,7 +35,7 @@ resource "aws_subnet" "private_subnets" {
   availability_zone = data.aws_availability_zones.available.names[count.index]
 
   tags = {
-    Env  = var.environment
+    Env  = var.deployment_id
     Name = "DBeaverTE Private Subnet ${count.index + 1}"
   }
 
@@ -46,7 +46,7 @@ resource "aws_internet_gateway" "dbeaver_gw" {
   vpc_id = aws_vpc.dbeaver_net.id
 
   tags = {
-    Env  = var.environment
+    Env  = var.deployment_id
     Name = "DBeaverTE VPC IG"
   }
   depends_on = [aws_vpc.dbeaver_net]
@@ -67,7 +67,7 @@ resource "aws_route" "dbeaver_vpc_main_gw" {
 resource "aws_eip" "dbeaver_nat_gateway" {
   domain           = "vpc"
   tags = {
-    Env  = var.environment
+    Env  = var.deployment_id
     Name = "DBeaverTE EIP for Private VPC "
   }
 }
@@ -76,7 +76,7 @@ resource "aws_nat_gateway" "nat_gateway" {
   allocation_id = aws_eip.dbeaver_nat_gateway.id
   subnet_id = aws_subnet.public_subnets[0].id
   tags = {
-    Env  = var.environment
+    Env  = var.deployment_id
     Name = "DBeaverTE Private Subnets Nat Gateway"
   }
 
@@ -95,7 +95,7 @@ resource "aws_route_table" "dbeaver_private_rt_nat" {
   }
 
   tags = {
-    Env  = var.environment
+    Env  = var.deployment_id
     Name = "DBeaver TE Private Route Table"
   }
   depends_on = [

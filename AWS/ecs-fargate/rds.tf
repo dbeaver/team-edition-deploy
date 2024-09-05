@@ -15,10 +15,11 @@ resource "aws_db_subnet_group" "rds_dbeaver_db_subnet" {
     aws_subnet.private_subnets
   ]
   count      = var.rds_db ? 1 : 0
-  name       = "${var.environment}-rds_dbeaver_db_subnet"
+  name       = "DBeaverTE-${var.deployment_id}-rds_db_subnet"
   subnet_ids = [aws_subnet.private_subnets[0].id, aws_subnet.private_subnets[1].id] 
 
   tags = {
+    Env  = var.deployment_id
     Name = "DBeaver Team Edition Database subnet"
   }
 }
@@ -45,7 +46,7 @@ resource "aws_db_instance" "rds_dbeaver_db" {
   skip_final_snapshot    = true
 
   tags = {
-    Env  = var.environment
+    Env  = var.deployment_id
     Name = "DBeaver Team Edition Database"
   }
 }

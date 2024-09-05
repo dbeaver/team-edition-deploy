@@ -3,13 +3,13 @@
 ################################################################################
 
 resource "aws_lb" "dbeaver_te_lb" {
-  name               = "${var.environment}-DBeaverTE-ALB"
+  name               = "DBeaverTE-${var.deployment_id}-ALB"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.dbeaver_alb.id]
   subnets            = aws_subnet.public_subnets[*].id
   tags = {
-    env = var.environment
+    env = var.deployment_id
   }
 }
 
@@ -114,7 +114,7 @@ resource "aws_lb_listener_rule" "forward_to_service_uri_tm" {
 
 
 resource "aws_lb_target_group" "dbeaver_dc" {
-  name        = "${var.environment}-DBeaverTE-dc"
+  name        = "DBeaverTE-${var.deployment_id}-dc"
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
@@ -129,7 +129,7 @@ resource "aws_lb_target_group" "dbeaver_dc" {
 }
 
 resource "aws_lb_target_group" "dbeaver_te" {
-  name        = "${var.environment}-DBeaverTE"
+  name        = "DBeaverTE-${var.deployment_id}"
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
@@ -149,7 +149,7 @@ resource "aws_lb_target_group" "dbeaver_te" {
 }
 
 resource "aws_lb_target_group" "dbeaver_qm" {
-  name        = "${var.environment}-DBeaverTE-qm"
+  name        = "DBeaverTE-${var.deployment_id}-qm"
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
@@ -164,7 +164,7 @@ resource "aws_lb_target_group" "dbeaver_qm" {
 }
 
 resource "aws_lb_target_group" "dbeaver_rm" {
-  name        = "${var.environment}-DBeaverTE-rm"
+  name        = "DBeaverTE-${var.deployment_id}-rm"
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
@@ -179,7 +179,7 @@ resource "aws_lb_target_group" "dbeaver_rm" {
 }
 
 resource "aws_lb_target_group" "dbeaver_tm" {
-  name        = "${var.environment}-DBeaverTE-tm"
+  name        = "DBeaverTE-${var.deployment_id}-tm"
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"

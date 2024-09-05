@@ -22,8 +22,8 @@ variable "alb_certificate_Identifier" {
   default     = ""
 }
 
-variable "environment" {
-  description = "The environment name (e.g., dev, test, prod)"
+variable "deployment_id" {
+  description = "The deployment name"
   type        = string
   default     = "prod"
 }
