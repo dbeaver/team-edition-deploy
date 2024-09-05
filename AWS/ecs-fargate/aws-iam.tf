@@ -11,8 +11,8 @@ data "aws_iam_policy_document" "assume_role_policy" {
 }
 
 resource "aws_iam_policy" "CloudbeaverTeamEditionEFSAccessPolicy" {
-  name        = "CloudbeaverTeamEditionEFSAccessPolicy"
-  description = "Policy to allow access only to specific EFS resources"
+  name        = "DBeaverTE-${var.deployment_id}-CloudbeaverTeamEditionEFSAccessPolicy"
+  description = "Policy to allow access only to specific EFS resources for ${var.deployment_id} environment"
   policy      = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -64,7 +64,7 @@ resource "aws_iam_policy" "CloudbeaverTeamEditionEFSAccessPolicy" {
 }
 
 resource "aws_iam_role" "ecsTaskExecutionRole" {
-  name               = "ecsTaskExecutionRole"
+  name               = "DBeaverTE-${var.deployment_id}-ecsTaskExecutionRole"
   assume_role_policy = "${data.aws_iam_policy_document.assume_role_policy.json}"
 }
 

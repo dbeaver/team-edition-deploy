@@ -1,16 +1,15 @@
-
 ################################################################################
 # ALB
 ################################################################################
 
 resource "aws_lb" "dbeaver_te_lb" {
-  name               = "DBeaverTE-ALB"
+  name               = "DBeaverTE-${var.deployment_id}-ALB"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.dbeaver_alb.id]
   subnets            = aws_subnet.public_subnets[*].id
   tags = {
-    env = "dev"
+    env = var.deployment_id
   }
 }
 
@@ -32,6 +31,7 @@ resource "aws_lb_listener" "dbeaver-te-listener" {
     }
   }
 }
+
 # This resources must be edited if HTTPS not used
 resource "aws_lb_listener" "dbeaver-te-listener-https" {
 
@@ -39,7 +39,7 @@ resource "aws_lb_listener" "dbeaver-te-listener-https" {
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-TLS-1-2-2017-01"
-  certificate_arn = "arn:aws:acm:${var.aws_region}:${var.aws_account_id}:certificate/${var.alb_certificate_Identifier}"
+  certificate_arn   = "arn:aws:acm:${var.aws_region}:${var.aws_account_id}:certificate/${var.alb_certificate_Identifier}"
 
   default_action {
     type             = "forward"
@@ -114,7 +114,7 @@ resource "aws_lb_listener_rule" "forward_to_service_uri_tm" {
 
 
 resource "aws_lb_target_group" "dbeaver_dc" {
-  name        = "DBeaverTE-dc"
+  name        = "DBeaverTE-${var.deployment_id}-dc"
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
@@ -129,7 +129,7 @@ resource "aws_lb_target_group" "dbeaver_dc" {
 }
 
 resource "aws_lb_target_group" "dbeaver_te" {
-  name        = "DBeaverTE"
+  name        = "DBeaverTE-${var.deployment_id}"
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
@@ -149,7 +149,7 @@ resource "aws_lb_target_group" "dbeaver_te" {
 }
 
 resource "aws_lb_target_group" "dbeaver_qm" {
-  name        = "DBeaverTE-qm"
+  name        = "DBeaverTE-${var.deployment_id}-qm"
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
@@ -164,7 +164,7 @@ resource "aws_lb_target_group" "dbeaver_qm" {
 }
 
 resource "aws_lb_target_group" "dbeaver_rm" {
-  name        = "DBeaverTE-rm"
+  name        = "DBeaverTE-${var.deployment_id}-rm"
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
@@ -179,7 +179,7 @@ resource "aws_lb_target_group" "dbeaver_rm" {
 }
 
 resource "aws_lb_target_group" "dbeaver_tm" {
-  name        = "DBeaverTE-tm"
+  name        = "DBeaverTE-${var.deployment_id}-tm"
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
@@ -192,8 +192,3 @@ resource "aws_lb_target_group" "dbeaver_tm" {
     path    = "/tm/health"
   }
 }
-
-
-
-
-

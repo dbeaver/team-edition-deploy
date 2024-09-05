@@ -15,10 +15,11 @@ resource "aws_db_subnet_group" "rds_dbeaver_db_subnet" {
     aws_subnet.private_subnets
   ]
   count      = var.rds_db ? 1 : 0
-  name       = "rds_dbeaver_db_subnetz"
+  name       = "DBeaverTE-${var.deployment_id}-rds_db_subnet"
   subnet_ids = [aws_subnet.private_subnets[0].id, aws_subnet.private_subnets[1].id] 
 
   tags = {
+    Env  = var.deployment_id
     Name = "DBeaver Team Edition Database subnet"
   }
 }
@@ -31,20 +32,21 @@ resource "aws_db_instance" "rds_dbeaver_db" {
     aws_subnet.private_subnets
   ]
 
-  count                = var.rds_db ? 1 : 0
-  allocated_storage    = var.db_allocated_storage
-  storage_type         = "gp2"
-  engine               = var.rds_db_type
-  engine_version       = var.rds_db_version
-  instance_class       = var.db_instance_class
-  db_name              = var.cloudbeaver-db-env[2].value
-  username             = var.cloudbeaver-db-env[1].value
-  password             = var.cloudbeaver-db-env[0].value
-  db_subnet_group_name = aws_db_subnet_group.rds_dbeaver_db_subnet[0].name
+  count                  = var.rds_db ? 1 : 0
+  allocated_storage      = var.db_allocated_storage
+  storage_type           = "gp2"
+  engine                 = var.rds_db_type
+  engine_version         = var.rds_db_version
+  instance_class         = var.db_instance_class
+  db_name                = var.cloudbeaver-db-env[2].value
+  username               = var.cloudbeaver-db-env[1].value
+  password               = var.cloudbeaver-db-env[0].value
+  db_subnet_group_name   = aws_db_subnet_group.rds_dbeaver_db_subnet[0].name
   vpc_security_group_ids = [aws_security_group.dbeaver_te_private.id]
-  skip_final_snapshot  = true
+  skip_final_snapshot    = true
 
   tags = {
+    Env  = var.deployment_id
     Name = "DBeaver Team Edition Database"
   }
 }
