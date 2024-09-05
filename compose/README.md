@@ -114,9 +114,15 @@ Now you can use `dbeaver-te` command to start manager.
 
 For detailed instructions on how to use the script manager, refer to [manager doucmentation](../manager/README.md).
 
-#### Version update procedure to 24.1.0
+#### Version update from 24.0.0 or earlier
 
-There are significant deployment changes in version 24.1.0, so you have to follow these steps to upgrade correctly:
+There are significant deployment changes in version 24.1.0.
+
+So if you want to update Team Edition:
+- from version 24.0.0 or early
+- to version 24.1.0 or later
+
+you have to follow these steps:
 
 ##### Step 1. Get last changes and open configuration
 
@@ -139,10 +145,10 @@ IMAGE_SOURCE=dbeaver
 and change version tag to
 
 ```
-CLOUDBEAVER_VERSION_TAG=24.1.0
+CLOUDBEAVER_VERSION_TAG=24.2.0
 ```
 
-##### Step 3.
+##### Step 3. Restart cluster
 
 1. Stop your cluster:
 - run `dbeaver-te stop` if you use script manager
@@ -166,7 +172,7 @@ Follow the next steps:
 - run `dbeaver-te stop` if you use script manager
 - or navigate to the directory `team-edition-deploy/compose/cbte` and run `docker-compose down`
 
-2. Remove nginx config volume
+2. Remove nginx config volume:
 ```
 docker volume rm cbte_nginx_conf_data
 ```
