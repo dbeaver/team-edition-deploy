@@ -5,8 +5,8 @@ kind: Ingress
 metadata:
   name: ingress-{{ .Release.Name }}
   annotations:
-    kubernetes.io/ingress.class: "alb"
-    alb.ingress.kubernetes.io/scheme: "internet-facing"
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
     {{- if eq "https" .Values.httpScheme }}
     ingress.kubernetes.io/ssl-redirect: "true"
     {{- end }}
@@ -25,6 +25,7 @@ metadata:
     # alb.ingress.kubernetes.io/use-regex: true
 
 spec:
+  ingressClassName: alb
 {{- if eq "https" .Values.httpScheme }}
   tls:
     - hosts:
@@ -35,39 +36,39 @@ spec:
   - host: "{{ .Values.cloudbeaverBaseDomain }}"
     http:
       paths:
-        - path: /(.*)(.*)
+        - path: /
           pathType: Prefix
           backend:
             service:
               name: cloudbeaver-te
               port:
                 number: 8978
-        - path: /(dc/|dc$)(.*)
+        - path: /dc/
           pathType: Prefix
           backend:
             service:
               name: cloudbeaver-dc
               port:
                 number: 8970
-        - path: /(rm/|rm$)(.*)
+        - path: /rm/
           pathType: Prefix
           backend:
             service:
               name: cloudbeaver-rm
               port:
                 number: 8971
-        - path: /(qm/|qm$)(.*)
+        - path: /qm/
           pathType: Prefix
           backend:
             service:
               name: cloudbeaver-qm
               port:
                 number: 8972
-        - path: /(tm/|tm$)(.*)
+        - path: /tm/
           pathType: Prefix
           backend:
             service:
               name: cloudbeaver-tm
               port:
-                number: 8973                
+                number: 8973        
 {{ end }}
