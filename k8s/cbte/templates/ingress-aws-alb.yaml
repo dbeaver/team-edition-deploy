@@ -7,9 +7,13 @@ metadata:
   annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
-    {{- if eq "https" .Values.httpScheme }}
-    ingress.kubernetes.io/ssl-redirect: "true"
+    {{- if .Values.certificateARN }}
+    alb.ingress.kubernetes.io/certificate-arn: "{{ .Values.certificateARN }}"
     {{- end }}
+    {{- if eq "https" .Values.httpScheme }}
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    {{- end }}
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
     alb.ingress.kubernetes.io/rewrite-target: "/$1$2"
     alb.ingress.kubernetes.io/affinity: "cookie"
     alb.ingress.kubernetes.io/affinity-mode: "persistent"
@@ -21,9 +25,7 @@ metadata:
     alb.ingress.kubernetes.io/session-cookie-max-age: "345600"
     alb.ingress.kubernetes.io/proxy-body-size: "500m"
     alb.ingress.kubernetes.io/proxy-read-timeout: "3600"
-    alb.ingress.kubernetes.io/proxy-send-timeout: "3600"    
-    # alb.ingress.kubernetes.io/use-regex: true
-
+    alb.ingress.kubernetes.io/proxy-send-timeout: "3600"
 spec:
   ingressClassName: alb
 {{- if eq "https" .Values.httpScheme }}
@@ -33,8 +35,7 @@ spec:
       secretName: {{ .Release.Name }}-ingress-tls
 {{- end }}
   rules:
-  - host: "{{ .Values.cloudbeaverBaseDomain }}"
-    http:
+  - http:
       paths:
         - path: /
           pathType: Prefix
