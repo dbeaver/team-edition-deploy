@@ -17,6 +17,13 @@ Ensure all TCP ports from the below list are available in your network stack.
  - 443/tcp (for HTTPS access)
 
 
+### Clone Git repository
+
+To get started, clone the Git repository to your local machine by running the following command in your terminal:
+```
+git clone https://github.com/dbeaver/cloudbeaver-deploy.git
+```
+
 ### Using external DB
 
 By default, Team Edition stores all data in an internal PostgreSQL database. If you want to use it, skip this step.

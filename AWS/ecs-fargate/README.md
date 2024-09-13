@@ -15,7 +15,11 @@
 
 3. Next you need to [install Terraform](https://developer.hashicorp.com/terraform/install)
 
-4. Choose configuration for your cluster database:
+4. Clone the Git repository to your local machine by running the following command in your terminal:
+```
+git clone https://github.com/dbeaver/cloudbeaver-deploy.git
+```
+5. Choose configuration for your cluster database:
    - If you plan to use the PostgreSQL internal container:
      - Navigate to `team-edition-deploy/AWS/ecs-fargate`  
      - Open `variables.tf`.
@@ -30,7 +34,7 @@
       - Specify `rds_db_version`, the default is `postgres:16.1`. Only PostgreSQL version can be specified.  
       - Set the credentials for database in `cloudbeaver-db-env`. By default it is `postgres`.
 
-5. Configure the deployment in `variables.tf` file as follows:  
+6. Configure the deployment in `variables.tf` file as follows:  
    - Set your `aws_account_id`, you can get it by logging into your AWS console:
 
    ![alt text](images/image.png)
@@ -42,9 +46,9 @@
    - Ensure that the `alb_certificate_Identifier` variable contains the ID from [AWS Certificate Manager](#importing-an-ssl-certificate-in-aws) corresponding to the domain name specified   in the `CLOUDBEAVER_PUBLIC_URL` variable within `variables.tf`. The domain name in `CLOUDBEAVER_PUBLIC_URL` must match the domain for which the certificates have been issued.
    - You can customize the deployment version by updating the `dbeaver_te_version` environment variable. The default version is `24.2.0`.
 
-5. Run `terraform init` and then `terraform apply` in `ecs-fargate` directory to create the ECS cluster and complete the deployment.
+7. Run `terraform init` and then `terraform apply` in `ecs-fargate` directory to create the ECS cluster and complete the deployment.
 
-6. Cluster destruction is performed in reverse order:
+8. Cluster destruction is performed in reverse order:
     - Run `terraform destroy` in `ecs-fargate` directory to destroy ECS cluster.
 
 ### Importing an SSL Certificate in AWS
