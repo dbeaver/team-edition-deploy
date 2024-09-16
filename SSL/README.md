@@ -21,13 +21,3 @@ The cluster supports HTTP and HTTPS. By default, it contains a pre-configured SS
 5. Ensure your domain is pointing to the server's IP address.
 
 Learn more in [Domain manager documentation](https://dbeaver.com/docs/cloudbeaver/Domain-Manager/)
-
-## Using nginx (advanced mode)
-
-Team Edition uses nginx for server configuration. You can set up custom domain and SSL certificate in nginx configuration files.
-
-1. Connect to your server.
-2. Copy the `fullchain.pem` and `privkey.pem` SSL certificates to the `/etc/nginx/ssl/live/databases.team` directory within the Nginx Docker container.
-3. Open the `/etc/nginx/product-conf/cloudbeaver-te.conf` file inside the Nginx Docker container and set your domain name in the `server_name` variable.
-4. Apply the new Nginx configurations by running `docker compose restart`.
-5. Ensure your domain is pointing to the server's IP address.
