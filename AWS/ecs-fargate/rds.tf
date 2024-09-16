@@ -15,7 +15,7 @@ resource "aws_db_subnet_group" "rds_dbeaver_db_subnet" {
     aws_subnet.private_subnets
   ]
   count      = var.rds_db ? 1 : 0
-  name       = "DBeaverTE-${var.deployment_id}-rds_db_subnet"
+  name       = "dbeaverte-${var.deployment_id}-rds_db_subnet"
   subnet_ids = [aws_subnet.private_subnets[0].id, aws_subnet.private_subnets[1].id] 
 
   tags = {
