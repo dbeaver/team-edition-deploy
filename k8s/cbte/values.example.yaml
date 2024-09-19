@@ -42,6 +42,16 @@ cloudbeaverTM:
   replicaCount: 1
   image: dbeaver/cloudbeaver-tm  
 
+# Cloud storage configuration 
+# By default is None, it means not cloud deployment
+# AWS - type: efs storageClassName: efs-sc
+cloudProvider: None  # Options: None, aws
+storage:
+  type: efs
+  storageClassName: "efs-sc"
+  efs:
+    fileSystemId: ""
+
 backend:
   internal_db: true
   cloudbeaver_db_driver: postgres-jdbc

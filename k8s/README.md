@@ -56,3 +56,59 @@ and add two lines in the `metadata.annotations`
 
 - `service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"`
 - `service.beta.kubernetes.io/do-loadbalancer-hostname: "cloudbeaverBaseDomain"`
+
+### Clouds volumes configuration
+
+#### AWS
+
+##### Prerequisites
+
+- **AWS CLI** installed and configured
+- **eksctl** installed
+- **Helm** installed
+- **Terraform** installed
+- Access to an existing **EKS cluster**
+
+
+##### Step 1: Associate IAM OIDC Provider
+
+Associate the IAM OIDC provider with your EKS cluster to enable IAM roles for service accounts.
+
+```
+eksctl utils associate-iam-oidc-provider \
+  --region=<your-region> \
+  --cluster=<your-cluster-name> \
+  --approve
+```
+
+##### Step 2: Install AWS EFS and EBS CSI Drivers
+
+Install the AWS EFS and EBS CSI drivers using Helm.
+
+```
+helm repo add aws-efs-csi-driver https://kubernetes-sigs.github.io/aws-efs-csi-driver/
+helm repo add aws-ebs-csi-driver https://kubernetes-sigs.github.io/aws-ebs-csi-driver/
+helm repo update
+
+helm install aws-efs-csi-driver aws-efs-csi-driver/aws-efs-csi-driver --namespace kube-system
+helm install aws-ebs-csi-driver aws-ebs-csi-driver/aws-ebs-csi-driver --namespace kube-system
+```
+
+##### Step 3: Configure EFS via Terraform 
+
+1. Navigate to Directory `team-edition-deploy/AWS/aws-eks`
+2. Open the `main.tf` file in a text editor
+3. Update the following variables with your AWS region and EKS cluster name
+```
+variable "region" {
+  description = "Region for AWS EFS"
+  default     = ""<your-region>"
+}
+variable "cluster_name" {
+  description = "EKS cluster name"
+  default     = "<your-cluster-name>"
+}
+```
+4. Run `terraform init` and `terraform apply`
+5. Take `efs_file_system_id` after complite deployment and put it in `storage.efs.fileSystemId` in `team-edition-deploy/k8s/cbte/values.yaml` file
+6. Set in `team-edition-deploy/k8s/cbte/values.yaml` in `cloudProvider` to `aws`
