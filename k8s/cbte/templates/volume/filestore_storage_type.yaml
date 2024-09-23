@@ -1,0 +1,12 @@
+{{- if and (eq .Values.cloudProvider "gcp") (eq .Values.storage.type "filestore") }}
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{ .Values.storage.storageClassName }}
+provisioner: filestore.csi.storage.gke.io
+parameters:
+  network: "default"
+  tier: "STANDARD"  # Options: STANDARD, PREMIUM, BASIC_HDD, BASIC_SSD, HIGH_SCALE_SSD
+reclaimPolicy: Retain
+volumeBindingMode: Immediate
+{{- end }}

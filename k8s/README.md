@@ -112,3 +112,29 @@ variable "cluster_name" {
 4. Run `terraform init` and `terraform apply`
 5. Take `efs_file_system_id` after complite deployment and put it in `storage.efs.fileSystemId` in `team-edition-deploy/k8s/cbte/values.yaml` file
 6. Set in `team-edition-deploy/k8s/cbte/values.yaml` in `cloudProvider` to `aws`
+
+
+#### GCP 
+
+##### Prerequisites
+
+- **gcloud** installed and configured
+- **Helm** installed
+- Access to an existing **GKE cluster**
+
+##### Step 1: Enable the Cloud Filestore API and the Google Kubernetes Engine API 
+
+```
+gcloud services enable file.googleapis.com container.googleapis.com
+```
+
+##### Step 2: Configure values.yaml file 
+
+Update the following variables in values.yaml file
+
+```
+cloudProvider: gcp 
+storage:
+  type: filestore
+  storageClassName: "filestore-sc"
+```
