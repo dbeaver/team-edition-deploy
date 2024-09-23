@@ -8,4 +8,5 @@ parameters:
   provisioningMode: efs-ap
   fileSystemId: {{ .Values.storage.efs.fileSystemId | default "" }}
   directoryPerms: "777"
+reclaimPolicy: Retain
 {{- end }}
