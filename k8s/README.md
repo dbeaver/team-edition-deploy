@@ -15,7 +15,7 @@
 - `cd team-edition-deploy/k8s/cbte`
 - `cp ./values.example.yaml ./values.yaml`
 - Edit chart values in `values.yaml` (use any text editor)
-- Configure domain and SSL certificate (optional)
+- Configure domain and SSL certificate 
   - Add an A record in your DNS hosting for a value of `cloudbeaverBaseDomain` variable with load balancer IP address.
   - Generate internal services certificates:  
      On Linux or macOS, run the script to prepare services certificates:   
@@ -23,13 +23,13 @@
   - If you set the *HTTPS* endpoint scheme, then create a valid TLS certificate for the domain endpoint `cloudbeaverBaseDomain` and place it into `k8s/cbte/ingressSsl`:  
     Certificate: `ingressSsl/fullchain.pem`  
     Private Key: `ingressSsl/privkey.pem`
-- Deploy Team Edition with Helm: `helm install cloudbeaver`
+- Deploy Team Edition with Helm: `helm install cloudbeaver-te ./ --values ./values.yaml`
 
 ### Version update procedure.
 
 - Change directory to `team-edition-deploy/k8s/cbte`.
 - Change value of `imageTag` in configuration file `values.yaml` with a preferred version. Go to next step if tag `latest` set.
-- Upgrade cluster: `helm upgrade cloudbeaver` 
+- Upgrade cluster: `helm upgrade cloudbeaver-te ./ --values ./values.yaml` 
 
 ### OpenShift deployment
 
@@ -71,6 +71,7 @@ Create IAM role and link policy:
 ```
 eksctl create iamserviceaccount \
   --cluster <your-cluster-name> \
+  --region <your-region> \
   --namespace kube-system \
   --name aws-load-balancer-controller \
   --attach-policy-arn arn:aws:iam::<your-account-id>:policy/AWSLoadBalancerControllerIAMPolicy \

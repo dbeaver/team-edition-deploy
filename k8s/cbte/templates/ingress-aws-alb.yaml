@@ -35,7 +35,8 @@ spec:
       secretName: {{ .Release.Name }}-ingress-tls
 {{- end }}
   rules:
-  - http:
+  - host: "{{ .Values.cloudbeaverBaseDomain }}"
+    http:
       paths:
         - path: /
           pathType: Prefix
