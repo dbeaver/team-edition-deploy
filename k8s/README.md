@@ -11,6 +11,9 @@
 [//]: # (* [Nginx load balancer]&#40;https://docs.nginx.com/nginx-ingress-controller/installation/installation-with-helm/&#41; and [Kubernetes Helm plugin]&#40;https://helm.sh/docs/topics/plugins/&#41; added to your `k8s`)
 
 ### How to run services
+
+**Note:** If you want to store Team Edition data in cloud storage, make sure to [configure cloud volumes](#clouds-volumes-configuration) first.
+
 - Clone this repo from GitHub: `git clone https://github.com/dbeaver/team-edition-deploy`
 - `cd team-edition-deploy/k8s/cbte`
 - `cp ./values.example.yaml ./values.yaml`
@@ -25,11 +28,11 @@
     Private Key: `ingressSsl/privkey.pem`
 - Deploy Team Edition with Helm: `helm install cloudbeaver`
 
-### Version update procedure.
+### Version update procedure
 
 - Change directory to `team-edition-deploy/k8s/cbte`.
 - Change value of `imageTag` in configuration file `values.yaml` with a preferred version. Go to next step if tag `latest` set.
-- Upgrade cluster: `helm upgrade cloudbeaver` 
+- Upgrade cluster: `helm upgrade cloudbeaver`
 
 ### OpenShift deployment
 
@@ -58,6 +61,10 @@ and add two lines in the `metadata.annotations`
 - `service.beta.kubernetes.io/do-loadbalancer-hostname: "cloudbeaverBaseDomain"`
 
 ### Clouds volumes configuration
+
+To store Team Edition data in the cloud, you need to configure cloud volumes. For example, you can store connection configurations and user information in AWS EFS.
+
+Once this is set up, you can deploy Team Edition by following [this guide](#how-to-run-services).
 
 #### AWS
 
@@ -94,7 +101,7 @@ helm install aws-efs-csi-driver aws-efs-csi-driver/aws-efs-csi-driver --namespac
 helm install aws-ebs-csi-driver aws-ebs-csi-driver/aws-ebs-csi-driver --namespace kube-system
 ```
 
-##### Step 3: Configure EFS via Terraform 
+##### Step 3: Configure EFS via Terraform
 
 1. Navigate to Directory `team-edition-deploy/AWS/aws-eks`
 2. Open the `main.tf` file in a text editor
