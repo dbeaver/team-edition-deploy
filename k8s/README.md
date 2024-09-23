@@ -12,7 +12,7 @@
 
 ### How to run services
 
-**Note:** If you want to store Team Edition data in AWS S3, make sure to [configure cloud volumes](#clouds-volumes-configuration) first.
+**Note:** If you want to store Team Edition data in cloud storage, make sure to [configure cloud volumes](#clouds-volumes-configuration) first.
 
 - Clone this repo from GitHub: `git clone https://github.com/dbeaver/team-edition-deploy`
 - `cd team-edition-deploy/k8s/cbte`
@@ -62,11 +62,11 @@ and add two lines in the `metadata.annotations`
 
 ### Clouds volumes configuration
 
-To store Team Edition data in the cloud, you need to configure cloud volumes. For example, you can store connection configurations and user information in AWS S3.
+To store Team Edition data in the cloud, you need to configure cloud volumes. For example, you can store connection configurations and user information in AWS EFS.
 
 Once this is set up, you can deploy Team Edition by following [this guide](#how-to-run-services).
 
-#### AWS S3
+#### AWS
 
 ##### Prerequisites
 
