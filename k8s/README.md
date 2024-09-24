@@ -53,6 +53,14 @@ Install `AWS CLI`: If `AWS CLI` is not installed yet, install it by following th
 Install `eksctl`: `eksctl` is a command-line utility for creating and managing EKS clusters. Install eksctl by following the instructions on the [official eksctl website](https://eksctl.io/installation/).  
 
 
+Policy required for eksctl to work:
+
+- [CloudFormation Full Access](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AWSCloudFormationFullAccess.html)
+- [EKS Full Access](https://docs.aws.amazon.com/eks/latest/userguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-console)
+- [EC2 and EC2 Auto Scaling Full Access](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonEC2FullAccess.html)
+- [IAM Full Access](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/IAMFullAccess.html)
+- [Systems Manager](https://docs.aws.amazon.com/systems-manager/latest/userguide/security_iam_id-based-policy-examples.html)
+
 1. OIDC Provider Association:  
 
 ```
