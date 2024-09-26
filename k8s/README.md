@@ -7,8 +7,7 @@
 * 16Gb RAM
 * Linux or macOS as deploy host
 * `git` and `kubectl` installed
-
-[//]: # (* [Nginx load balancer]&#40;https://docs.nginx.com/nginx-ingress-controller/installation/installation-with-helm/&#41; and [Kubernetes Helm plugin]&#40;https://helm.sh/docs/topics/plugins/&#41; added to your `k8s`)
+* [Nginx load balancer](https://docs.nginx.com/nginx-ingress-controller/installation/installation-with-helm/) and [Kubernetes Helm plugin](https://helm.sh/docs/topics/plugins/) added to your `k8s`
 
 ### How to run services
 
@@ -125,7 +124,7 @@ variable "cluster_name" {
 
 ##### Prerequisites
 
-- **gcloud** installed and configured
+- [gcloud](https://cloud.google.com/sdk/docs/install) installed and configured
 - **Helm** installed
 - Access to an existing **GKE cluster**
 
@@ -137,7 +136,7 @@ gcloud services enable file.googleapis.com container.googleapis.com
 
 ##### Step 2: Configure values.yaml file 
 
-Update the following variables in values.yaml file
+Set in `team-edition-deploy/k8s/cbte/values.yaml`
 
 ```
 cloudProvider: gcp 
@@ -145,3 +144,5 @@ storage:
   type: filestore
   storageClassName: "filestore-sc"
 ```
+
+Once this is set up, you can deploy Team Edition by following [this guide](#how-to-run-services).
