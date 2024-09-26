@@ -16,7 +16,7 @@ networks:
 services:
   nginx:
     restart: unless-stopped
-    image: docker.io/${IMAGE_SOURCE:-dbeaver}/cloudbeaver-nginx:${CLOUDBEAVER_VERSION_TAG}
+    image: ${PODMAN_IMAGE_SOURCE:-dbeaver.io/dbeaver}/cloudbeaver-nginx:${CLOUDBEAVER_VERSION_TAG}
     user: root  
     ports:
       - 80:80
@@ -42,7 +42,7 @@ services:
       - cloudbeaver-tm
   kafka:
     restart: unless-stopped
-    image: docker.io/${IMAGE_SOURCE:-dbeaver}/cloudbeaver-kafka:3.8
+    image: ${PODMAN_IMAGE_SOURCE:-dbeaver.io/dbeaver}/cloudbeaver-kafka:3.8
     hostname: kafka
     expose:
       - 9092
@@ -60,7 +60,7 @@ services:
   postgres:
     restart: unless-stopped
     hostname: postgres
-    image: docker.io/${IMAGE_SOURCE:-dbeaver}/cloudbeaver-postgres:14
+    image: ${PODMAN_IMAGE_SOURCE:-dbeaver.io/dbeaver}/cloudbeaver-postgres:14
     volumes:
       - metadata_data:/var/lib/postgresql/data:z
       - ./cloudbeaver-db-init.sql:/docker-entrypoint-initdb.d/cb-init.sql:z
@@ -74,7 +74,7 @@ services:
       - cloudbeaver-te-private-net
   cloudbeaver-dc:
     restart: unless-stopped
-    image: docker.io/${IMAGE_SOURCE:-dbeaver}/cloudbeaver-dc:${CLOUDBEAVER_VERSION_TAG}
+    image: ${PODMAN_IMAGE_SOURCE:-dbeaver.io/dbeaver}/cloudbeaver-dc:${CLOUDBEAVER_VERSION_TAG}
     hostname: cloudbeaver-dc
     environment:
       - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
@@ -104,7 +104,7 @@ services:
   cloudbeaver-te:
     restart: unless-stopped
     hostname: cloudbeaver-te
-    image: docker.io/${IMAGE_SOURCE:-dbeaver}/cloudbeaver-te:${CLOUDBEAVER_VERSION_TAG}
+    image: ${PODMAN_IMAGE_SOURCE:-dbeaver.io/dbeaver}/cloudbeaver-te:${CLOUDBEAVER_VERSION_TAG}
     deploy:
       replicas: ${REPLICA_COUNT_TE:-1}
     volumes:
@@ -121,7 +121,7 @@ services:
       - cloudbeaver-te-private-net
   cloudbeaver-rm:
     restart: unless-stopped
-    image: docker.io/${IMAGE_SOURCE:-dbeaver}/cloudbeaver-rm:${CLOUDBEAVER_VERSION_TAG}
+    image: ${PODMAN_IMAGE_SOURCE:-dbeaver.io/dbeaver}/cloudbeaver-rm:${CLOUDBEAVER_VERSION_TAG}
     hostname: cloudbeaver-rm
     deploy:
       replicas: ${REPLICA_COUNT_RM:-1}
@@ -138,7 +138,7 @@ services:
       - cloudbeaver-te-private-net
   cloudbeaver-qm:
     restart: unless-stopped
-    image: docker.io/${IMAGE_SOURCE:-dbeaver}/cloudbeaver-qm:${CLOUDBEAVER_VERSION_TAG}
+    image: ${PODMAN_IMAGE_SOURCE:-dbeaver.io/dbeaver}/cloudbeaver-qm:${CLOUDBEAVER_VERSION_TAG}
     hostname: cloudbeaver-qm
     deploy:
       replicas: ${REPLICA_COUNT_QM:-1}
@@ -154,7 +154,7 @@ services:
       - cloudbeaver-te-private-net
   cloudbeaver-tm:
     restart: unless-stopped
-    image: docker.io/${IMAGE_SOURCE:-dbeaver}/cloudbeaver-tm:${CLOUDBEAVER_VERSION_TAG}
+    image: ${PODMAN_IMAGE_SOURCE:-dbeaver.io/dbeaver}/cloudbeaver-tm:${CLOUDBEAVER_VERSION_TAG}
     hostname: cloudbeaver-tm
     deploy:
       replicas: ${REPLICA_COUNT_TM:-1}
