@@ -69,10 +69,10 @@ To store Team Edition data in the cloud, you need to configure cloud volumes. Fo
 
 ##### Prerequisites
 
-- **AWS CLI** installed and configured
-- **eksctl** installed
-- **Helm** installed
-- **Terraform** installed
+- [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html) installed and configured
+- [eksctl](https://eksctl.io/installation/) installed
+- [Helm](https://helm.sh/docs/intro/install/) installed
+- [Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli) installed
 - Access to an existing **EKS cluster**
 
 Policy required:
