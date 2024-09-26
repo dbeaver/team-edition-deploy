@@ -61,20 +61,22 @@ and add two lines in the `metadata.annotations`
 
 ### Clouds volumes configuration
 
+#### AWS
+
 To store Team Edition data in the cloud, you need to configure cloud volumes. For example, you can store connection configurations and user information in AWS EFS.
 
-Once this is set up, you can deploy Team Edition by following [this guide](#how-to-run-services).
-
-#### AWS
 
 ##### Prerequisites
 
-- **AWS CLI** installed and configured
-- **eksctl** installed
-- **Helm** installed
-- **Terraform** installed
+- [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html) installed and configured
+- [eksctl](https://eksctl.io/installation/) installed
+- [Helm](https://helm.sh/docs/intro/install/) installed
+- [Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli) installed
 - Access to an existing **EKS cluster**
 
+Policy required:
+
+- [AmazonElasticFileSystemFullAccess](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonElasticFileSystemFullAccess.html)
 
 ##### Step 1: Associate IAM OIDC Provider
 
@@ -108,7 +110,7 @@ helm install aws-ebs-csi-driver aws-ebs-csi-driver/aws-ebs-csi-driver --namespac
 ```
 variable "region" {
   description = "Region for AWS EFS"
-  default     = ""<your-region>"
+  default     = "<your-region>"
 }
 variable "cluster_name" {
   description = "EKS cluster name"
@@ -116,16 +118,26 @@ variable "cluster_name" {
 }
 ```
 4. Run `terraform init` and `terraform apply`
-5. Take `efs_file_system_id` after complite deployment and put it in `storage.efs.fileSystemId` in `team-edition-deploy/k8s/cbte/values.yaml` file
-6. Set in `team-edition-deploy/k8s/cbte/values.yaml` in `cloudProvider` to `aws`
+5. Take `efs_file_system_id` and set it in `team-edition-deploy/k8s/cbte/values.yaml` after completing deployment with followed values
 
+```
+cloudProvider: aws 
+storage:
+  type: efs
+  storageClassName: "efs-sc"
+  efs:
+    fileSystemId: "<your-efs-id>"
+
+```
+
+Once this is set up, you can deploy Team Edition by following [this guide](#how-to-run-services).
 
 #### GCP 
 
 ##### Prerequisites
 
 - [gcloud](https://cloud.google.com/sdk/docs/install) installed and configured
-- **Helm** installed
+- [Helm](https://helm.sh/docs/intro/install/) installed
 - Access to an existing **GKE cluster**
 
 ##### Step 1: Enable the Cloud Filestore API and the Google Kubernetes Engine API 
@@ -136,7 +148,7 @@ gcloud services enable file.googleapis.com container.googleapis.com
 
 ##### Step 2: Configure values.yaml file 
 
-Set in `team-edition-deploy/k8s/cbte/values.yaml`
+Set in `team-edition-deploy/k8s/cbte/values.yaml`with followed values 
 
 ```
 cloudProvider: gcp 
