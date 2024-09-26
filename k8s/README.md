@@ -62,11 +62,10 @@ and add two lines in the `metadata.annotations`
 
 ### Clouds volumes configuration
 
+#### AWS
+
 To store Team Edition data in the cloud, you need to configure cloud volumes. For example, you can store connection configurations and user information in AWS EFS.
 
-Once this is set up, you can deploy Team Edition by following [this guide](#how-to-run-services).
-
-#### AWS
 
 ##### Prerequisites
 
@@ -76,6 +75,9 @@ Once this is set up, you can deploy Team Edition by following [this guide](#how-
 - **Terraform** installed
 - Access to an existing **EKS cluster**
 
+Policy required:
+
+- [AmazonElasticFileSystemFullAccess](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonElasticFileSystemFullAccess.html)
 
 ##### Step 1: Associate IAM OIDC Provider
 
@@ -109,7 +111,7 @@ helm install aws-ebs-csi-driver aws-ebs-csi-driver/aws-ebs-csi-driver --namespac
 ```
 variable "region" {
   description = "Region for AWS EFS"
-  default     = ""<your-region>"
+  default     = "<your-region>"
 }
 variable "cluster_name" {
   description = "EKS cluster name"
@@ -117,5 +119,16 @@ variable "cluster_name" {
 }
 ```
 4. Run `terraform init` and `terraform apply`
-5. Take `efs_file_system_id` after complite deployment and put it in `storage.efs.fileSystemId` in `team-edition-deploy/k8s/cbte/values.yaml` file
-6. Set in `team-edition-deploy/k8s/cbte/values.yaml` in `cloudProvider` to `aws`
+5. Take `efs_file_system_id` and set it in `team-edition-deploy/k8s/cbte/values.yaml` after completing deployment with followed values
+
+```
+cloudProvider: aws 
+storage:
+  type: efs
+  storageClassName: "efs-sc"
+  efs:
+    fileSystemId: "<your-efs-id>"
+
+```
+
+Once this is set up, you can deploy Team Edition by following [this guide](#how-to-run-services).
