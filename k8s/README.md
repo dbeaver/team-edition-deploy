@@ -45,7 +45,7 @@
 #### Version update procedure
 
 1. Change directory to `team-edition-deploy/k8s/cbte`.
-2. Change value of `imageTag` in configuration file `values.yaml` with a preferred version. Go to next step if tag `latest` set.
+2. Change value of `imageTag` in configuration file `values.yaml` with a preferred version. Go to next step if tag `latest` is set.
 3. Upgrade cluster: `helm upgrade cloudbeaver-te ./ --values ./values.yaml`
 
 ### Additional configuration
@@ -178,9 +178,9 @@ helm install aws-ebs-csi-driver aws-ebs-csi-driver/aws-ebs-csi-driver --namespac
 
 ###### Step 3: Configure EFS via Terraform
 
-1. Navigate to Directory `team-edition-deploy/AWS/aws-eks`
-2. Open the `main.tf` file in a text editor
-3. Update the following variables with your AWS region and EKS cluster name
+1. Navigate to directory `team-edition-deploy/AWS/aws-eks`
+2. Open the `main.tf` file in a text editor.
+3. Update the following variables with your AWS region and EKS cluster name:
 ```
 variable "region" {
   description = "Region for AWS EFS"
@@ -191,8 +191,10 @@ variable "cluster_name" {
   default     = "<your-cluster-name>"
 }
 ```
-4. Run `terraform init` and `terraform apply`
-5. Take `efs_file_system_id` and set it in `team-edition-deploy/k8s/cbte/values.yaml` after completing deployment with followed values
+4. Run `terraform init`.
+5. Next, run `terraform apply`, which will output `efs_file_system_id`.
+6. Open the file `team-edition-deploy/k8s/cbte/values.yaml` and update the `fileSystemId` parameter with the value of `efs_file_system_id` obtained in the previous step.
+7. Fill in the other parameters as shown in the example:
 
 ```
 cloudProvider: aws
@@ -222,7 +224,7 @@ gcloud services enable file.googleapis.com container.googleapis.com
 
 ###### Step 2: Configure values.yaml file
 
-Set in `team-edition-deploy/k8s/cbte/values.yaml`with followed values
+Open the file `team-edition-deploy/k8s/cbte/values.yaml` and fill in the following parameters as shown in the example:
 
 ```
 cloudProvider: gcp
