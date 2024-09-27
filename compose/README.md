@@ -7,7 +7,7 @@ All you need is a Linux machine with docker.
 
 - Minimum 16GB RAM
 - Minimum 50GB storage, > 100GB recommended
-- Ubuntu recommended
+- Ubuntu is recommended, but it also works on other Linux distributions, macOS, and Windows
 - [Docker](https://docs.docker.com/engine/install/ubuntu/) installed. Make sure you have chosen the right OS distro.
 - [docker-compose](https://docs.docker.com/compose/install/) binary installed and added to your PATH variable. Supported versions 2.10 and above
     - If you install `docker-compose-plugin`, you must use the `docker compose` command instead of `docker-compose`.
@@ -21,7 +21,7 @@ Ensure all TCP ports from the below list are available in your network stack.
 
 To get started, clone the Git repository to your local machine by running the following command in your terminal:
 ```
-git clone https://github.com/dbeaver/cloudbeaver-deploy.git
+git clone https://github.com/dbeaver/team-edition-deploy.git
 ```
 
 ### Using external DB
