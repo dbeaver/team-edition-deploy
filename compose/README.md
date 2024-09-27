@@ -21,7 +21,7 @@ Ensure all TCP ports from the below list are available in your network stack.
 
 To get started, clone the Git repository to your local machine by running the following command in your terminal:
 ```
-git clone https://github.com/dbeaver/cloudbeaver-deploy.git
+git clone https://github.com/dbeaver/team-edition-deploy.git
 ```
 
 ### Using external DB
