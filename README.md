@@ -35,10 +35,10 @@ Version update is handled differently for different deployment methods. To updat
 
 - [Docker compose](compose/README.md#version-update-procedure)  
 - [Kubernetes](k8s/README.md#version-update-procedure)  
-- [AWS AMI](Manager/README.md#version-update-procedure)  
+- [AWS AMI](manager/README.md#version-update-procedure)  
 - [AWS ECS](AWS/ecs-fargate/README.md#version-update)  
-- [GCP Image](Manager/README.md#version-update-procedure)  
-- [Azure Image](Manager/README.md#version-update-procedure)
+- [GCP Image](manager/README.md#version-update-procedure)  
+- [Azure Image](manager/README.md#version-update-procedure)
 
 
 #### How to change database password for already deployed clusters
