@@ -49,7 +49,8 @@ cloudbeaverTM:
 # By default is None, it means not cloud deployment
 # AWS - type: efs storageClassName: efs-sc
 # GCP - type: filestore storageClassName: filestore-sc
-cloudProvider: None  # Options: None, aws, gcp
+# Azure -type: azurefile storageClassName: azurefile
+cloudProvider: None  # Options: None, aws, gcp, azure
 storage:
   type: efs
   storageClassName: "efs-sc"

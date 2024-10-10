@@ -8,7 +8,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteMany
-  {{- if or (eq .Values.cloudProvider "gcp") (eq .Values.cloudProvider "aws") }}
+  {{- if or (eq .Values.cloudProvider "gcp") (eq .Values.cloudProvider "aws") (eq .Values.cloudProvider "azure") }}
   storageClassName: {{ .Values.storage.storageClassName }}
   {{- end }}
   resources:

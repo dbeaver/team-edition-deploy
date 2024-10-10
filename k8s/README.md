@@ -11,6 +11,7 @@
   - [Clouds volumes configuration](#clouds-volumes-configuration)
     - [AWS](#aws)
     - [Google Cloud](#google-cloud)
+    - [Azure](#azure)
 
 
 ### Minimum requirements
@@ -231,6 +232,27 @@ cloudProvider: gcp
 storage:
   type: filestore
   storageClassName: "filestore-sc"
+```
+
+Once this is set up, you can deploy Team Edition by following [this guide](#how-to-run-services).
+
+
+##### Azure
+
+###### Prerequisites
+
+- [Helm](https://helm.sh/docs/intro/install/) installed
+- Access to an existing **GKE cluster**
+
+###### Step 1: Configure values.yaml file
+
+Open the file `team-edition-deploy/k8s/cbte/values.yaml` and fill in the following parameters as shown in the example:
+
+```
+cloudProvider: azure
+storage:
+  type: azurefile
+  storageClassName: "azurefile"
 ```
 
 Once this is set up, you can deploy Team Edition by following [this guide](#how-to-run-services).
