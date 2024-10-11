@@ -242,7 +242,7 @@ Once this is set up, you can deploy Team Edition by following [this guide](#how-
 ###### Prerequisites
 
 - [Helm](https://helm.sh/docs/intro/install/) installed
-- Access to an existing **GKE cluster**
+- Access to an existing **AKS cluster**
 
 ###### Step 1: Configure values.yaml file
 
