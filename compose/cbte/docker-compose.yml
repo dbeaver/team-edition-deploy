@@ -7,11 +7,11 @@ volumes:
   nginx_ssl_data: {}
   nginx_conf_data: {}
 networks:
-  cloudbeaver-te-private-net: null
+  dbeaver-te-private-net: null
 services:
   nginx:
     restart: unless-stopped
-    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-nginx:${CLOUDBEAVER_VERSION_TAG}
+    image: ${IMAGE_SOURCE:-dbeaver}/dbeaver-nginx:${TE_VERSION_TAG}
     ports:
       - 80:80
       - 443:443
@@ -22,21 +22,21 @@ services:
       - REPLICA_COUNT_QM=${REPLICA_COUNT_QM:-1}
       - REPLICA_COUNT_RM=${REPLICA_COUNT_RM:-1}
       - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-dbeaver}
-      - CLOUDBEAVER_SERVICE_PORT=${CLOUDBEAVER_SERVICE_PORT:-8978}
+      - TE_SERVICE_PORT=${TE_SERVICE_PORT:-8978}
     networks:
-      - cloudbeaver-te-private-net
+      - dbeaver-te-private-net
     volumes:
       - nginx_conf_data:/etc/nginx/product-conf/
       - nginx_ssl_data:/etc/nginx/ssl/
     depends_on:
-      - cloudbeaver-te
-      - cloudbeaver-dc
-      - cloudbeaver-rm
-      - cloudbeaver-qm
-      - cloudbeaver-tm
+      - dbeaver-te-web
+      - dbeaver-te-dc
+      - dbeaver-te-rm
+      - dbeaver-te-qm
+      - dbeaver-te-tm
   kafka:
     restart: unless-stopped
-    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-kafka:3.8
+    image: ${IMAGE_SOURCE:-dbeaver}/dbeaver-kafka:3.8
     hostname: kafka
     expose:
       - 9092
@@ -50,43 +50,43 @@ services:
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
       - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
     networks:
-      - cloudbeaver-te-private-net
+      - dbeaver-te-private-net
   postgres:
     restart: unless-stopped
     hostname: postgres
-    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-postgres:14
+    image: ${IMAGE_SOURCE:-dbeaver}/dbeaver-postgres:14
     volumes:
       - metadata_data:/var/lib/postgresql/data
       - ./cloudbeaver-db-init.sql:/docker-entrypoint-initdb.d/cb-init.sql
     environment:
       - POSTGRES_DB=cloudbeaver
-      - POSTGRES_USER=${CLOUDBEAVER_DB_USER}
-      - POSTGRES_PASSWORD=${CLOUDBEAVER_DB_PASSWORD}
+      - POSTGRES_USER=${TE_DB_USER}
+      - POSTGRES_PASSWORD=${TE_DB_PASSWORD}
     expose:
       - 5432
     networks:
-      - cloudbeaver-te-private-net
-  cloudbeaver-dc:
+      - dbeaver-te-private-net
+  dbeaver-te-dc:
     restart: unless-stopped
-    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-dc:${CLOUDBEAVER_VERSION_TAG}
-    hostname: cloudbeaver-dc
+    image: ${IMAGE_SOURCE:-dbeaver}/team-dc:${TE_VERSION_TAG}
+    hostname: dbeaver-te-dc
     environment:
-      - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
-      - CLOUDBEAVER_RM_SERVER_URL=http://cloudbeaver-rm:8971/rm
-      - CLOUDBEAVER_QM_SERVER_URL=http://cloudbeaver-qm:8972/qm
-      - CLOUDBEAVER_TM_SERVER_URL=http://cloudbeaver-tm:8973/tm
-      - CLOUDBEAVER_DC_BACKEND_DB_URL=${CLOUDBEAVER_DB_URL}
-      - CLOUDBEAVER_DC_BACKEND_DB_USER=${CLOUDBEAVER_DB_USER}
-      - CLOUDBEAVER_DC_BACKEND_DB_PASSWORD=${CLOUDBEAVER_DB_PASSWORD}
-      - CLOUDBEAVER_QM_BACKEND_DB_URL=${CLOUDBEAVER_DB_URL}
-      - CLOUDBEAVER_QM_BACKEND_DB_USER=${CLOUDBEAVER_DB_USER}
-      - CLOUDBEAVER_QM_BACKEND_DB_PASSWORD=${CLOUDBEAVER_DB_PASSWORD}
-      - CLOUDBEAVER_TM_BACKEND_DB_URL=${CLOUDBEAVER_DB_URL}
-      - CLOUDBEAVER_TM_BACKEND_DB_USER=${CLOUDBEAVER_DB_USER}
-      - CLOUDBEAVER_TM_BACKEND_DB_PASSWORD=${CLOUDBEAVER_DB_PASSWORD}
-      - CLOUDBEAVER_QM_BACKEND_DB_DRIVER=${CLOUDBEAVER_DB_DRIVER}
-      - CLOUDBEAVER_DC_BACKEND_DB_DRIVER=${CLOUDBEAVER_DB_DRIVER}
-      - CLOUDBEAVER_TM_BACKEND_DB_DRIVER=${CLOUDBEAVER_DB_DRIVER}
+      - TE_DC_SERVER_URL=http://dbeaver-te-dc:8970/dc
+      - TE_RM_SERVER_URL=http://dbeaver-te-rm:8971/rm
+      - TE_QM_SERVER_URL=http://dbeaver-te-qm:8972/qm
+      - TE_TM_SERVER_URL=http://dbeaver-te-tm:8973/tm
+      - TE_DC_BACKEND_DB_URL=${TE_DB_URL}
+      - TE_DC_BACKEND_DB_USER=${TE_DB_USER}
+      - TE_DC_BACKEND_DB_PASSWORD=${TE_DB_PASSWORD}
+      - TE_QM_BACKEND_DB_URL=${TE_DB_URL}
+      - TE_QM_BACKEND_DB_USER=${TE_DB_USER}
+      - TE_QM_BACKEND_DB_PASSWORD=${TE_DB_PASSWORD}
+      - TE_TM_BACKEND_DB_URL=${TE_DB_URL}
+      - TE_TM_BACKEND_DB_USER=${TE_DB_USER}
+      - TE_TM_BACKEND_DB_PASSWORD=${TE_DB_PASSWORD}
+      - TE_QM_BACKEND_DB_DRIVER=${TE_DB_DRIVER}
+      - TE_DC_BACKEND_DB_DRIVER=${TE_DB_DRIVER}
+      - TE_TM_BACKEND_DB_DRIVER=${TE_DB_DRIVER}
     volumes:
       - dc_data:/opt/domain-controller/workspace
       - ./cert/private/:/opt/domain-controller/conf/certificates/
@@ -94,72 +94,72 @@ services:
     expose:
       - 8970
     networks:
-      - cloudbeaver-te-private-net
-  cloudbeaver-te:
+      - dbeaver-te-private-net
+  dbeaver-te-web:
     restart: unless-stopped
-    hostname: cloudbeaver-te
-    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-te:${CLOUDBEAVER_VERSION_TAG}
+    hostname: dbeaver-te-web
+    image: ${IMAGE_SOURCE:-dbeaver}/team-web:${TE_VERSION_TAG}
     deploy:
       replicas: ${REPLICA_COUNT_TE:-1}
     volumes:
       - ./cert/public/:/opt/cloudbeaver/conf/certificates/
     environment:
-      - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
+      - TE_DC_SERVER_URL=http://dbeaver-te-dc:8970/dc
     expose:
-      - ${CLOUDBEAVER_SERVICE_PORT:-8978}
+      - ${TE_SERVICE_PORT:-8978}
     depends_on:
-      - cloudbeaver-dc
-      - cloudbeaver-rm
-      - cloudbeaver-qm
+      - dbeaver-te-dc
+      - dbeaver-te-rm
+      - dbeaver-te-qm
     networks:
-      - cloudbeaver-te-private-net
-  cloudbeaver-rm:
+      - dbeaver-te-private-net
+  dbeaver-te-rm:
     restart: unless-stopped
-    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-rm:${CLOUDBEAVER_VERSION_TAG}
-    hostname: cloudbeaver-rm
+    image: ${IMAGE_SOURCE:-dbeaver}/team-rm:${TE_VERSION_TAG}
+    hostname: dbeaver-te-rm
     deploy:
       replicas: ${REPLICA_COUNT_RM:-1}
     environment:
-      - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
+      - TE_DC_SERVER_URL=http://dbeaver-te-dc:8970/dc
     volumes:
       - rm_data:/opt/resource-manager/workspace
       - ./cert/public/:/opt/resource-manager/conf/certificates/
     depends_on:
-      - cloudbeaver-dc
+      - dbeaver-te-dc
     expose:
       - 8971
     networks:
-      - cloudbeaver-te-private-net
-  cloudbeaver-qm:
+      - dbeaver-te-private-net
+  dbeaver-te-qm:
     restart: unless-stopped
-    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-qm:${CLOUDBEAVER_VERSION_TAG}
-    hostname: cloudbeaver-qm
+    image: ${IMAGE_SOURCE:-dbeaver}/team-qm:${TE_VERSION_TAG}
+    hostname: dbeaver-te-qm
     deploy:
       replicas: ${REPLICA_COUNT_QM:-1}
     environment:
-      - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
+      - TE_DC_SERVER_URL=http://dbeaver-te-dc:8970/dc
     volumes:
       - ./cert/public/:/opt/query-manager/conf/certificates/
     depends_on:
-      - cloudbeaver-dc
+      - dbeaver-te-dc
     expose:
       - 8972
     networks:
-      - cloudbeaver-te-private-net
-  cloudbeaver-tm:
+      - dbeaver-te-private-net
+  dbeaver-te-tm:
     restart: unless-stopped
-    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-tm:${CLOUDBEAVER_VERSION_TAG}
-    hostname: cloudbeaver-tm
+    image: ${IMAGE_SOURCE:-dbeaver}/team-tm:${TE_VERSION_TAG}
+    hostname: dbeaver-te-tm
     deploy:
       replicas: ${REPLICA_COUNT_TM:-1}
     environment:
-      - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
+      - TE_DC_SERVER_URL=http://dbeaver-te-dc:8970/dc
     volumes:
       - tm_data:/opt/task-manager/workspace
       - ./cert/public/:/opt/task-manager/conf/certificates/
     depends_on:
-      - cloudbeaver-dc
+      - dbeaver-te-dc
     expose:
       - 8973
     networks:
-      - cloudbeaver-te-private-net
+      - dbeaver-te-private-net

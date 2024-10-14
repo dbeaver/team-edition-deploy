@@ -32,8 +32,8 @@ If you want to use another database on your side, you can do it according to the
 
 1. Navigate to `team-edition-deploy/compose/cbte` folder, and open `.env.example` file.
 2. Change `USE_EXTERNAL_DB` to `true` value.
-3. Change `CLOUDBEAVER_DB_DRIVER` to driver for a database you want to use, for example: `postgres-jdbc`/`mysql8`/`oracle_thin`
-4. Enter the authentication data for your database in the fields `CLOUDBEAVER_DB_URL` `CLOUDBEAVER_DB_USER` `CLOUDBEAVER_DB_PASSWORD`
+3. Change `TE_DB_DRIVER` to driver for a database you want to use, for example: `postgres-jdbc`/`mysql8`/`oracle_thin`
+4. Enter the authentication data for your database in the fields `TE_DB_URL` `TE_DB_USER` `TE_DB_PASSWORD`
 
 
 #### Configure Oracle database
@@ -74,8 +74,8 @@ If you want to use another database on your side, you can do it according to the
     - Edit `.env` file to set configuration properties
 2. Configure domain name (optional):
    - You may skip this step. In this case, the cluster will be configured for `localhost`.  
-   - Set the `CLOUDBEAVER_DOMAIN` property to the desired domain name.  
-   - Create DNS records for `CLOUDBEAVER_DOMAIN`.  
+   - Set the `TE_DOMAIN` property to the desired domain name.  
+   - Create DNS records for `TE_DOMAIN`.  
 3. [Configure SSL](../SSL/README.md#ssl-certificate-configuration)
 4. Start the cluster:
    - `docker-compose up -d` or `docker compose up -d`
@@ -95,8 +95,8 @@ To ensure the safety and integrity of your data, it is recommended to create a b
 
 ### Services will be accessible in the next URIs
 
-- https://__CLOUDBEAVER_DOMAIN__ - web interface. It will open the admin panel on the first start
-- https://__CLOUDBEAVER_DOMAIN__/dc - endpoint for desktop applications
+- https://__TE_DOMAIN__ - web interface. It will open the admin panel on the first start
+- https://__TE_DOMAIN__/dc - endpoint for desktop applications
 
 ### Stopping the cluster
 `docker-compose down`
@@ -104,7 +104,7 @@ To ensure the safety and integrity of your data, it is recommended to create a b
 ### Version update procedure
 
 1. Navigate to `team-edition-deploy/compose/cbte`
-2. Change value of `CLOUDBEAVER_VERSION_TAG` in `.env` with a preferred version. Go to next step if tag `latest` is set.
+2. Change value of `TE_VERSION_TAG` in `.env` with a preferred version. Go to next step if tag `latest` is set.
 3. Pull new docker images: `docker-compose pull` or `docker compose pull`  
 4. Restart cluster: `docker-compose up -d` or `docker compose up -d`
 
@@ -152,7 +152,7 @@ IMAGE_SOURCE=dbeaver
 and change version tag to
 
 ```
-CLOUDBEAVER_VERSION_TAG=24.2.0
+TE_VERSION_TAG=24.2.0
 ```
 
 ##### Step 3. Restart cluster
