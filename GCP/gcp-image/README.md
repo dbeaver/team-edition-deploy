@@ -17,7 +17,7 @@ To deploy Team Edition in Google Cloud Console interface, you need to import Tea
 
 1. Log in to your account in [Google Cloud Console](https://console.cloud.google.com/), navigate to **Compute Engine -> Images**, and click **[+] CREATE IMAGE**.
 
-![Alt text](<image1.png>)
+![Alt text](images/create-image.png)
 
 2. Fill in the **Create an image** form:
 
@@ -26,27 +26,27 @@ To deploy Team Edition in Google Cloud Console interface, you need to import Tea
 - If you are prompted to enable Cloud Build tools and grant permissions, do so.
 - Copy the following URI `dbeaver-te-server/dbeaver` in the **Virtual disk file** field, click **BROWSE**, and select the version you need.
 
-![Alt text](image2.png)
+![Alt text](images/choose-vmdk.png)
 
 
 That's all done. The other fields are not required.
 
 3. Click **Create**. You may have to wait up to 15 minutes while the Team Edition server custom image imports to your account.
 
-![Alt text](image3.png)
+![Alt text](images/waiting-for-build-to-complete.png)
 
 
 #### Step 2. Create a new GCP Compute Engine instance from the imported image
 
 1. Open the tab **Images**, click on the name of the image that you just imported, and click on the **[+] Create instance** button.
 
-![Alt text](image4.png)
+![Alt text](images/create-instance.png)
 
 2. Give your instance a name
 
 3. In the **Machine configuration** section, make sure to pick a "Machine type" with recommended memory and cpu (4 CPUs and 16GB RAM) to run Dbeaver server.
 
-![Alt text](image5.png)
+![Alt text](images/machine-configuration.png)
 
 4. In the "Boot disk" section, click the "Change" button
 
@@ -58,7 +58,7 @@ That's all done. The other fields are not required.
 
 7. Finally, click the **Create** button. After a few minutes, your Team Edition server instance should be up and running.
 
-![Alt text](image7.png)
+![Alt text](images/running-instance.png)
 
 You can check that your instance is running correctly by copying and pasting the **External IP** address provided by GCP into your browser.
 
@@ -67,7 +67,7 @@ You can check that your instance is running correctly by copying and pasting the
 
 1. Log in to your account in [Google Cloud Console](https://console.cloud.google.com/), navigate to **Compute Engine** and click on **Activate Cloud Shell**.
 
-![Alt text](image.png)
+![Alt text](images/open-cli.png)
 
 2. If you are prompted to authorize, do so.
 

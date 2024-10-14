@@ -1,4 +1,4 @@
-### DBeaver TE deployment for AWS ECS and Fargate with Terraform.
+## Team Edition deployment for AWS ECS and Fargate with Terraform
 
 1. First you need to install and configure your AWS CLI:
 
@@ -7,11 +7,11 @@
    - [Environment variables to configure the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html)
 
 2. Check that your AWS user has the minimum required IAM policies:
-   
+
    - `AmazonECS_FullAccess`
    - `AmazonEC2FullAccess`
    - `AmazonRDSFullAccess`
-   - `AWSCloudMapFullAccess` 
+   - `AWSCloudMapFullAccess`
 
 3. Next you need to [install Terraform](https://developer.hashicorp.com/terraform/install)
 
@@ -37,11 +37,11 @@ git clone https://github.com/dbeaver/cloudbeaver-deploy.git
 6. Configure the deployment in `variables.tf` file as follows:  
    - Set your `aws_account_id`, you can get it by logging into your AWS console:
 
-   ![alt text](images/image.png)
+   ![Accoun ID](images/account-id.png)
 
    - Set your `aws_region` in format `us-east-1`. For example:
 
-   ![alt text](images/image-1.png)
+   ![Region](images/region.png)
 
    - Ensure that the `alb_certificate_Identifier` variable contains the ID from [AWS Certificate Manager](#importing-an-ssl-certificate-in-aws) corresponding to the domain name specified   in the `CLOUDBEAVER_PUBLIC_URL` variable within `variables.tf`. The domain name in `CLOUDBEAVER_PUBLIC_URL` must match the domain for which the certificates have been issued.
    - You can customize the deployment version by updating the `dbeaver_te_version` environment variable. The default version is `24.2.0`.
@@ -51,7 +51,7 @@ git clone https://github.com/dbeaver/cloudbeaver-deploy.git
 8. Cluster destruction is performed in reverse order:
     - Run `terraform destroy` in `ecs-fargate` directory to destroy ECS cluster.
 
-### Importing an SSL Certificate in AWS
+## Importing an SSL Certificate in AWS
 
    **Note:** SSL Certificates are digital documents that ensure secure communication between a web server and a user's browser. They encrypt data to prevent interception and verify the authenticity of a website. You can obtain SSL certificates from Certificate Authorities (CAs) like Let's Encrypt, DigiCert, and Comodo.
 
@@ -63,9 +63,9 @@ git clone https://github.com/dbeaver/cloudbeaver-deploy.git
 
    After completing these steps, you will receive an Identifier for your newly imported certificate.
 
-   ![alt text](images/image-2.png)
+   ![Identifier](images/identifier.png)
 
-### Version update
+## Version update
 
 1. Navigate to the `team-edition-deploy/AWS/ecs-fargate` directory.
 
