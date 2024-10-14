@@ -1,18 +1,18 @@
-### Clouds volumes configuration
+## Google Cloud Filestore configuration for Kubernetes deployment
 
-#### Prerequisites
+### Prerequisites
 
 - [gcloud](https://cloud.google.com/sdk/docs/install) installed and configured
 - [Helm](https://helm.sh/docs/intro/install/) installed
 - Access to an existing **GKE cluster**
 
-#### Step 1: Enable the Cloud Filestore API and the Google Kubernetes Engine API
+### Step 1: Enable the Cloud Filestore API and the Google Kubernetes Engine API
 
 ```
 gcloud services enable file.googleapis.com container.googleapis.com
 ```
 
-#### Step 2: Configure values.yaml file
+### Step 2: Configure values.yaml file
 
 Open the file `team-edition-deploy/k8s/cbte/values.yaml` and fill in the following parameters as shown in the example:
 

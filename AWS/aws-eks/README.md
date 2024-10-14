@@ -1,4 +1,4 @@
-#### AWS ALB configuration  
+## AWS ALB configuration for Kubernetes deployment
 
 If you want to use [AWS Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html) as ingress controller, follow this instruction.
 
@@ -55,12 +55,12 @@ helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
   --set serviceAccount.name=aws-load-balancer-controller
 ```
 
-#### Clouds volumes configuration
+## AWS volumes configuration for Kubernetes deployment
 
 To store Team Edition data in the cloud, you need to configure cloud volumes. For example, you can store connection configurations and user information in AWS EFS.
 
 
-###### Prerequisites
+### Prerequisites
 
 - [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html) installed and configured
 - [eksctl](https://eksctl.io/installation/) installed
@@ -72,7 +72,7 @@ Policy required:
 
 - [AmazonElasticFileSystemFullAccess](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonElasticFileSystemFullAccess.html)
 
-###### Step 1: Associate IAM OIDC Provider
+### Step 1: Associate IAM OIDC Provider
 
 Associate the IAM OIDC provider with your EKS cluster to enable IAM roles for service accounts.
 
@@ -83,7 +83,7 @@ eksctl utils associate-iam-oidc-provider \
   --approve
 ```
 
-###### Step 2: Install AWS EFS and EBS CSI Drivers
+### Step 2: Install AWS EFS and EBS CSI Drivers
 
 Install the AWS EFS and EBS CSI drivers using Helm.
 
@@ -96,7 +96,7 @@ helm install aws-efs-csi-driver aws-efs-csi-driver/aws-efs-csi-driver --namespac
 helm install aws-ebs-csi-driver aws-ebs-csi-driver/aws-ebs-csi-driver --namespace kube-system
 ```
 
-###### Step 3: Configure EFS via Terraform
+### Step 3: Configure EFS via Terraform
 
 1. Navigate to directory `team-edition-deploy/AWS/aws-eks`
 2. Open the `main.tf` file in a text editor.

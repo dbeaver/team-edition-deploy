@@ -6,12 +6,12 @@
   - [Version update](#version-update-procedure)
 - [Additional configuration](#additional-configuration)
   - [OpenShift deployment](#openshift-deployment)
-  - [AWS ALB configuration ](../AWS/aws-eks/README.md#aws-alb-configuration)
+  - [AWS ALB configuration ](../AWS/aws-eks/README.md)
   - [Digital Ocean proxy configuration](#digital-ocean-proxy-configuration)
   - [Clouds volumes configuration](#clouds-volumes-configuration)
-    - [AWS](../AWS/aws-eks/README.md#clouds-volumes-configuration)
-    - [Google Cloud](../GCP/gke/README.md#clouds-volumes-configuration)
-    - [Azure](../Azure/aks/README.md#clouds-volumes-configuration)
+    - [AWS](../AWS/aws-eks/README.md#aws-volumes-configuration-for-kubernetes-deployment)
+    - [Google Cloud](../GCP/gke/README.md)
+    - [Azure](../Azure/aks/README.md)
 
 
 ### Minimum requirements
@@ -76,3 +76,13 @@ and add two lines in the `metadata.annotations`
 
 - `service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"`
 - `service.beta.kubernetes.io/do-loadbalancer-hostname: "cloudbeaverBaseDomain"`
+
+#### AWS ALB configuration
+
+If you want to use AWS Application Load Balancer as ingress controller, [follow this instruction](../AWS/aws-eks/README.md).
+
+#### Clouds volumes configuration
+
+- [AWS](../AWS/aws-eks/README.md#aws-volumes-configuration-for-kubernetes-deployment)
+- [Google Cloud](../GCP/gke/README.md)
+- [Azure](../Azure/aks/README.md)

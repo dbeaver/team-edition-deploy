@@ -1,11 +1,11 @@
-### Clouds volumes configuration
+## AWS volumes configuration for Kubernetes deployment
 
-#### Prerequisites
+### Prerequisites
 
 - [Helm](https://helm.sh/docs/intro/install/) installed
 - Access to an existing **AKS cluster**
 
-#### Step 1: Configure values.yaml file
+### Configure values.yaml file
 
 Open the file `team-edition-deploy/k8s/cbte/values.yaml` and fill in the following parameters as shown in the example:
 
