@@ -1,6 +1,7 @@
 ## AWS ALB configuration for Kubernetes deployment
 
-If you want to use [AWS Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html) as ingress controller, follow this instruction.
+If you want to use [AWS Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html) as ingress controller, follow this instruction.  
+This is not necessary, you can use `nginx` by default as a ingress controller.
 
 Install `AWS CLI`: If `AWS CLI` is not installed yet, install it by following the instructions on the [official AWS CLI website](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html).  
 
