@@ -14,10 +14,13 @@ or in a cloud.
     * AWS
         - [AWS AMI](AWS/ami/) - if you want to use AWS for deployment
         - [AWS ECS](AWS/ecs-fargate/) - create and deploy ECS cluster
+        - [AWS EKS](AWS/aws-eks/README.md) - if you want to use AWS EKS for deployment
     * Google Cloud
         - [GCP Image](GCP/gcp-image) - if you want to use GCP for deployment
+        - [GCP GKE](GCP/gke/README.md) - if you want to use GCP GKE for deployment
     * Azure
         - [Azure Image](Azure/azure-image) - if you want to use Azure for deployment
+        - [Azure AKS](Azure/aks/README.md) - if you want to use Azure AKS for deployment
 
 ### Server initial configuration
 
