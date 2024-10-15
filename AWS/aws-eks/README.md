@@ -1,61 +1,3 @@
-## AWS ALB configuration for Kubernetes deployment
-
-If you want to use [AWS Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html) as ingress controller, follow this instruction.  
-This is not necessary, you can use `nginx` by default as a ingress controller.
-
-Install `AWS CLI`: If `AWS CLI` is not installed yet, install it by following the instructions on the [official AWS CLI website](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html).  
-
-Install `eksctl`: `eksctl` is a command-line utility for creating and managing EKS clusters. Install eksctl by following the instructions on the [official eksctl website](https://eksctl.io/installation/).  
-
-
-Policy required for eksctl to work:
-
-- [CloudFormation Full Access](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AWSCloudFormationFullAccess.html)
-- [EKS Full Access](https://docs.aws.amazon.com/eks/latest/userguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-console)
-- [EC2 and EC2 Auto Scaling Full Access](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonEC2FullAccess.html)
-- [IAM Full Access](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/IAMFullAccess.html)
-- [Systems Manager](https://docs.aws.amazon.com/systems-manager/latest/userguide/security_iam_id-based-policy-examples.html)
-
-1. OIDC Provider Association:  
-
-```
-eksctl utils associate-iam-oidc-provider --region=<your-region> --cluster=<your-cluster-name> --approve
-```
-
-2. Create IAM role and link policy:  
-
-Create policy IAM:  
-```
-curl -o iam_policy.json https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/main/docs/install/iam_policy.json
-aws iam create-policy --policy-name AWSLoadBalancerControllerIAMPolicy --policy-document file://iam_policy.json
-```
-
-Create IAM role and link policy:  
-```
-eksctl create iamserviceaccount \
-  --cluster <your-cluster-name> \
-  --region <your-region> \
-  --namespace kube-system \
-  --name aws-load-balancer-controller \
-  --attach-policy-arn arn:aws:iam::<your-account-id>:policy/AWSLoadBalancerControllerIAMPolicy \
-  --approve
-```
-
-3. Install AWS Load Balancer Controller using Helm:  
-
-```
-helm repo add eks https://aws.github.io/eks-charts
-helm repo update
-
-helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
-  -n kube-system \
-  --set clusterName=<your-cluster-name> \
-  --set serviceAccount.create=false \
-  --set region=<your-region> \
-  --set vpcId=<your-vpc-id> \
-  --set serviceAccount.name=aws-load-balancer-controller
-```
-
 ## AWS volumes configuration for Kubernetes deployment
 
 To store Team Edition data in the cloud, you need to configure cloud volumes. For example, you can store connection configurations and user information in AWS EFS.
@@ -125,6 +67,67 @@ storage:
   efs:
     fileSystemId: "<your-efs-id>"
 
+```
+
+Once this is set up, you can deploy Team Edition by following [this guide](../../k8s/README.md#how-to-run-services).
+
+
+## AWS ALB configuration for Kubernetes deployment
+
+If you want to use [AWS Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html) as ingress controller, follow this instruction.  
+This is not necessary, you can use `nginx` by default as a ingress controller.
+
+Install `AWS CLI`: If `AWS CLI` is not installed yet, install it by following the instructions on the [official AWS CLI website](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html).  
+
+Install `eksctl`: `eksctl` is a command-line utility for creating and managing EKS clusters. Install eksctl by following the instructions on the [official eksctl website](https://eksctl.io/installation/).  
+
+
+Policy required for eksctl to work:
+
+- [CloudFormation Full Access](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AWSCloudFormationFullAccess.html)
+- [EKS Full Access](https://docs.aws.amazon.com/eks/latest/userguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-console)
+- [EC2 and EC2 Auto Scaling Full Access](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonEC2FullAccess.html)
+- [IAM Full Access](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/IAMFullAccess.html)
+- [Systems Manager](https://docs.aws.amazon.com/systems-manager/latest/userguide/security_iam_id-based-policy-examples.html)
+
+1. OIDC Provider Association:  
+
+```
+eksctl utils associate-iam-oidc-provider --region=<your-region> --cluster=<your-cluster-name> --approve
+```
+
+2. Create IAM role and link policy:  
+
+Create policy IAM:  
+```
+curl -o iam_policy.json https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/main/docs/install/iam_policy.json
+aws iam create-policy --policy-name AWSLoadBalancerControllerIAMPolicy --policy-document file://iam_policy.json
+```
+
+Create IAM role and link policy:  
+```
+eksctl create iamserviceaccount \
+  --cluster <your-cluster-name> \
+  --region <your-region> \
+  --namespace kube-system \
+  --name aws-load-balancer-controller \
+  --attach-policy-arn arn:aws:iam::<your-account-id>:policy/AWSLoadBalancerControllerIAMPolicy \
+  --approve
+```
+
+3. Install AWS Load Balancer Controller using Helm:  
+
+```
+helm repo add eks https://aws.github.io/eks-charts
+helm repo update
+
+helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
+  -n kube-system \
+  --set clusterName=<your-cluster-name> \
+  --set serviceAccount.create=false \
+  --set region=<your-region> \
+  --set vpcId=<your-vpc-id> \
+  --set serviceAccount.name=aws-load-balancer-controller
 ```
 
 Once this is set up, you can deploy Team Edition by following [this guide](../../k8s/README.md#how-to-run-services).

@@ -7,20 +7,21 @@ It requires server deployment. You can deploy it on a single host (e.g. your loc
 or in a cloud.  
 
 ### Deployment
- * On premise
-    - [Docker compose](compose) - the simplest way to deploy and run the server on the local machine
-    - [Kubernetes](k8s) - if you prefer to run everything with docker orchestration
- * Cloud
-    * AWS
-        - [AWS AMI](AWS/ami/) - if you want to use AWS for deployment
-        - [AWS ECS](AWS/ecs-fargate/) - create and deploy ECS cluster
-        - [AWS EKS](AWS/aws-eks/README.md) - if you want to use AWS EKS for deployment
-    * Google Cloud
-        - [GCP Image](GCP/gcp-image) - if you want to use GCP for deployment
-        - [GCP GKE](GCP/gke/README.md) - if you want to use GCP GKE for deployment
-    * Azure
-        - [Azure Image](Azure/azure-image) - if you want to use Azure for deployment
-        - [Azure AKS](Azure/aks/README.md) - if you want to use Azure AKS for deployment
+**On-premise**  
+- [**Docker Compose**](compose) – the simplest way to deploy and run the server locally  
+- [**Kubernetes**](k8s) – for Docker orchestration
+
+**Cloud**  
+- **AWS**
+  - [**AMI**](AWS/ami/) – AWS-based deployment  
+  - [**ECS**](AWS/ecs-fargate/) – create and deploy an ECS cluster  
+  - [**EKS**](AWS/aws-eks/README.md) – deploy with EKS
+- **Google Cloud**
+  - [**Image**](GCP/gcp-image) – GCP-based deployment  
+  - [**GKE**](GCP/gke/README.md) – deploy with GKE
+- **Azure**
+  - [**Image**](Azure/azure-image) – Azure-based deployment  
+  - [**AKS**](Azure/aks/README.md) – deploy with AKS
 
 ### Server initial configuration
 
