@@ -6,7 +6,7 @@
   - [Version update](#version-update-procedure)
 - [Additional configuration](#additional-configuration)
   - [OpenShift deployment](#openshift-deployment)
-  - [AWS ALB configuration ](../AWS/aws-eks/README.md)
+  - [AWS ALB configuration ](../AWS/aws-eks/README.md#aws-alb-configuration-for-kubernetes-deployment)
   - [Digital Ocean proxy configuration](#digital-ocean-proxy-configuration)
   - [Clouds volumes configuration](#clouds-volumes-configuration)
     - [AWS](../AWS/aws-eks/README.md#aws-volumes-configuration-for-kubernetes-deployment)
