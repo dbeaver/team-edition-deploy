@@ -79,7 +79,7 @@ and add two lines in the `metadata.annotations`
 
 #### AWS ALB configuration
 
-If you want to use AWS Application Load Balancer as ingress controller, [follow this instruction](../AWS/aws-eks/README.md).
+If you want to use AWS Application Load Balancer as ingress controller, [follow this instruction](../AWS/aws-eks/README.md#aws-alb-configuration-for-kubernetes-deployment).
 
 #### Clouds volumes configuration
 
