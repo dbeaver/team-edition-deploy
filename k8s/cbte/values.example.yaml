@@ -10,7 +10,7 @@ cloudbeaver:
   # pullCredsName: regcred
 
 # Ingress Values
-# Supported ingress controllers: nginx, haproxy
+# Supported ingress controllers: aws-alb, nginx, haproxy
 ingressController: nginx
 # Domain name for ingress endpoint
 cloudbeaverBaseDomain: "cloudbeaver.local"
@@ -21,6 +21,9 @@ httpScheme: http
 httpsCertPath: "ingressSsl"
 # certificate: <httpsCertPath>/fullchain.pem
 # certificate key: <httpsCertPath>/privkey.pem
+# If you keep certificate in AWS Certificate Manager and use aws-alb set your certificate ARN
+# Domain certificates must equal cloudbeaverBaseDomain
+certificateARN: ""
 
 
 crossServiceCertPath: "crossSsl"
@@ -41,6 +44,18 @@ cloudbeaverQM:
 cloudbeaverTM:
   replicaCount: 1
   image: dbeaver/cloudbeaver-tm  
+
+# Cloud storage configuration 
+# By default is None, it means not cloud deployment
+# AWS - type: efs storageClassName: efs-sc
+# GCP - type: filestore storageClassName: filestore-sc
+# Azure -type: azurefile storageClassName: azurefile
+cloudProvider: None  # Options: None, aws, gcp, azure
+storage:
+  type: efs
+  storageClassName: "efs-sc"
+  efs:
+    fileSystemId: ""
 
 backend:
   internal_db: true

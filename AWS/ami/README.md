@@ -13,7 +13,7 @@
 - Find `dbeaver-te-server`
 - Choose version
 
-![example](image.png)
+![AWS Catalog](aws-catalog.png)
 
 - Launch instance
 

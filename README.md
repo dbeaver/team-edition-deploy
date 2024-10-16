@@ -7,17 +7,21 @@ It requires server deployment. You can deploy it on a single host (e.g. your loc
 or in a cloud.  
 
 ### Deployment
- * On premise
-    - [Docker compose](compose) - the simplest way to deploy and run the server on the local machine
-    - [Kubernetes](k8s) - if you prefer to run everything with docker orchestration
- * Cloud
-    * AWS
-        - [AWS AMI](AWS/ami/) - if you want to use AWS for deployment
-        - [AWS ECS](AWS/ecs-fargate/) - create and deploy ECS cluster
-    * Google Cloud
-        - [GCP Image](GCP/) - if you want to use GCP for deployment
-    * Azure
-        - [Azure Image](Azure/) - if you want to use Azure for deployment
+**On-premise**  
+- [**Docker Compose**](compose) – the simplest way to deploy and run the server locally  
+- [**Kubernetes**](k8s) – for Docker orchestration
+
+**Cloud**  
+- **AWS**
+  - [**AMI**](AWS/ami/) – AWS-based deployment  
+  - [**ECS**](AWS/ecs-fargate/) – create and deploy an ECS cluster  
+  - [**EKS**](AWS/aws-eks/README.md) – deploy with EKS
+- **Google Cloud**
+  - [**Image**](GCP/gcp-image) – GCP-based deployment  
+  - [**GKE**](GCP/gke/README.md) – deploy with GKE
+- **Azure**
+  - [**Image**](Azure/azure-image) – Azure-based deployment  
+  - [**AKS**](Azure/aks/README.md) – deploy with AKS
 
 ### Server initial configuration
 
@@ -35,10 +39,10 @@ Version update is handled differently for different deployment methods. To updat
 
 - [Docker compose](compose/README.md#version-update-procedure)  
 - [Kubernetes](k8s/README.md#version-update-procedure)  
-- [AWS AMI](Manager/README.md#version-update-procedure)  
+- [AWS AMI](manager/README.md#version-update-procedure)  
 - [AWS ECS](AWS/ecs-fargate/README.md#version-update)  
-- [GCP Image](Manager/README.md#version-update-procedure)  
-- [Azure Image](Manager/README.md#version-update-procedure)
+- [GCP Image](manager/README.md#version-update-procedure)  
+- [Azure Image](manager/README.md#version-update-procedure)
 
 
 #### How to change database password for already deployed clusters

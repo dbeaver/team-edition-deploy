@@ -1,28 +1,33 @@
 ---
-{{- if eq .Values.ingressController "nginx" }}
+{{- if eq .Values.ingressController "aws-alb" }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ingress-{{ .Release.Name }}
   annotations:
-    kubernetes.io/ingress.class: "nginx"
-    {{- if eq "https" .Values.httpScheme }}
-    ingress.kubernetes.io/ssl-redirect: "true"
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    {{- if .Values.certificateARN }}
+    alb.ingress.kubernetes.io/certificate-arn: "{{ .Values.certificateARN }}"
     {{- end }}
-    nginx.ingress.kubernetes.io/rewrite-target: "/$1$2"
-    nginx.ingress.kubernetes.io/affinity: "cookie"
-    nginx.ingress.kubernetes.io/affinity-mode: "persistent"
-    nginx.ingress.kubernetes.io/session-cookie-name: "cb-node-id"
-    nginx.ingress.kubernetes.io/session-cookie-path: "/"
-    nginx.ingress.kubernetes.io/session-cookie-domain: "{{ .Values.cloudbeaverBaseDomain }}"
-    nginx.ingress.kubernetes.io/session-cookie-change-on-failure: "true"
-    nginx.ingress.kubernetes.io/session-cookie-secure: "true"
-    nginx.ingress.kubernetes.io/session-cookie-max-age: "345600"
-    nginx.ingress.kubernetes.io/proxy-body-size: "500m"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"    
-    # nginx.ingress.kubernetes.io/use-regex: true
+    {{- if eq "https" .Values.httpScheme }}
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    {{- end }}
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/rewrite-target: "/$1$2"
+    alb.ingress.kubernetes.io/affinity: "cookie"
+    alb.ingress.kubernetes.io/affinity-mode: "persistent"
+    alb.ingress.kubernetes.io/session-cookie-name: "cb-node-id"
+    alb.ingress.kubernetes.io/session-cookie-path: "/"
+    alb.ingress.kubernetes.io/session-cookie-domain: "{{ .Values.cloudbeaverBaseDomain }}"
+    alb.ingress.kubernetes.io/session-cookie-change-on-failure: "true"
+    alb.ingress.kubernetes.io/session-cookie-secure: "true"
+    alb.ingress.kubernetes.io/session-cookie-max-age: "345600"
+    alb.ingress.kubernetes.io/proxy-body-size: "500m"
+    alb.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    alb.ingress.kubernetes.io/proxy-send-timeout: "3600"
 spec:
+  ingressClassName: alb
 {{- if eq "https" .Values.httpScheme }}
   tls:
     - hosts:
@@ -67,5 +72,5 @@ spec:
             service:
               name: cloudbeaver-tm
               port:
-                number: 8973             
+                number: 8973        
 {{ end }}
