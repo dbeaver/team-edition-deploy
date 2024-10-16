@@ -165,6 +165,20 @@ CLOUDBEAVER_VERSION_TAG=24.2.0
 - or navigate to the directory `team-edition-deploy/compose/cbte` and run `docker-compose up -d`  
 
 
+#### Podman requirements
+
+as user `root` run following commands before [Configuring and starting Team Edition cluster](https://github.com/dbeaver/team-edition-deploy/tree/main/compose#configuring-and-starting-team-edition-cluster):
+1. ```loginctl enable-linger 1000```
+2. ```echo 'net.ipv4.ip_unprivileged_port_start=80' >> /etc/sysctl.conf```
+3. ```sysctl -p```
+
+on step 3 and 4 of [Configuring and starting Team Edition cluster](https://github.com/dbeaver/team-edition-deploy/tree/main/compose#configuring-and-starting-team-edition-cluster) use `podman-compose` tool intead of `docker-compose` and on step 4 define compose file name:
+```
+podman-compose -f podman-compose.yml up -d
+```
+or replace `docker-compose.yml` with `podman-compose.yml` and use `podman-compose` without compose project definition
+
+
 #### Bug fixes
 
 If you experience errors when updating your cluster, like that:
