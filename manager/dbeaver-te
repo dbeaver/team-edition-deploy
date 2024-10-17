@@ -11,8 +11,8 @@ done < /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env
 
 ARG="$1"
 
-TEAM_EDITION_IMAGE="cloudbeaver-dc"
-TEAM_EDITION_TAG="$CLOUDBEAVER_VERSION_TAG"
+TEAM_EDITION_IMAGE="team-dc"
+TEAM_EDITION_TAG="$TE_VERSION_TAG"
 TEAM_EDITION_UPDATE_AVAILABLE=false
 case $(uname -m) in
 
@@ -226,7 +226,7 @@ updateCloudbeaver() {
 	checkCloudBeaverUpdateVersion "$1"
 	if [ "$TEAM_EDITION_UPDATE_AVAILABLE" == true ]
 	then
-		sed -i "s/CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_TAG/CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_NEW_TAG/g" /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env 
+		sed -i "s/TE_VERSION_TAG=$TEAM_EDITION_TAG/TE_VERSION_TAG=$TEAM_EDITION_NEW_TAG/g" /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env 
 		rm /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml
 		cd /opt/dbeaver-team-server/team-edition-deploy/ && git fetch &&  git checkout --force $TEAM_EDITION_NEW_TAG
 		docker compose -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml --env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env --project-directory /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ up -d --remove-orphans
@@ -238,7 +238,7 @@ createBackup(){
     PROJECT_NAME=$COMPOSE_PROJECT_NAME
     BACKUP_PATH="./backup/$PROJECT_NAME"_$(date +%d%m%Y)
     mkdir -p $BACKUP_PATH
-    services="cloudbeaver-dc cloudbeaver-qm cloudbeaver-rm cloudbeaver-te"
+    services="dbeaver-te-dc dbeaver-te-qm dbeaver-te-rm dbeaver-te-web"
 
     skip_db=false
     include_certs=false
@@ -263,11 +263,11 @@ createBackup(){
     if [ "$skip_db" = false ]; then
         PG_SERVICE="postgres"
         DB_NAME="cloudbeaver"
-        docker exec $PROJECT_NAME-"$PG_SERVICE"-1 pg_dump $DB_NAME --username $CLOUDBEAVER_DB_USER --format c > $BACKUP_PATH/"$PG_SERVICE".backup
+        docker exec $PROJECT_NAME-"$PG_SERVICE"-1 pg_dump $DB_NAME --username $TE_DB_USER --format c > $BACKUP_PATH/"$PG_SERVICE".backup
     fi
 
     if [ "$include_certs" = true ]; then
-        CERT_BASE_PATH=$(docker inspect -f '{{ range .Mounts }}{{ if and (eq .Type "bind") (eq .Destination "/opt/cloudbeaver/conf/certificates") }}{{ .Source }}{{ end }}{{ end }}' $PROJECT_NAME-cloudbeaver-te-1)
+        CERT_BASE_PATH=$(docker inspect -f '{{ range .Mounts }}{{ if and (eq .Type "bind") (eq .Destination "/opt/cloudbeaver/conf/certificates") }}{{ .Source }}{{ end }}{{ end }}' $PROJECT_NAME-dbeaver-te-web-1)
         CERT_PATH="${CERT_BASE_PATH%/*}" 
         tar -czf $BACKUP_PATH/"cert.tar.gz" -C "$CERT_PATH" .
     fi
@@ -288,7 +288,7 @@ restoreBackup(){
     BACKUP_DIR="$TEMP_DIR/backup/$BACKUP_FOLDER_NAME"
     ARCHIVE_DATE=$(echo $ARCHIVE_NAME | grep -o '[0-9]\{8\}')
 
-    services="cloudbeaver-dc cloudbeaver-qm cloudbeaver-rm cloudbeaver-te"
+    services="dbeaver-te-dc dbeaver-te-qm dbeaver-te-rm dbeaver-te-web"
     for SERVICE in $services; do
         BACKUP_ARCHIVE_PATH="$BACKUP_DIR/${SERVICE}.tar.gz"
         VOLUME_PATH=$(docker inspect -f '{{ range .Mounts }}{{ if eq .Type "volume" }}{{ println .Destination }}{{ end }}{{ end }}' $PROJECT_NAME-"$SERVICE"-1 | head -1)
@@ -305,12 +305,12 @@ restoreBackup(){
     DB_BACKUP="$BACKUP_DIR/postgres.backup"
     if [ -f "$DB_BACKUP" ]; then
         echo "Restoring PostgreSQL database..."
-        docker exec -i $PROJECT_NAME-"postgres"-1 pg_restore --dbname cloudbeaver --username $CLOUDBEAVER_DB_USER --clean --if-exists < "$DB_BACKUP"
+        docker exec -i $PROJECT_NAME-"postgres"-1 pg_restore --dbname cloudbeaver --username $TE_DB_USER --clean --if-exists < "$DB_BACKUP"
     else
         echo "PostgreSQL backup file not found."
     fi
 
-    CERT_BASE_PATH=$(docker inspect -f '{{ range .Mounts }}{{ if and (eq .Type "bind") (eq .Destination "/opt/cloudbeaver/conf/certificates") }}{{ .Source }}{{ end }}{{ end }}' $PROJECT_NAME-cloudbeaver-te-1)
+    CERT_BASE_PATH=$(docker inspect -f '{{ range .Mounts }}{{ if and (eq .Type "bind") (eq .Destination "/opt/cloudbeaver/conf/certificates") }}{{ .Source }}{{ end }}{{ end }}' $PROJECT_NAME-dbeaver-te-web-1)
     CERT_PATH="${CERT_BASE_PATH%/*}"  
     CERT_ARCHIVE_PATH="$BACKUP_DIR/cert.tar.gz"
     if [ -f "$CERT_ARCHIVE_PATH" ]; then
@@ -333,10 +333,10 @@ case $1 in
 
   "start")
 		docker ps -a -q \
-			--filter "name=cbte-cloudbeaver-tm-1"  \
+			--filter "name=$PROJECT_NAME-dbeaver-te-tm-1"  \
 			--filter "status=exited" | \
 			grep -q . \
-			&& docker rm -f "cbte-cloudbeaver-tm-1"
+			&& docker rm -f "$PROJECT_NAME-dbeaver-te-tm-1"
     startCloudbeaver
     ;;
 

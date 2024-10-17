@@ -31,19 +31,19 @@ secretCertPath: "secretSsl"
 # Service depend values
 cloudbeaverTE:
   replicaCount: 1
-  image: dbeaver/cloudbeaver-te
+  image: dbeaver/team-te
 cloudbeaverDC:
   replicaCount: 1
-  image: dbeaver/cloudbeaver-dc
+  image: dbeaver/team-dc
 cloudbeaverRM:
   replicaCount: 1
-  image: dbeaver/cloudbeaver-rm
+  image: dbeaver/team-rm
 cloudbeaverQM:
   replicaCount: 1
-  image: dbeaver/cloudbeaver-qm
+  image: dbeaver/team-qm
 cloudbeaverTM:
   replicaCount: 1
-  image: dbeaver/cloudbeaver-tm  
+  image: dbeaver/team-tm  
 
 # Cloud storage configuration 
 # By default is None, it means not cloud deployment
