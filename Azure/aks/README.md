@@ -1,4 +1,4 @@
-## AWS volumes configuration for Kubernetes deployment
+## Azure volumes configuration for Kubernetes deployment
 
 ### Prerequisites
 
