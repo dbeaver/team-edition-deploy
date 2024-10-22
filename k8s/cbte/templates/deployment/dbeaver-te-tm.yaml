@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: dbeaver-te-tm
+  name: dbeaver-te-tm
+spec:
+  replicas: {{ .Values.dbeaver_te_tm.replicaCount }}
+  selector:
+    matchLabels:
+      app: dbeaver-te-tm
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        date: "{{ now | unixEpoch }}"
+        {{ .Release.Name }}-net: "true"
+        {{ .Release.Name }}-private-net: "true"
+        app: dbeaver-te-tm
+    spec:
+      containers:
+        - image: "{{ .Values.dbeaver_te_tm.image }}:{{ .Values.dbeaverTE.imageTag | default .Chart.AppVersion }}"
+          imagePullPolicy: "{{ .Values.dbeaverTE.pullPolicy }}"
+          name: dbeaver-te-tm
+          env:
+            - name: DBEAVER_TE_DC_SERVER_URL
+              value: "http://dbeaver-te-dc:8970/dc"
+          ports:
+            - containerPort: 8973
+          resources: {}
+          volumeMounts:
+            - mountPath: /opt/task-manager/workspace
+              name: {{ .Release.Name }}-tm-data
+            - name: cross-ssl-cert
+              mountPath: /opt/task-manager/conf/certificates
+              readOnly: true
+      {{- if .Values.dbeaverTE.pullCredsName }}
+      imagePullSecrets:
+        - name: {{ .Values.dbeaverTE.pullCredsName }}
+      {{- end }}
+      hostname: dbeaver-te-tm
+      restartPolicy: Always
+      volumes:
+        - name: {{ .Release.Name }}-tm-data
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-tm-data
+        - name: cross-ssl-cert
+          secret:
+            secretName: {{ .Release.Name }}-crossservice-ssl
+            items:
+              - key: tls.crt
+                path: dc-cert.crt

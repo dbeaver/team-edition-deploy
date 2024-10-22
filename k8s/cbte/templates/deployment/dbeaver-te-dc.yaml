@@ -5,7 +5,7 @@ metadata:
     app: dbeaver-te-dc
   name: dbeaver-te-dc
 spec:
-  replicas: {{ .Values.cloudbeaverDC.replicaCount }}
+  replicas: {{ .Values.dbeaver_te_dc.replicaCount }}
   selector:
     matchLabels:
       app: dbeaver-te-dc
@@ -25,45 +25,45 @@ spec:
       #     fsGroup: 1000
       #     fsGroupChangePolicy: "Always"
       containers:
-        - image: "{{ .Values.cloudbeaverDC.image }}:{{ .Values.cloudbeaver.imageTag | default .Chart.AppVersion }}"
-          imagePullPolicy: "{{ .Values.cloudbeaver.pullPolicy }}"
+        - image: "{{ .Values.dbeaver_te_dc.image }}:{{ .Values.dbeaverTE.imageTag | default .Chart.AppVersion }}"
+          imagePullPolicy: "{{ .Values.dbeaverTE.pullPolicy }}"
           name: dbeaver-te-dc
           env:
-            - name: CLOUDBEAVER_DC_BACKEND_DB_URL
-              value: "{{ .Values.backend.cloudbeaver_db_url }}?currentSchema=dc"
-            - name: CLOUDBEAVER_DC_BACKEND_DB_USER
-              value: "{{ .Values.backend.cloudbeaver_db_user }}"
-            - name: CLOUDBEAVER_DC_BACKEND_DB_PASSWORD
+            - name: DBEAVER_TE_DC_BACKEND_DB_URL
+              value: "{{ .Values.backend.dbeaver_te_db_url }}?currentSchema=dc"
+            - name: DBEAVER_TE_DC_BACKEND_DB_USER
+              value: "{{ .Values.backend.dbeaver_te_db_user }}"
+            - name: DBEAVER_TE_DC_BACKEND_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ .Release.Name }}-db-pass
                   key: postgres-pass
-            - name: CLOUDBEAVER_QM_BACKEND_DB_URL
-              value: "{{ .Values.backend.cloudbeaver_db_url }}?currentSchema=qm"
-            - name: CLOUDBEAVER_QM_BACKEND_DB_USER
-              value: "{{ .Values.backend.cloudbeaver_db_user }}"
-            - name: CLOUDBEAVER_QM_BACKEND_DB_PASSWORD
+            - name: DBEAVER_TE_QM_BACKEND_DB_URL
+              value: "{{ .Values.backend.dbeaver_te_db_url }}?currentSchema=qm"
+            - name: DBEAVER_TE_QM_BACKEND_DB_USER
+              value: "{{ .Values.backend.dbeaver_te_db_user }}"
+            - name: DBEAVER_TE_QM_BACKEND_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ .Release.Name }}-db-pass
                   key: postgres-pass
-            - name: CLOUDBEAVER_TM_BACKEND_DB_URL
-              value: "{{ .Values.backend.cloudbeaver_db_url }}?currentSchema=tm"
-            - name: CLOUDBEAVER_TM_BACKEND_DB_USER
-              value: "{{ .Values.backend.cloudbeaver_db_user }}"
-            - name: CLOUDBEAVER_TM_BACKEND_DB_PASSWORD
+            - name: DBEAVER_TE_TM_BACKEND_DB_URL
+              value: "{{ .Values.backend.dbeaver_te_db_url }}?currentSchema=tm"
+            - name: DBEAVER_TE_TM_BACKEND_DB_USER
+              value: "{{ .Values.backend.dbeaver_te_db_user }}"
+            - name: DBEAVER_TE_TM_BACKEND_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ .Release.Name }}-db-pass
                   key: postgres-pass
-            - name: CLOUDBEAVER_DC_SERVER_URL
+            - name: DBEAVER_TE_DC_SERVER_URL
               value: "http://dbeaver-te-dc:8970/dc"
-            - name: CLOUDBEAVER_RM_SERVER_URL
+            - name: DBEAVER_TE_RM_SERVER_URL
               value: "http://dbeaver-te-rm:8971/rm"
-            - name: CLOUDBEAVER_QM_SERVER_URL
+            - name: DBEAVER_TE_QM_SERVER_URL
               value: "http://dbeaver-te-qm:8972/qm"
-            - name: CLOUDBEAVER_PUBLIC_URL
-              value: "{{ .Values.httpScheme }}://{{ .Values.cloudbeaverBaseDomain }}"
+            - name: DBEAVER_TE_PUBLIC_URL
+              value: "{{ .Values.httpScheme }}://{{ .Values.dbeaverTEBaseDomain }}"
           ports:
             - containerPort: 8970
           resources: {}
@@ -73,9 +73,9 @@ spec:
             - name: private-cers
               mountPath: /opt/domain-controller/conf/certificates
               readOnly: true
-      {{- if .Values.cloudbeaver.pullCredsName }}
+      {{- if .Values.dbeaverTE.pullCredsName }}
       imagePullSecrets:
-        - name: {{ .Values.cloudbeaver.pullCredsName }}
+        - name: {{ .Values.dbeaverTE.pullCredsName }}
       {{- end }}
       hostname: dbeaver-te-dc
       restartPolicy: Always

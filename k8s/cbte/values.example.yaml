@@ -1,9 +1,9 @@
-# Default values for cloudbeaver-te.
+# Default values for dbeaverTE.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-# cloudbeaver general values for all TE services
-cloudbeaver:
+# dbeaver-te general values for all TE services
+dbeaverTE:
   imageTag: "24.2.0"
   pullPolicy: Always
   # pullCredsName - name of a secret config map that contains docker repo auths
@@ -13,7 +13,7 @@ cloudbeaver:
 # Supported ingress controllers: aws-alb, nginx, haproxy
 ingressController: nginx
 # Domain name for ingress endpoint
-cloudbeaverBaseDomain: "dbeaver.local"
+dbeaverTEBaseDomain: "dbeaver.local"
 # LoadBallancer secure mode. Possible values - http, https
 httpScheme: http
 # If httpScheme is https.
@@ -22,28 +22,28 @@ httpsCertPath: "ingressSsl"
 # certificate: <httpsCertPath>/fullchain.pem
 # certificate key: <httpsCertPath>/privkey.pem
 # If you keep certificate in AWS Certificate Manager and use aws-alb set your certificate ARN
-# Domain certificates must equal cloudbeaverBaseDomain
+# Domain certificates must equal dbeaverTEBaseDomain
 certificateARN: ""
 
 
 crossServiceCertPath: "crossSsl"
 secretCertPath: "secretSsl"
 # Service depend values
-cloudbeaverTE:
+dbeaver_te_web:
   replicaCount: 1
   image: dbeaver/team-te
-cloudbeaverDC:
+dbeaver_te_dc:
   replicaCount: 1
   image: dbeaver/team-dc
-cloudbeaverRM:
+dbeaver_te_rm:
   replicaCount: 1
   image: dbeaver/team-rm
-cloudbeaverQM:
+dbeaver_te_qm:
   replicaCount: 1
   image: dbeaver/team-qm
-cloudbeaverTM:
+dbeaver_te_tm:
   replicaCount: 1
-  image: dbeaver/team-tm  
+  image: dbeaver/team-tm
 
 # Cloud storage configuration 
 # By default is None, it means not cloud deployment
@@ -58,7 +58,7 @@ storage:
 
 backend:
   internal_db: true
-  cloudbeaver_db_driver: postgres-jdbc
-  cloudbeaver_db_url: jdbc:postgresql://postgres:5432/cloudbeaver
-  cloudbeaver_db_user: postgres
-  cloudbeaver_db_password: StR0NgP2sSw0rD
+  dbeaver_te_db_driver: postgres-jdbc
+  dbeaver_te_db_url: jdbc:postgresql://postgres:5432/cloudbeaver
+  dbeaver_te_db_user: postgres
+  dbeaver_te_db_password: StR0NgP2sSw0rD

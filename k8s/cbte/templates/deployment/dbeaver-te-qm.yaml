@@ -2,13 +2,13 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: dbeaver-te-tm
-  name: dbeaver-te-tm
+    app: dbeaver-te-qm
+  name: dbeaver-te-qm
 spec:
-  replicas: {{ .Values.cloudbeaverTM.replicaCount }}
+  replicas: {{ .Values.dbeaver_te_qm.replicaCount }}
   selector:
     matchLabels:
-      app: dbeaver-te-tm
+      app: dbeaver-te-qm
   strategy:
     type: Recreate
   template:
@@ -17,7 +17,7 @@ spec:
         date: "{{ now | unixEpoch }}"
         {{ .Release.Name }}-net: "true"
         {{ .Release.Name }}-private-net: "true"
-        app: dbeaver-te-tm
+        app: dbeaver-te-qm
     spec:
       # securityContext:
       #     runAsUser: 1000
@@ -25,31 +25,26 @@ spec:
       #     fsGroup: 1000
       #     fsGroupChangePolicy: "Always"
       containers:
-        - image: "{{ .Values.cloudbeaverTM.image }}:{{ .Values.cloudbeaver.imageTag | default .Chart.AppVersion }}"
-          imagePullPolicy: "{{ .Values.cloudbeaver.pullPolicy }}"
-          name: dbeaver-te-tm
+        - image: "{{ .Values.dbeaver_te_qm.image }}:{{ .Values.dbeaverTE.imageTag | default .Chart.AppVersion }}"
+          imagePullPolicy: "{{ .Values.dbeaverTE.pullPolicy }}"
+          name: dbeaver-te-qm
           env:
-            - name: CLOUDBEAVER_DC_SERVER_URL
+            - name: DBEAVER_TE_DC_SERVER_URL
               value: "http://dbeaver-te-dc:8970/dc"
           ports:
-            - containerPort: 8973
+            - containerPort: 8972
           resources: {}
           volumeMounts:
-            - mountPath: /opt/task-manager/workspace
-              name: {{ .Release.Name }}-tm-data
             - name: cross-ssl-cert
-              mountPath: /opt/task-manager/conf/certificates
+              mountPath: /opt/query-manager/conf/certificates
               readOnly: true
-      {{- if .Values.cloudbeaver.pullCredsName }}
+      {{- if .Values.dbeaverTE.pullCredsName }}
       imagePullSecrets:
-        - name: {{ .Values.cloudbeaver.pullCredsName }}
+        - name: {{ .Values.dbeaverTE.pullCredsName }}
       {{- end }}
-      hostname: dbeaver-te-tm
+      hostname: dbeaver-te-qm
       restartPolicy: Always
       volumes:
-        - name: {{ .Release.Name }}-tm-data
-          persistentVolumeClaim:
-            claimName: {{ .Release.Name }}-tm-data
         - name: cross-ssl-cert
           secret:
             secretName: {{ .Release.Name }}-crossservice-ssl

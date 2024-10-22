@@ -16,11 +16,11 @@ spec:
 {{- if eq "https" .Values.httpScheme }}
   tls:
     - hosts:
-      - {{ .Values.cloudbeaverBaseDomain }}
+      - {{ .Values.dbeaverTEBaseDomain }}
       secretName: {{ .Release.Name }}-ingress-tls
 {{- end }}
   rules:
-  - host: "{{ .Values.cloudbeaverBaseDomain }}"
+  - host: "{{ .Values.dbeaverTEBaseDomain }}"
     http:
       paths:
         - path: /

@@ -19,7 +19,7 @@ metadata:
     alb.ingress.kubernetes.io/affinity-mode: "persistent"
     alb.ingress.kubernetes.io/session-cookie-name: "cb-node-id"
     alb.ingress.kubernetes.io/session-cookie-path: "/"
-    alb.ingress.kubernetes.io/session-cookie-domain: "{{ .Values.cloudbeaverBaseDomain }}"
+    alb.ingress.kubernetes.io/session-cookie-domain: "{{ .Values.dbeaverTEBaseDomain }}"
     alb.ingress.kubernetes.io/session-cookie-change-on-failure: "true"
     alb.ingress.kubernetes.io/session-cookie-secure: "true"
     alb.ingress.kubernetes.io/session-cookie-max-age: "345600"
@@ -31,11 +31,11 @@ spec:
 {{- if eq "https" .Values.httpScheme }}
   tls:
     - hosts:
-      - {{ .Values.cloudbeaverBaseDomain }}
+      - {{ .Values.dbeaverTEBaseDomain }}
       secretName: {{ .Release.Name }}-ingress-tls
 {{- end }}
   rules:
-  - host: "{{ .Values.cloudbeaverBaseDomain }}"
+  - host: "{{ .Values.dbeaverTEBaseDomain }}"
     http:
       paths:
         - path: /

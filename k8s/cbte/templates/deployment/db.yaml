@@ -28,7 +28,7 @@ spec:
             - name: POSTGRES_DB
               value: cloudbeaver
             - name: POSTGRES_USER
-              value: {{ .Values.backend.cloudbeaver_db_user }}
+              value: {{ .Values.backend.dbeaver_te_db_user }}
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
