@@ -2,10 +2,10 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: cloudbeaver-dc
-  name: cloudbeaver-dc
+    app: dbeaver-te-dc
+  name: dbeaver-te-dc
 spec:
   ports:
     - port: 8970
   selector:
-    app: cloudbeaver-dc
+    app: dbeaver-te-dc

@@ -74,7 +74,7 @@ variable "cloudbeaver-db-env" {
 
 variable "ecr_repositories" {
   type    = list
-  default = ["dc", "rm", "qm", "te", "tm", "postgres"]
+  default = ["dc", "rm", "qm", "web", "tm", "postgres"]
 }
 
 variable "dbeaver_te_default_ns" {

@@ -27,35 +27,35 @@ spec:
           pathType: Prefix
           backend:
             service:
-              name: cloudbeaver-te
+              name: dbeaver-te-te
               port:
                 number: 8978
         - path: /dc
           pathType: Prefix
           backend:
             service:
-              name: cloudbeaver-dc
+              name: dbeaver-te-dc
               port:
                 number: 8970
         - path: /rm
           pathType: Prefix
           backend:
             service:
-              name: cloudbeaver-rm
+              name: dbeaver-te-rm
               port:
                 number: 8971
         - path: /qm
           pathType: Prefix
           backend:
             service:
-              name: cloudbeaver-qm
+              name: dbeaver-te-qm
               port:
                 number: 8972
         - path: /tm
           pathType: Prefix
           backend:
             service:
-              name: cloudbeaver-qm
+              name: dbeaver-te-qm
               port:
                 number: 8973                
 {{ end }}

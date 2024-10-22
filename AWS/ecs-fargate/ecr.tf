@@ -1,6 +1,6 @@
 resource "aws_ecr_repository" "dbeaver_te" {
   count = length(var.ecr_repositories)
-  name  = "${var.deployment_id}-cloudbeaver-${element(var.ecr_repositories, count.index)}"
+  name  = "${var.deployment_id}-team-${element(var.ecr_repositories, count.index)}"
   image_tag_mutability = "MUTABLE"
   force_delete = "true"
 

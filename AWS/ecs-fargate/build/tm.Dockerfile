@@ -1,3 +1,3 @@
 ARG TEVERSION
-FROM dbeaver/cloudbeaver-tm:$TEVERSION
+FROM dbeaver/team-tm:$TEVERSION
 COPY "cert/public" "/etc/cloudbeaver/public" 

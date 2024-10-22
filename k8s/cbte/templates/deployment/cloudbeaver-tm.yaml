@@ -2,13 +2,13 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: cloudbeaver-tm
-  name: cloudbeaver-tm
+    app: dbeaver-te-tm
+  name: dbeaver-te-tm
 spec:
   replicas: {{ .Values.cloudbeaverTM.replicaCount }}
   selector:
     matchLabels:
-      app: cloudbeaver-tm
+      app: dbeaver-te-tm
   strategy:
     type: Recreate
   template:
@@ -17,7 +17,7 @@ spec:
         date: "{{ now | unixEpoch }}"
         {{ .Release.Name }}-net: "true"
         {{ .Release.Name }}-private-net: "true"
-        app: cloudbeaver-tm
+        app: dbeaver-te-tm
     spec:
       # securityContext:
       #     runAsUser: 1000
@@ -27,10 +27,10 @@ spec:
       containers:
         - image: "{{ .Values.cloudbeaverTM.image }}:{{ .Values.cloudbeaver.imageTag | default .Chart.AppVersion }}"
           imagePullPolicy: "{{ .Values.cloudbeaver.pullPolicy }}"
-          name: cloudbeaver-tm
+          name: dbeaver-te-tm
           env:
             - name: CLOUDBEAVER_DC_SERVER_URL
-              value: "http://cloudbeaver-dc:8970/dc"
+              value: "http://dbeaver-te-dc:8970/dc"
           ports:
             - containerPort: 8973
           resources: {}
@@ -44,7 +44,7 @@ spec:
       imagePullSecrets:
         - name: {{ .Values.cloudbeaver.pullCredsName }}
       {{- end }}
-      hostname: cloudbeaver-tm
+      hostname: dbeaver-te-tm
       restartPolicy: Always
       volumes:
         - name: {{ .Release.Name }}-tm-data

@@ -2,13 +2,13 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: cloudbeaver-dc
-  name: cloudbeaver-dc
+    app: dbeaver-te-dc
+  name: dbeaver-te-dc
 spec:
   replicas: {{ .Values.cloudbeaverDC.replicaCount }}
   selector:
     matchLabels:
-      app: cloudbeaver-dc
+      app: dbeaver-te-dc
   strategy:
     type: Recreate
   template:
@@ -17,7 +17,7 @@ spec:
         date: "{{ now | unixEpoch }}"
         {{ .Release.Name }}-net: "true"
         {{ .Release.Name }}-private-net: "true"
-        app: cloudbeaver-dc
+        app: dbeaver-te-dc
     spec:
       # securityContext:
       #     runAsUser: 1000
@@ -27,7 +27,7 @@ spec:
       containers:
         - image: "{{ .Values.cloudbeaverDC.image }}:{{ .Values.cloudbeaver.imageTag | default .Chart.AppVersion }}"
           imagePullPolicy: "{{ .Values.cloudbeaver.pullPolicy }}"
-          name: cloudbeaver-dc
+          name: dbeaver-te-dc
           env:
             - name: CLOUDBEAVER_DC_BACKEND_DB_URL
               value: "{{ .Values.backend.cloudbeaver_db_url }}?currentSchema=dc"
@@ -57,11 +57,11 @@ spec:
                   name: {{ .Release.Name }}-db-pass
                   key: postgres-pass
             - name: CLOUDBEAVER_DC_SERVER_URL
-              value: "http://cloudbeaver-dc:8970/dc"
+              value: "http://dbeaver-te-dc:8970/dc"
             - name: CLOUDBEAVER_RM_SERVER_URL
-              value: "http://cloudbeaver-rm:8971/rm"
+              value: "http://dbeaver-te-rm:8971/rm"
             - name: CLOUDBEAVER_QM_SERVER_URL
-              value: "http://cloudbeaver-qm:8972/qm"
+              value: "http://dbeaver-te-qm:8972/qm"
             - name: CLOUDBEAVER_PUBLIC_URL
               value: "{{ .Values.httpScheme }}://{{ .Values.cloudbeaverBaseDomain }}"
           ports:
@@ -77,7 +77,7 @@ spec:
       imagePullSecrets:
         - name: {{ .Values.cloudbeaver.pullCredsName }}
       {{- end }}
-      hostname: cloudbeaver-dc
+      hostname: dbeaver-te-dc
       restartPolicy: Always
       volumes:
         - name: {{ .Release.Name }}-dc-data

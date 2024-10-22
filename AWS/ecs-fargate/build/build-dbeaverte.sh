@@ -30,10 +30,14 @@ for svc in $TESERVICES; do
 
   if [ "$svc" = "postgres" ]; then
     TEVERSION=16 
+    docker pull dbeaver/dbeaver-"${svc}":${TEVERSION}
+    docker build -t dbeaver-"${svc}" --build-arg TEVERSION=${TEVERSION} -f "${svc}".Dockerfile .
+    docker tag dbeaver-"${svc}" ${AWS_ACC_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${DEPLOYMENT_ID}-team-"${svc}":${TEVERSION}
+    docker push ${AWS_ACC_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${DEPLOYMENT_ID}-team-"${svc}":${TEVERSION}
+  else
+    docker pull dbeaver/team-"${svc}":${TEVERSION}
+    docker build -t team-"${svc}" --build-arg TEVERSION=${TEVERSION} -f "${svc}".Dockerfile .
+    docker tag team-"${svc}" ${AWS_ACC_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${DEPLOYMENT_ID}-team-"${svc}":${TEVERSION}
+    docker push ${AWS_ACC_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${DEPLOYMENT_ID}-team-"${svc}":${TEVERSION}
   fi
-
-  docker pull dbeaver/cloudbeaver-"${svc}":${TEVERSION}
-  docker build -t cloudbeaver-"${svc}" --build-arg TEVERSION=${TEVERSION} -f "${svc}".Dockerfile .
-  docker tag cloudbeaver-"${svc}" ${AWS_ACC_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${DEPLOYMENT_ID}-cloudbeaver-"${svc}":${TEVERSION}
-  docker push ${AWS_ACC_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${DEPLOYMENT_ID}-cloudbeaver-"${svc}":${TEVERSION}
  done

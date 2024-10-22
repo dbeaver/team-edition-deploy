@@ -13,7 +13,7 @@ cloudbeaver:
 # Supported ingress controllers: aws-alb, nginx, haproxy
 ingressController: nginx
 # Domain name for ingress endpoint
-cloudbeaverBaseDomain: "cloudbeaver.local"
+cloudbeaverBaseDomain: "dbeaver.local"
 # LoadBallancer secure mode. Possible values - http, https
 httpScheme: http
 # If httpScheme is https.
