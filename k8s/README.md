@@ -33,11 +33,11 @@
 3. `cp ./values.example.yaml ./values.yaml`
 4. Edit chart values in `values.yaml` (use any text editor).
 5. Configure domain and SSL certificate:
-  - Add an A record in your DNS hosting for a value of `cloudbeaverBaseDomain` variable with load balancer IP address.
+  - Add an A record in your DNS hosting for a value of `dbeaverTEBaseDomain` variable with load balancer IP address.
   - Generate internal services certificates:  
      On Linux or macOS, run the script to prepare services certificates:   
        `./services-certs-generator.sh`
-  - If you set the *HTTPS* endpoint scheme, then create a valid TLS certificate for the domain endpoint `cloudbeaverBaseDomain` and place it into `k8s/cbte/ingressSsl`:  
+  - If you set the *HTTPS* endpoint scheme, then create a valid TLS certificate for the domain endpoint `dbeaverTEBaseDomain` and place it into `k8s/cbte/ingressSsl`:  
     - Certificate: `ingressSsl/fullchain.pem`  
     - Private Key: `ingressSsl/privkey.pem`
 6. Deploy Team Edition with Helm: `helm install cloudbeaver-te ./ --values ./values.yaml`
@@ -56,7 +56,7 @@ You need additional configuration changes to deploy Team Edition in OpenShift.
 
 1. In `values.yaml` change the `ingressController` value to `haproxy`
 2. Add security context:
-  Uncomment the following lines in `cloudbeaver-*.yaml` files in [templates/deployment](cbte/templates/deployment):
+  Uncomment the following lines in `dbeaver-te-*.yaml` files in [templates/deployment](cbte/templates/deployment):
     ```yaml
           # securityContext:
           #     runAsUser: 1000
@@ -131,7 +131,7 @@ Edit ingress controller with:
 and add two lines in the `metadata.annotations`
 
 - `service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"`
-- `service.beta.kubernetes.io/do-loadbalancer-hostname: "cloudbeaverBaseDomain"`
+- `service.beta.kubernetes.io/do-loadbalancer-hostname: "dbeaverTEBaseDomain"`
 
 #### Clouds volumes configuration
 
