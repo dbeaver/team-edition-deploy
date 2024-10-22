@@ -37,7 +37,7 @@ spec:
           pathType: Prefix
           backend:
             service:
-              name: dbeaver-te-te
+              name: dbeaver-te-web
               port:
                 number: 8978
         - path: /(dc/|dc$)(.*)
