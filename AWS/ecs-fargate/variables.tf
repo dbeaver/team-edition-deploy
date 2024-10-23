@@ -59,7 +59,7 @@ variable "rds_db_version" {
 }
 
 
-variable "cloudbeaver-db-env" {
+variable "dbeaver-db-env" {
   description = "Parameters for your internal database"
   # type = map(string)
   default = [
@@ -131,75 +131,75 @@ variable "cloudbeaver-kafka-env" {
 variable "cloudbeaver-dc-env" {
   # type = map(string)
   default = [{
-      "name": "CLOUDBEAVER_DC_SERVER_URL",
-      "value": "http://cloudbeaver-dc:8970/dc"
+      "name": "DBEAVER_TE_DC_SERVER_URL",
+      "value": "http://dbeaver-te-dc:8970/dc"
   },
   {
-      "name": "CLOUDBEAVER_QM_SERVER_URL",
-      "value": "http://cloudbeaver-qm:8972/qm"
+      "name": "DBEAVER_TE_QM_SERVER_URL",
+      "value": "http://dbeaver-te-qm:8972/qm"
   },
   {
-      "name": "CLOUDBEAVER_RM_SERVER_URL",
-      "value": "http://cloudbeaver-rm:8971/rm"
+      "name": "DBEAVER_TE_RM_SERVER_URL",
+      "value": "http://dbeaver-te-rm:8971/rm"
   },
   {
-      "name": "CLOUDBEAVER_TM_SERVER_URL",
-      "value": "http://cloudbeaver-tm:8973/tm"
+      "name": "DBEAVER_TE_TM_SERVER_URL",
+      "value": "http://dbeaver-te-tm:8973/tm"
   },
   {
-      "name": "CLOUDBEAVER_DC_BACKEND_DB_URL",
+      "name": "DBEAVER_TE_DC_BACKEND_DB_URL",
       "value": "jdbc:postgresql://postgres:5432/cloudbeaver"
   },
   {
-      "name": "CLOUDBEAVER_QM_BACKEND_DB_URL",
+      "name": "DBEAVER_TE_QM_BACKEND_DB_URL",
       "value": "jdbc:postgresql://postgres:5432/cloudbeaver"
   },
   {
-      "name": "CLOUDBEAVER_TM_BACKEND_DB_URL",
+      "name": "DBEAVER_TE_TM_BACKEND_DB_URL",
       "value": "jdbc:postgresql://postgres:5432/cloudbeaver"
   },
   {
-      "name": "CLOUDBEAVER_QM_BACKEND_DB_DRIVER",
+      "name": "DBEAVER_TE_QM_BACKEND_DB_DRIVER",
       "value": "postgres-jdbc"
   },
   {
-      "name": "CLOUDBEAVER_DC_BACKEND_DB_DRIVER",
+      "name": "DBEAVER_TE_DC_BACKEND_DB_DRIVER",
       "value": "postgres-jdbc"
   },
   {
-      "name": "CLOUDBEAVER_TM_BACKEND_DB_DRIVER",
+      "name": "DBEAVER_TE_TM_BACKEND_DB_DRIVER",
       "value": "postgres-jdbc"
   },
   {
-      "name": "CLOUDBEAVER_DC_BACKEND_DB_USER",
+      "name": "DBEAVER_TE_DC_BACKEND_DB_USER",
       "value": "dc"
   },
   {
-      "name": "CLOUDBEAVER_QM_BACKEND_DB_USER",
+      "name": "DBEAVER_TE_QM_BACKEND_DB_USER",
       "value": "qm"
   },
   {
-      "name": "CLOUDBEAVER_TM_BACKEND_DB_USER",
+      "name": "DBEAVER_TE_TM_BACKEND_DB_USER",
       "value": "tm"
   },
   {
-      "name": "CLOUDBEAVER_DC_BACKEND_DB_PASSWORD",
+      "name": "DBEAVER_TE_DC_BACKEND_DB_PASSWORD",
       "value": "DCpassword"
   },
   {
-      "name": "CLOUDBEAVER_TM_BACKEND_DB_PASSWORD",
+      "name": "DBEAVER_TE_TM_BACKEND_DB_PASSWORD",
       "value": "TMpassword"
   },
   {
-      "name": "CLOUDBEAVER_QM_BACKEND_DB_PASSWORD",
+      "name": "DBEAVER_TE_QM_BACKEND_DB_PASSWORD",
       "value": "QMpassword"
   },
   {
-      "name": "CLOUDBEAVER_DC_CERT_PATH",
+      "name": "DBEAVER_TE_DC_CERT_PATH",
       "value": "/etc/cloudbeaver/private"
   },
   {
-      "name": "CLOUDBEAVER_PUBLIC_URL",
+      "name": "DBEAVER_TE_PUBLIC_URL",
       "value": "https://cloudbeaver.io"
   }]
 }
@@ -207,11 +207,11 @@ variable "cloudbeaver-dc-env" {
 variable "cloudbeaver-shared-env" {
   # type = map(string)
   default = [{
-      "name": "CLOUDBEAVER_DC_SERVER_URL",
-      "value": "http://cloudbeaver-dc:8970/dc"
+      "name": "DBEAVER_TE_DC_SERVER_URL",
+      "value": "http://dbeaver-te-dc:8970/dc"
   },
   {
-      "name": "CLOUDBEAVER_DC_CERT_PATH",
+      "name": "DBEAVER_TE_DC_CERT_PATH",
       "value": "/etc/cloudbeaver/public"
   }]
 }

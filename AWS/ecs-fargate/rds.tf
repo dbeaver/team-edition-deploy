@@ -38,9 +38,9 @@ resource "aws_db_instance" "rds_dbeaver_db" {
   engine                 = var.rds_db_type
   engine_version         = var.rds_db_version
   instance_class         = var.db_instance_class
-  db_name                = var.cloudbeaver-db-env[2].value
-  username               = var.cloudbeaver-db-env[1].value
-  password               = var.cloudbeaver-db-env[0].value
+  db_name                = var.dbeaver-db-env[2].value
+  username               = var.dbeaver-db-env[1].value
+  password               = var.dbeaver-db-env[0].value
   db_subnet_group_name   = aws_db_subnet_group.rds_dbeaver_db_subnet[0].name
   vpc_security_group_ids = [aws_security_group.dbeaver_te_private.id]
   skip_final_snapshot    = true

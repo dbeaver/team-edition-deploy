@@ -18,13 +18,13 @@ locals {
     for item in var.cloudbeaver-dc-env : {
       name  = item.name
       value = (
-        item.name == "CLOUDBEAVER_DC_BACKEND_DB_URL" ? (var.rds_db ? local.rds_db_url : format("jdbc:postgresql://%s-postgres:5432/cloudbeaver", var.deployment_id)) :
-        item.name == "CLOUDBEAVER_QM_BACKEND_DB_URL" ? (var.rds_db ? local.rds_db_url : format("jdbc:postgresql://%s-postgres:5432/cloudbeaver", var.deployment_id)) :
-        item.name == "CLOUDBEAVER_TM_BACKEND_DB_URL" ? (var.rds_db ? local.rds_db_url : format("jdbc:postgresql://%s-postgres:5432/cloudbeaver", var.deployment_id)) :
-        item.name == "CLOUDBEAVER_DC_SERVER_URL" ? format("http://%s-cloudbeaver-dc:8970/dc", var.deployment_id) :
-        item.name == "CLOUDBEAVER_QM_SERVER_URL" ? format("http://%s-cloudbeaver-qm:8972/qm", var.deployment_id) :
-        item.name == "CLOUDBEAVER_RM_SERVER_URL" ? format("http://%s-cloudbeaver-rm:8971/rm", var.deployment_id) :
-        item.name == "CLOUDBEAVER_TM_SERVER_URL" ? format("http://%s-cloudbeaver-tm:8973/tm", var.deployment_id) :
+        item.name == "DBEAVER_TE_DC_BACKEND_DB_URL" ? (var.rds_db ? local.rds_db_url : format("jdbc:postgresql://%s-postgres:5432/cloudbeaver", var.deployment_id)) :
+        item.name == "DBEAVER_TE_QM_BACKEND_DB_URL" ? (var.rds_db ? local.rds_db_url : format("jdbc:postgresql://%s-postgres:5432/cloudbeaver", var.deployment_id)) :
+        item.name == "DBEAVER_TE_TM_BACKEND_DB_URL" ? (var.rds_db ? local.rds_db_url : format("jdbc:postgresql://%s-postgres:5432/cloudbeaver", var.deployment_id)) :
+        item.name == "DBEAVER_TE_DC_SERVER_URL" ? format("http://%s-dbeaver-te-dc:8970/dc", var.deployment_id) :
+        item.name == "DBEAVER_TE_QM_SERVER_URL" ? format("http://%s-dbeaver-te-qm:8972/qm", var.deployment_id) :
+        item.name == "DBEAVER_TE_RM_SERVER_URL" ? format("http://%s-dbeaver-te-rm:8971/rm", var.deployment_id) :
+        item.name == "DBEAVER_TE_TM_SERVER_URL" ? format("http://%s-dbeaver-te-tm:8973/tm", var.deployment_id) :
         item.value
       )
     }
@@ -34,24 +34,24 @@ locals {
     for item in var.cloudbeaver-shared-env : {
       name  = item.name
       value = (
-        item.name == "CLOUDBEAVER_DC_SERVER_URL" ? format("http://%s-cloudbeaver-dc:8970/dc", var.deployment_id) :
+        item.name == "DBEAVER_TE_DC_SERVER_URL" ? format("http://%s-dbeaver-te-dc:8970/dc", var.deployment_id) :
         item.value
       )
     }
   ]
   
-  postgres_password = { for item in var.cloudbeaver-db-env : item.name => item.value }["POSTGRES_PASSWORD"]
-  postgres_user     = { for item in var.cloudbeaver-db-env : item.name => item.value }["POSTGRES_USER"]
+  postgres_password = { for item in var.dbeaver-db-env : item.name => item.value }["POSTGRES_PASSWORD"]
+  postgres_user     = { for item in var.dbeaver-db-env : item.name => item.value }["POSTGRES_USER"]
 
   updated_cloudbeaver_dc_env = [for item in local.cloudbeaver_dc_env_modified : {
     name  = item.name
     value = (
-      item.name == "CLOUDBEAVER_DC_BACKEND_DB_PASSWORD" ? local.postgres_password :
-      item.name == "CLOUDBEAVER_QM_BACKEND_DB_PASSWORD" ? local.postgres_password :
-      item.name == "CLOUDBEAVER_TM_BACKEND_DB_PASSWORD" ? local.postgres_password :
-      item.name == "CLOUDBEAVER_DC_BACKEND_DB_USER" ? local.postgres_user :
-      item.name == "CLOUDBEAVER_QM_BACKEND_DB_USER" ? local.postgres_user :
-      item.name == "CLOUDBEAVER_TM_BACKEND_DB_USER" ? local.postgres_user :
+      item.name == "DBEAVER_TE_DC_BACKEND_DB_PASSWORD" ? local.postgres_password :
+      item.name == "DBEAVER_TE_QM_BACKEND_DB_PASSWORD" ? local.postgres_password :
+      item.name == "DBEAVER_TE_TM_BACKEND_DB_PASSWORD" ? local.postgres_password :
+      item.name == "DBEAVER_TE_DC_BACKEND_DB_USER" ? local.postgres_user :
+      item.name == "DBEAVER_TE_QM_BACKEND_DB_USER" ? local.postgres_user :
+      item.name == "DBEAVER_TE_TM_BACKEND_DB_USER" ? local.postgres_user :
       item.value
     )
   }]
@@ -173,7 +173,7 @@ resource "aws_ecs_task_definition" "dbeaver_db" {
     name        = "${var.deployment_id}-postgres"
     image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/${var.deployment_id}-team-postgres:16"
     essential   = true
-    environment = var.cloudbeaver-db-env
+    environment = var.dbeaver-db-env
     mountPoints = [{
               "containerPath": "/var/lib/postgresql/data",
               "sourceVolume": "${var.deployment_id}-cloudbeaver_db_data"
@@ -336,7 +336,7 @@ resource "aws_ecs_task_definition" "dbeaver_dc" {
     }
   }
   container_definitions = jsonencode([{
-    name        = "${var.deployment_id}-cloudbeaver-dc"
+    name        = "${var.deployment_id}-dbeaver-te-dc"
     image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/${var.deployment_id}-team-dc:${var.dbeaver_te_version}"
     essential   = true
     environment = local.updated_cloudbeaver_dc_env
@@ -354,7 +354,7 @@ resource "aws_ecs_task_definition" "dbeaver_dc" {
       }
     }
     portMappings = [{
-      name          = "${var.deployment_id}-cloudbeaver-dc"
+      name          = "${var.deployment_id}-dbeaver-te-dc"
       protocol      = "tcp"
       containerPort = 8970
       hostPort      = 8970
@@ -369,7 +369,7 @@ resource "aws_ecs_service" "dc" {
     aws_security_group.dbeaver_te
   ]
 
-  name            = "${var.deployment_id}-cloudbeaver-dc"
+  name            = "${var.deployment_id}-dbeaver-te-dc"
   cluster         = aws_ecs_cluster.dbeaver_te.id
   task_definition = aws_ecs_task_definition.dbeaver_dc.arn
   launch_type     = "FARGATE"
@@ -384,16 +384,16 @@ resource "aws_ecs_service" "dc" {
     enabled   = true
     namespace = aws_service_discovery_private_dns_namespace.dbeaver.arn
     service {
-      port_name = "${var.deployment_id}-cloudbeaver-dc"
+      port_name = "${var.deployment_id}-dbeaver-te-dc"
       client_alias {
-        dns_name = "${var.deployment_id}-cloudbeaver-dc"
+        dns_name = "${var.deployment_id}-dbeaver-te-dc"
         port     = 8970
       }
     }
   }
   load_balancer {
     target_group_arn = aws_lb_target_group.dbeaver_dc.arn
-    container_name   = "${var.deployment_id}-cloudbeaver-dc"
+    container_name   = "${var.deployment_id}-dbeaver-te-dc"
     container_port   = 8970
   }
 
@@ -428,7 +428,7 @@ resource "aws_ecs_task_definition" "dbeaver_rm" {
     }
   }
   container_definitions = jsonencode([{
-    name        = "${var.deployment_id}-cloudbeaver-rm"
+    name        = "${var.deployment_id}-dbeaver-te-rm"
     image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/${var.deployment_id}-team-rm:${var.dbeaver_te_version}"
     essential   = true
     environment = local.cloudbeaver_shared_env_modified
@@ -446,7 +446,7 @@ resource "aws_ecs_task_definition" "dbeaver_rm" {
       }
     }
     portMappings = [{
-      name          = "${var.deployment_id}-cloudbeaver-rm"
+      name          = "${var.deployment_id}-dbeaver-te-rm"
       protocol      = "tcp"
       containerPort = 8971
       hostPort      = 8971
@@ -461,7 +461,7 @@ resource "aws_ecs_service" "rm" {
     aws_security_group.dbeaver_te
   ]
 
-  name            = "${var.deployment_id}-cloudbeaver-rm"
+  name            = "${var.deployment_id}-dbeaver-te-rm"
   cluster         = aws_ecs_cluster.dbeaver_te.id
   task_definition = aws_ecs_task_definition.dbeaver_rm.arn
   launch_type     = "FARGATE"
@@ -476,16 +476,16 @@ resource "aws_ecs_service" "rm" {
     enabled   = true
     namespace = aws_service_discovery_private_dns_namespace.dbeaver.arn
     service {
-      port_name = "${var.deployment_id}-cloudbeaver-rm"
+      port_name = "${var.deployment_id}-dbeaver-te-rm"
       client_alias {
-        dns_name = "${var.deployment_id}-cloudbeaver-rm"
+        dns_name = "${var.deployment_id}-dbeaver-te-rm"
         port     = 8971
       }
     }
   }
   load_balancer {
     target_group_arn = aws_lb_target_group.dbeaver_rm.arn
-    container_name   = "${var.deployment_id}-cloudbeaver-rm"
+    container_name   = "${var.deployment_id}-dbeaver-te-rm"
     container_port   = 8971
   }
 
@@ -513,7 +513,7 @@ resource "aws_ecs_task_definition" "dbeaver_qm" {
   memory                   = 2048
   execution_role_arn       = aws_iam_role.ecsTaskExecutionRole.arn
   container_definitions = jsonencode([{
-    name        = "${var.deployment_id}-cloudbeaver-qm"
+    name        = "${var.deployment_id}-dbeaver-te-qm"
     image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/${var.deployment_id}-team-qm:${var.dbeaver_te_version}"
     essential   = true
     environment = local.cloudbeaver_shared_env_modified
@@ -527,7 +527,7 @@ resource "aws_ecs_task_definition" "dbeaver_qm" {
       }
     }
     portMappings = [{
-      name          = "${var.deployment_id}-cloudbeaver-qm"
+      name          = "${var.deployment_id}-dbeaver-te-qm"
       protocol      = "tcp"
       containerPort = 8972
       hostPort      = 8972
@@ -542,7 +542,7 @@ resource "aws_ecs_service" "qm" {
     aws_security_group.dbeaver_te
   ]
 
-  name            = "${var.deployment_id}-cloudbeaver-qm"
+  name            = "${var.deployment_id}-dbeaver-te-qm"
   cluster         = aws_ecs_cluster.dbeaver_te.id
   task_definition = aws_ecs_task_definition.dbeaver_qm.arn
   launch_type     = "FARGATE"
@@ -557,16 +557,16 @@ resource "aws_ecs_service" "qm" {
     enabled   = true
     namespace = aws_service_discovery_private_dns_namespace.dbeaver.arn
     service {
-      port_name = "${var.deployment_id}-cloudbeaver-qm"
+      port_name = "${var.deployment_id}-dbeaver-te-qm"
       client_alias {
-        dns_name = "${var.deployment_id}-cloudbeaver-qm"
+        dns_name = "${var.deployment_id}-dbeaver-te-qm"
         port     = 8972
       }
     }
   }
   load_balancer {
     target_group_arn = aws_lb_target_group.dbeaver_qm.arn
-    container_name   = "${var.deployment_id}-cloudbeaver-qm"
+    container_name   = "${var.deployment_id}-dbeaver-te-qm"
     container_port   = 8972
   }
 
@@ -603,7 +603,7 @@ resource "aws_ecs_task_definition" "dbeaver_tm" {
     }
   }
   container_definitions = jsonencode([{
-    name        = "${var.deployment_id}-cloudbeaver-tm"
+    name        = "${var.deployment_id}-dbeaver-te-tm"
     image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/${var.deployment_id}-team-tm:${var.dbeaver_te_version}"
     essential   = true
     environment = local.cloudbeaver_shared_env_modified
@@ -621,7 +621,7 @@ resource "aws_ecs_task_definition" "dbeaver_tm" {
       }
     }
     portMappings = [{
-      name          = "${var.deployment_id}-cloudbeaver-tm"
+      name          = "${var.deployment_id}-dbeaver-te-tm"
       protocol      = "tcp"
       containerPort = 8973
       hostPort      = 8973
@@ -636,7 +636,7 @@ resource "aws_ecs_service" "tm" {
     aws_security_group.dbeaver_te
   ]
 
-  name            = "${var.deployment_id}-cloudbeaver-tm"
+  name            = "${var.deployment_id}-dbeaver-te-tm"
   cluster         = aws_ecs_cluster.dbeaver_te.id
   task_definition = aws_ecs_task_definition.dbeaver_tm.arn
   launch_type     = "FARGATE"
@@ -651,16 +651,16 @@ resource "aws_ecs_service" "tm" {
     enabled   = true
     namespace = aws_service_discovery_private_dns_namespace.dbeaver.arn
     service {
-      port_name = "${var.deployment_id}-cloudbeaver-tm"
+      port_name = "${var.deployment_id}-dbeaver-te-tm"
       client_alias {
-        dns_name = "${var.deployment_id}-cloudbeaver-tm"
+        dns_name = "${var.deployment_id}-dbeaver-te-tm"
         port     = 8973
       }
     }
   }
   load_balancer {
     target_group_arn = aws_lb_target_group.dbeaver_tm.arn
-    container_name   = "${var.deployment_id}-cloudbeaver-tm"
+    container_name   = "${var.deployment_id}-dbeaver-te-tm"
     container_port   = 8973
   }
 
@@ -690,7 +690,7 @@ resource "aws_ecs_task_definition" "dbeaver_te" {
   execution_role_arn       = aws_iam_role.ecsTaskExecutionRole.arn
 
   container_definitions = jsonencode([{
-    name        = "${var.deployment_id}-cloudbeaver-te"
+    name        = "${var.deployment_id}-dbeaver-te-web"
     image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/${var.deployment_id}-team-web:${var.dbeaver_te_version}"
     essential   = true
     environment = local.cloudbeaver_shared_env_modified
@@ -704,7 +704,7 @@ resource "aws_ecs_task_definition" "dbeaver_te" {
       }
     }
     portMappings = [{
-      name          = "${var.deployment_id}-cloudbeaver-te"
+      name          = "${var.deployment_id}-dbeaver-te-web"
       protocol      = "tcp"
       containerPort = 8978
       hostPort      = 8978
@@ -720,7 +720,7 @@ resource "aws_ecs_service" "te" {
     aws_lb_target_group.dbeaver_te
   ]
 
-  name            = "${var.deployment_id}-cloudbeaver-te"
+  name            = "${var.deployment_id}-dbeaver-te-web"
   cluster         = aws_ecs_cluster.dbeaver_te.id
   task_definition = aws_ecs_task_definition.dbeaver_te.arn
   launch_type     = "FARGATE"
@@ -735,16 +735,16 @@ resource "aws_ecs_service" "te" {
     enabled   = true
     namespace = aws_service_discovery_private_dns_namespace.dbeaver.arn
     service {
-      port_name = "${var.deployment_id}-cloudbeaver-te"
+      port_name = "${var.deployment_id}-dbeaver-te-web"
       client_alias {
-        dns_name = "${var.deployment_id}-cloudbeaver-te"
+        dns_name = "${var.deployment_id}-dbeaver-te-web"
         port     = 8978
       }
     }
   }
   load_balancer {
     target_group_arn = aws_lb_target_group.dbeaver_te.arn
-    container_name   = "${var.deployment_id}-cloudbeaver-te"
+    container_name   = "${var.deployment_id}-dbeaver-te-web"
     container_port   = 8978
   }
 
