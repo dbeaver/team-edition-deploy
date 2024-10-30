@@ -165,6 +165,47 @@ CLOUDBEAVER_VERSION_TAG=24.2.0
 - or navigate to the directory `team-edition-deploy/compose/cbte` and run `docker-compose up -d`  
 
 
+#### Version update from 24.2.0 or earlier
+
+There are significant deployment changes in version 24.3.0.
+
+So if you want to update Team Edition:
+- from version 24.2.0 or early
+- to version 24.3.0 or later
+
+you have to follow these steps:
+
+##### Step 1. Get last changes and open configuration
+
+- If you deploy Team Edition with docker-compose:
+    1. Navigate to `team-edition-deploy`
+    2. Run command `git checkout --force %version%`
+    3. Open the `.env` file located at `team-edition-deploy/compose/cbte/`
+- If you use for deployment preconfigured AMI, simply run this command: `dbeaver-te configure`
+
+##### Step2. Add the following environment variables:
+
+1. Navigate to `team-edition-deploy/compose/cbte`
+2. Run the following script to update volume ownership for compatibility with version 24.3.0’s new user permissions:
+
+For Linux:
+```
+./migrate_volume_ownership_24_3_0.sh
+```
+
+For Windows:
+```
+./migrate_volume_ownership_24_3_0.cmd
+```
+##### Step 4. Restart cluster
+
+1. Stop your cluster:
+- run `dbeaver-te stop` if you use script manager
+- or navigate to the directory `team-edition-deploy/compose/cbte` and run `docker-compose down`
+2. Start your cluster:
+- run `dbeaver-te start` if you use script manager
+- or navigate to the directory `team-edition-deploy/compose/cbte` and run `docker-compose up -d`  
+
 #### Podman requirements
 
 as user `root` run following commands before [Configuring and starting Team Edition cluster](https://github.com/dbeaver/team-edition-deploy/tree/main/compose#configuring-and-starting-team-edition-cluster):
