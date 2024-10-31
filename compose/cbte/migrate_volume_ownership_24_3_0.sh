@@ -10,13 +10,26 @@ NEW_GROUP="dbeaver"
 
 for SERVICE in "${SERVICES[@]}"; do
   SERVICE_NAME="${SERVICE%%:*}"
+  if [ -z "$(docker ps --filter "name=$SERVICE_NAME" --format "{{.Names}}")" ]; then
+    echo "Starting service '$SERVICE_NAME'..."
+    docker compose up -d "$SERVICE_NAME"
+  else
+    echo "Service '$SERVICE_NAME' is already running."
+  fi
+done
+
+for SERVICE in "${SERVICES[@]}"; do
+  SERVICE_NAME="${SERVICE%%:*}"
   VOLUME_PATHS="${SERVICE#*:}"
 
-  CONTAINER_NAME=$(docker ps --filter "name=$SERVICE_NAME" --format "{{.Names}}")
-  if [ -z "$CONTAINER_NAME" ]; then
-    echo "Error: No container found with the name '$SERVICE_NAME'"
-    continue
-  fi
+  CONTAINER_NAME=""
+  until [ -n "$CONTAINER_NAME" ]; do
+    echo "Waiting for container associated with service '$SERVICE_NAME' to start..."
+    CONTAINER_NAME=$(docker ps --filter "name=$SERVICE_NAME" --format "{{.Names}}")
+    sleep 1
+  done
+
+  echo "Container '$CONTAINER_NAME' is up and running."
 
   docker exec -it "$CONTAINER_NAME" bash -c "
     id '$NEW_USER' &>/dev/null || { useradd -m -s /bin/bash '$NEW_USER' && echo 'Created user: $NEW_USER'; }
@@ -28,4 +41,14 @@ for SERVICE in "${SERVICES[@]}"; do
   "
 
   echo "Volume migration completed successfully for container: $CONTAINER_NAME"
+done
+
+for SERVICE in "${SERVICES[@]}"; do
+  SERVICE_NAME="${SERVICE%%:*}"
+  if [ -n "$(docker ps --filter "name=$SERVICE_NAME" --format "{{.Names}}")" ]; then
+    echo "Stopping service '$SERVICE_NAME'..."
+    docker compose down "$SERVICE_NAME"
+  else
+    echo "Service '$SERVICE_NAME' is not running."
+  fi
 done
