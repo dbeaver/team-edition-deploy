@@ -77,6 +77,7 @@ services:
     image: ${PODMAN_IMAGE_SOURCE:-docker.io/dbeaver}/cloudbeaver-dc:${CLOUDBEAVER_VERSION_TAG}
     hostname: cloudbeaver-dc
     environment:
+      - CLOUDBEAVER_PUBLIC_URL=${CLOUDBEAVER_PUBLIC_URL}      
       - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
       - CLOUDBEAVER_RM_SERVER_URL=http://cloudbeaver-rm:8971/rm
       - CLOUDBEAVER_QM_SERVER_URL=http://cloudbeaver-qm:8972/qm
