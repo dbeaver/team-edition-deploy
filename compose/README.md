@@ -175,15 +175,7 @@ So if you want to update Team Edition:
 
 you have to follow these steps:
 
-##### Step 1. Get last changes and open configuration
-
-- If you deploy Team Edition with docker-compose:
-    1. Navigate to `team-edition-deploy`
-    2. Run command `git checkout --force %version%`
-    3. Open the `.env` file located at `team-edition-deploy/compose/cbte/`
-- If you use for deployment preconfigured AMI, simply run this command: `dbeaver-te configure`
-
-##### Step2. Add the following environment variables:
+##### Step1. Update volume ownership:
 
 1. Navigate to `team-edition-deploy/compose/cbte`
 2. Run the following script to update volume ownership for compatibility with version 24.3.0’s new user permissions:
@@ -197,6 +189,15 @@ For Windows:
 ```
 ./migrate_volume_ownership_24_3_0.cmd
 ```
+
+##### Step 2. Get last changes and open configuration
+
+- If you deploy Team Edition with docker-compose:
+    1. Navigate to `team-edition-deploy`
+    2. Run command `git checkout --force %version%`
+    3. Open the `.env` file located at `team-edition-deploy/compose/cbte/`
+- If you use for deployment preconfigured AMI, simply run this command: `dbeaver-te configure`
+
 ##### Step 4. Restart cluster
 
 1. Stop your cluster:
