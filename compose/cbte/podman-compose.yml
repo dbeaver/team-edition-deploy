@@ -22,8 +22,6 @@ services:
       - 443:8443
     environment:
       - PRODUCT_TYPE=te
-      - LISTEN_PORT_HTTP=8080
-      - LISTEN_PORT_HTTPS=8443
       - REPLICA_COUNT_TE=${REPLICA_COUNT_TE:-1}
       - REPLICA_COUNT_TM=${REPLICA_COUNT_TM:-1}
       - REPLICA_COUNT_QM=${REPLICA_COUNT_QM:-1}

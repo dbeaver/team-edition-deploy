@@ -13,10 +13,11 @@ services:
     restart: unless-stopped
     image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-nginx:${CLOUDBEAVER_VERSION_TAG}
     network_mode: host
-    user: root
     environment:
       - PRODUCT_TYPE=te
       - NETWORK_MODE=host
+      - NGINX_LISTEN_PORT_HTTP=80
+      - NGINX_LISTEN_PORT_HTTPS=443
       - REPLICA_COUNT_TE=${REPLICA_COUNT_TE:-1}
       - REPLICA_COUNT_TM=${REPLICA_COUNT_TM:-1}
       - REPLICA_COUNT_QM=${REPLICA_COUNT_QM:-1}
