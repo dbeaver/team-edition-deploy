@@ -108,6 +108,20 @@ To ensure the safety and integrity of your data, it is recommended to create a b
 3. Pull new docker images: `docker-compose pull` or `docker compose pull`  
 4. Restart cluster: `docker-compose up -d` or `docker compose up -d`
 
+### Postgres update procedure
+
+If you want to update your PostgreSQL to version 17, follow these steps:
+
+1. Navigate to `team-edition-deploy/compose/cbte`
+2. Stop the cluster: `docker-compose down` or `docker compose down`
+3. Run the update script: `./cloudbeaver-postgres-upgrade.sh`
+4. Update the PostgreSQL version in your Docker Compose file to 17 as shown
+
+```
+${IMAGE_SOURCE:-dbeaver}/cloudbeaver-postgres:17
+```
+5. Restart the cluster: `docker-compose up -d` or `docker compose up -d`
+
 #### Team Edition manager
 
 This repository includes a script manager that facilitates managing various tasks when using the Team Edition cluster. This is optional, you can use the usual docker compose commands instead.
