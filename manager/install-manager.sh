@@ -15,4 +15,20 @@ if [[ ":$PATH:" != *":$INSTALL_DIR:"* ]]; then
 fi
 
 CBTE_DIR=$(realpath "$CURRENT_DIR/../compose/cbte")
-sed -i "s|/opt/dbeaver-team-server/team-edition-deploy/compose/cbte/|$CBTE_DIR/|g" "$INSTALL_DIR/dbeaver-te"
+
+
+case $(uname) in
+
+  Linux)
+    sed -i "s|/opt/dbeaver-team-server/team-edition-deploy/compose/cbte/|$CBTE_DIR/|g" "$INSTALL_DIR/dbeaver-te"
+    ;;
+
+  Darwin)
+    sed -i'' -e "s|/opt/dbeaver-team-server/team-edition-deploy/compose/cbte/|$CBTE_DIR/|g" "$INSTALL_DIR/dbeaver-te"
+    ;;
+
+  *)
+    echo -n "unknown OS Type. Sed tool may be incompatible"
+    exit 1
+    ;;
+esac
