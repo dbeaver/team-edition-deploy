@@ -35,6 +35,18 @@ If you want to use another database on your side, you can do it according to the
 3. Change `CLOUDBEAVER_DB_DRIVER` to driver for a database you want to use, for example: `postgres-jdbc`/`mysql8`/`oracle_thin`
 4. Enter the authentication data for your database in the fields `CLOUDBEAVER_DB_URL` `CLOUDBEAVER_DB_USER` `CLOUDBEAVER_DB_PASSWORD`
 
+#### RedHat-based OS support
+
+run as root before up this compose:
+
+```
+loginctl enable-linger 1000
+echo 'net.ipv4.ip_unprivileged_port_start=80' >> /etc/sysctl.conf
+sysctl -p
+setsebool -P httpd_can_network_relay 1
+setsebool -P httpd_can_network_connect 1
+semanage permissive -a httpd_t
+```
 
 #### Configure Oracle database
 
