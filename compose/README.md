@@ -130,6 +130,8 @@ ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-postgres:17
 
 ## Team Edition manager
 
+> **Note:** The Team Edition manager is available only on Linux.
+
 This repository includes a script manager that facilitates managing various tasks when using the Team Edition cluster. This is optional, you can use the usual docker compose commands instead.
 
 Manager installation:
