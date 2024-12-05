@@ -67,5 +67,5 @@ spec:
             service:
               name: cloudbeaver-tm
               port:
-                number: 8973                
+                number: 8973
 {{ end }}
