@@ -13,7 +13,7 @@ variable "aws_region" {
 variable "dbeaver_te_version" {
   description = "The version of the cluster you want to deploy"
   type = string
-  default = "24.2.0"
+  default = "24.3.0"
 }
 
 variable "alb_certificate_Identifier" {
