@@ -33,39 +33,39 @@ spec:
   - host: "{{ .Values.cloudbeaverBaseDomain }}"
     http:
       paths:
-        - path: /
+        - path: /(.*)(.*)
           pathType: Prefix
           backend:
             service:
               name: cloudbeaver-te
               port:
                 number: 8978
-        - path: /dc/
+        - path: /(dc/|dc$)(.*)
           pathType: Prefix
           backend:
             service:
               name: cloudbeaver-dc
               port:
                 number: 8970
-        - path: /rm/
+        - path: /(rm/|rm$)(.*)
           pathType: Prefix
           backend:
             service:
               name: cloudbeaver-rm
               port:
                 number: 8971
-        - path: /qm/
+        - path: /(qm/|qm$)(.*)
           pathType: Prefix
           backend:
             service:
               name: cloudbeaver-qm
               port:
                 number: 8972
-        - path: /tm/
+        - path: /(tm/|tm$)(.*)
           pathType: Prefix
           backend:
             service:
               name: cloudbeaver-tm
               port:
-                number: 8973             
+                number: 8973                
 {{ end }}
