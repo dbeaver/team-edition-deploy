@@ -1,5 +1,7 @@
 ## Team Edition server manager
 
+> **Note:** The Team Edition manager is available only on Linux.
+
 `dbeaver-te` is a utility to manage a Team Edition server. Using this manager, you can start or stop the server, as well as update its version.
 
 ### Instalation
