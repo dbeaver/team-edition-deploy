@@ -21,7 +21,7 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-body-size: "500m"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"    
-    # nginx.ingress.kubernetes.io/use-regex: true
+    nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
 {{- if eq "https" .Values.httpScheme }}
   tls:
@@ -34,35 +34,35 @@ spec:
     http:
       paths:
         - path: /(.*)(.*)
-          pathType: Prefix
+          pathType: ImplementationSpecific
           backend:
             service:
               name: cloudbeaver-te
               port:
                 number: 8978
         - path: /(dc/|dc$)(.*)
-          pathType: Prefix
+          pathType: ImplementationSpecific
           backend:
             service:
               name: cloudbeaver-dc
               port:
                 number: 8970
         - path: /(rm/|rm$)(.*)
-          pathType: Prefix
+          pathType: ImplementationSpecific
           backend:
             service:
               name: cloudbeaver-rm
               port:
                 number: 8971
         - path: /(qm/|qm$)(.*)
-          pathType: Prefix
+          pathType: ImplementationSpecific
           backend:
             service:
               name: cloudbeaver-qm
               port:
                 number: 8972
         - path: /(tm/|tm$)(.*)
-          pathType: Prefix
+          pathType: ImplementationSpecific
           backend:
             service:
               name: cloudbeaver-tm
