@@ -1,0 +1,76 @@
+---
+{{- if eq .Values.ingressController "aws-alb" }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-{{ .Release.Name }}
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    {{- if .Values.certificateARN }}
+    alb.ingress.kubernetes.io/certificate-arn: "{{ .Values.certificateARN }}"
+    {{- end }}
+    {{- if eq "https" .Values.httpScheme }}
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    {{- end }}
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/rewrite-target: "/$1$2"
+    alb.ingress.kubernetes.io/affinity: "cookie"
+    alb.ingress.kubernetes.io/affinity-mode: "persistent"
+    alb.ingress.kubernetes.io/session-cookie-name: "cb-node-id"
+    alb.ingress.kubernetes.io/session-cookie-path: "/"
+    alb.ingress.kubernetes.io/session-cookie-domain: "{{ .Values.cloudbeaverBaseDomain }}"
+    alb.ingress.kubernetes.io/session-cookie-change-on-failure: "true"
+    alb.ingress.kubernetes.io/session-cookie-secure: "true"
+    alb.ingress.kubernetes.io/session-cookie-max-age: "345600"
+    alb.ingress.kubernetes.io/proxy-body-size: "500m"
+    alb.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    alb.ingress.kubernetes.io/proxy-send-timeout: "3600"
+spec:
+  ingressClassName: alb
+{{- if eq "https" .Values.httpScheme }}
+  tls:
+    - hosts:
+      - {{ .Values.cloudbeaverBaseDomain }}
+      secretName: {{ .Release.Name }}-ingress-tls
+{{- end }}
+  rules:
+  - host: "{{ .Values.cloudbeaverBaseDomain }}"
+    http:
+      paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: cloudbeaver-te
+              port:
+                number: 8978
+        - path: /dc/
+          pathType: Prefix
+          backend:
+            service:
+              name: cloudbeaver-dc
+              port:
+                number: 8970
+        - path: /rm/
+          pathType: Prefix
+          backend:
+            service:
+              name: cloudbeaver-rm
+              port:
+                number: 8971
+        - path: /qm/
+          pathType: Prefix
+          backend:
+            service:
+              name: cloudbeaver-qm
+              port:
+                number: 8972
+        - path: /tm/
+          pathType: Prefix
+          backend:
+            service:
+              name: cloudbeaver-tm
+              port:
+                number: 8973        
+{{ end }}

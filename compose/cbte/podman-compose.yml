@@ -1,3 +1,8 @@
+# run as root before up this compose:
+#   loginctl enable-linger 1000
+#   echo 'net.ipv4.ip_unprivileged_port_start=80' >> /etc/sysctl.conf
+#   sysctl -p
+
 version: '3'
 volumes:
   metadata_data: {}
@@ -11,7 +16,7 @@ networks:
 services:
   nginx:
     restart: unless-stopped
-    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-nginx:${CLOUDBEAVER_VERSION_TAG}
+    image: ${PODMAN_IMAGE_SOURCE:-docker.io/dbeaver}/cloudbeaver-nginx:${CLOUDBEAVER_VERSION_TAG}
     ports:
       - 80:8080
       - 443:8443
@@ -26,8 +31,8 @@ services:
     networks:
       - cloudbeaver-te-private-net
     volumes:
-      - nginx_conf_data:/etc/nginx/product-conf/
-      - nginx_ssl_data:/etc/nginx/ssl/
+      - nginx_conf_data:/etc/nginx/product-conf/:z
+      - nginx_ssl_data:/etc/nginx/ssl/:z
     depends_on:
       - cloudbeaver-te
       - cloudbeaver-dc
@@ -36,7 +41,7 @@ services:
       - cloudbeaver-tm
   kafka:
     restart: unless-stopped
-    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-kafka:3.8
+    image: ${PODMAN_IMAGE_SOURCE:-docker.io/dbeaver}/cloudbeaver-kafka:3.8
     hostname: kafka
     expose:
       - 9092
@@ -54,10 +59,10 @@ services:
   postgres:
     restart: unless-stopped
     hostname: postgres
-    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-postgres:14
+    image: ${PODMAN_IMAGE_SOURCE:-docker.io/dbeaver}/cloudbeaver-postgres:14
     volumes:
-      - metadata_data:/var/lib/postgresql/data
-      - ./cloudbeaver-db-init.sql:/docker-entrypoint-initdb.d/cb-init.sql
+      - metadata_data:/var/lib/postgresql/data:z
+      - ./cloudbeaver-db-init.sql:/docker-entrypoint-initdb.d/cb-init.sql:z
     environment:
       - POSTGRES_DB=cloudbeaver
       - POSTGRES_USER=${CLOUDBEAVER_DB_USER}
@@ -68,10 +73,10 @@ services:
       - cloudbeaver-te-private-net
   cloudbeaver-dc:
     restart: unless-stopped
-    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-dc:${CLOUDBEAVER_VERSION_TAG}
+    image: ${PODMAN_IMAGE_SOURCE:-docker.io/dbeaver}/cloudbeaver-dc:${CLOUDBEAVER_VERSION_TAG}
     hostname: cloudbeaver-dc
     environment:
-      - CLOUDBEAVER_PUBLIC_URL=${CLOUDBEAVER_PUBLIC_URL}
+      - CLOUDBEAVER_PUBLIC_URL=${CLOUDBEAVER_PUBLIC_URL}      
       - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
       - CLOUDBEAVER_RM_SERVER_URL=http://cloudbeaver-rm:8971/rm
       - CLOUDBEAVER_QM_SERVER_URL=http://cloudbeaver-qm:8972/qm
@@ -89,9 +94,9 @@ services:
       - CLOUDBEAVER_DC_BACKEND_DB_DRIVER=${CLOUDBEAVER_DB_DRIVER}
       - CLOUDBEAVER_TM_BACKEND_DB_DRIVER=${CLOUDBEAVER_DB_DRIVER}
     volumes:
-      - dc_data:/opt/domain-controller/workspace
-      - ./cert/private/:/opt/domain-controller/conf/certificates/
-      - ./cert/public/:/opt/domain-controller/conf/certificates/public/
+      - dc_data:/opt/domain-controller/workspace:z
+      - ./cert/private/:/opt/domain-controller/conf/certificates/:z
+      - ./cert/public/:/opt/domain-controller/conf/certificates/public/:z
     expose:
       - 8970
     networks:
@@ -99,11 +104,11 @@ services:
   cloudbeaver-te:
     restart: unless-stopped
     hostname: cloudbeaver-te
-    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-te:${CLOUDBEAVER_VERSION_TAG}
+    image: ${PODMAN_IMAGE_SOURCE:-docker.io/dbeaver}/cloudbeaver-te:${CLOUDBEAVER_VERSION_TAG}
     deploy:
       replicas: ${REPLICA_COUNT_TE:-1}
     volumes:
-      - ./cert/public/:/opt/cloudbeaver/conf/certificates/
+      - ./cert/public/:/opt/cloudbeaver/conf/certificates/:z
     environment:
       - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
     expose:
@@ -116,15 +121,15 @@ services:
       - cloudbeaver-te-private-net
   cloudbeaver-rm:
     restart: unless-stopped
-    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-rm:${CLOUDBEAVER_VERSION_TAG}
+    image: ${PODMAN_IMAGE_SOURCE:-docker.io/dbeaver}/cloudbeaver-rm:${CLOUDBEAVER_VERSION_TAG}
     hostname: cloudbeaver-rm
     deploy:
       replicas: ${REPLICA_COUNT_RM:-1}
     environment:
       - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
     volumes:
-      - rm_data:/opt/resource-manager/workspace
-      - ./cert/public/:/opt/resource-manager/conf/certificates/
+      - rm_data:/opt/resource-manager/workspace:z
+      - ./cert/public/:/opt/resource-manager/conf/certificates/:z
     depends_on:
       - cloudbeaver-dc
     expose:
@@ -133,14 +138,14 @@ services:
       - cloudbeaver-te-private-net
   cloudbeaver-qm:
     restart: unless-stopped
-    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-qm:${CLOUDBEAVER_VERSION_TAG}
+    image: ${PODMAN_IMAGE_SOURCE:-docker.io/dbeaver}/cloudbeaver-qm:${CLOUDBEAVER_VERSION_TAG}
     hostname: cloudbeaver-qm
     deploy:
       replicas: ${REPLICA_COUNT_QM:-1}
     environment:
       - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
     volumes:
-      - ./cert/public/:/opt/query-manager/conf/certificates/
+      - ./cert/public/:/opt/query-manager/conf/certificates/:z
     depends_on:
       - cloudbeaver-dc
     expose:
@@ -149,15 +154,15 @@ services:
       - cloudbeaver-te-private-net
   cloudbeaver-tm:
     restart: unless-stopped
-    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-tm:${CLOUDBEAVER_VERSION_TAG}
+    image: ${PODMAN_IMAGE_SOURCE:-docker.io/dbeaver}/cloudbeaver-tm:${CLOUDBEAVER_VERSION_TAG}
     hostname: cloudbeaver-tm
     deploy:
       replicas: ${REPLICA_COUNT_TM:-1}
     environment:
       - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
     volumes:
-      - tm_data:/opt/task-manager/workspace
-      - ./cert/public/:/opt/task-manager/conf/certificates/
+      - tm_data:/opt/task-manager/workspace:z
+      - ./cert/public/:/opt/task-manager/conf/certificates/:z
     depends_on:
       - cloudbeaver-dc
     expose:

@@ -238,7 +238,7 @@ createBackup(){
     PROJECT_NAME=$COMPOSE_PROJECT_NAME
     BACKUP_PATH="./backup/$PROJECT_NAME"_$(date +%d%m%Y)
     mkdir -p $BACKUP_PATH
-    services="cloudbeaver-dc cloudbeaver-qm cloudbeaver-rm cloudbeaver-te"
+    services="cloudbeaver-dc cloudbeaver-tm cloudbeaver-rm"
 
     skip_db=false
     include_certs=false
@@ -256,7 +256,7 @@ createBackup(){
 
     for SERVICE in $services; do
         VOLUME_PATH=$(docker inspect -f '{{ range .Mounts }}{{ if eq .Type "volume" }}{{ println .Destination }}{{ end }}{{ end }}' $PROJECT_NAME-"$SERVICE"-1 | head -1)
-		docker compose exec -T $SERVICE tar -czf - -C ${VOLUME_PATH} . > $BACKUP_PATH/"$SERVICE".tar.gz
+		docker compose exec -T $SERVICE sh -c "if [ -d '${VOLUME_PATH}' ] && [ \"\$(ls -A ${VOLUME_PATH})\" ]; then tar -czf - -C ${VOLUME_PATH} .;fi" > $BACKUP_PATH/"$SERVICE".tar.gz
 
     done
 
