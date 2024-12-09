@@ -7,6 +7,6 @@ provisioner: efs.csi.aws.com
 parameters:
   provisioningMode: efs-ap
   fileSystemId: {{ .Values.storage.efs.fileSystemId | default "" }}
-  directoryPerms: "777"
+  directoryPerms: "775"
 reclaimPolicy: Retain
 {{- end }}

@@ -49,7 +49,7 @@ resource "aws_efs_access_point" "efs_access_point" {
     creation_info {
       owner_gid   = 1000
       owner_uid   = 1000
-      permissions = "777"
+      permissions = "775"
     }
   }
 }
