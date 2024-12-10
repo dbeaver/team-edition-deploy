@@ -26,6 +26,8 @@ This will open the `.env` file, where you can change the parameters you want, th
 2. Enter `dbeaver-te update list`
 3. Choose the version you want to update.
 4. Run this command: `dbeaver-te update %version%`
+5. Restart the server: run `dbeaver-te stop`, then `dbeaver-te start`
+
 
 ### Backup and restore cluster
 
