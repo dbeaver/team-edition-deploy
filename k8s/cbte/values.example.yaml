@@ -21,7 +21,7 @@ httpScheme: http
 httpsCertPath: "ingressSsl"
 # certificate: <httpsCertPath>/fullchain.pem
 # certificate key: <httpsCertPath>/privkey.pem
-# If you keep certificate in AWS Certificate Manager and use aws-alb set your certificate ARN
+# If you use aws-alb set your certificate ARN from AWS Certificate Manager 
 # Domain certificates must equal cloudbeaverBaseDomain
 certificateARN: ""
 
