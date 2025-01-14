@@ -21,7 +21,7 @@
 * 16Gb RAM
 * Linux or macOS as deploy host
 * `git` and `kubectl` installed
-* [Nginx load balancer](https://docs.nginx.com/nginx-ingress-controller/installation/installation-with-helm/) and [Kubernetes Helm plugin](https://helm.sh/docs/topics/plugins/) added to your `k8s`
+* [Nginx load balancer](https://docs.nginx.com/nginx-ingress-controller/installation/installation-with-helm/) and [Kubernetes Helm plugin](https://helm.sh/docs/topics/plugins/) added to your `k8s` (ingress-nginx controller >= 1.11 and helm-chart >= 4.10.2)
 
 ### Deployment
 
