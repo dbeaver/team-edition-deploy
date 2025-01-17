@@ -4,30 +4,25 @@ volumes:
   dc_data: {}
   rm_data: {}
   tm_data: {}
-  nginx_ssl_data: {}
-  nginx_conf_data: {}
+  haproxy_ssl_data: {}
+  haproxy_conf_data: {}
 networks:
   cloudbeaver-te-private-net: null
 services:
-  nginx:
+  haproxy:
     restart: unless-stopped
-    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-nginx:${CLOUDBEAVER_VERSION_TAG}
+    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-haproxy:${CLOUDBEAVER_VERSION_TAG}
     ports:
       - 80:8080
       - 443:8443
     environment:
       - PRODUCT_TYPE=te
-      - REPLICA_COUNT_TE=${REPLICA_COUNT_TE:-1}
-      - REPLICA_COUNT_TM=${REPLICA_COUNT_TM:-1}
-      - REPLICA_COUNT_QM=${REPLICA_COUNT_QM:-1}
-      - REPLICA_COUNT_RM=${REPLICA_COUNT_RM:-1}
-      - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-dbeaver}
       - CLOUDBEAVER_WEB_SERVER_PORT=${CLOUDBEAVER_WEB_SERVER_PORT:-8978}
     networks:
       - cloudbeaver-te-private-net
     volumes:
-      - nginx_conf_data:/etc/nginx/product-conf/
-      - nginx_ssl_data:/etc/nginx/ssl/
+      - haproxy_conf_data:/etc/haproxy/conf/
+      - haproxy_ssl_data:/etc/haproxy/ssl/
     depends_on:
       - cloudbeaver-te
       - cloudbeaver-dc
@@ -88,6 +83,7 @@ services:
       - CLOUDBEAVER_QM_BACKEND_DB_DRIVER=${CLOUDBEAVER_DB_DRIVER}
       - CLOUDBEAVER_DC_BACKEND_DB_DRIVER=${CLOUDBEAVER_DB_DRIVER}
       - CLOUDBEAVER_TM_BACKEND_DB_DRIVER=${CLOUDBEAVER_DB_DRIVER}
+      - CLOUDBEAVER_DMSVC_URL=http://haproxy:11000
     volumes:
       - dc_data:/opt/domain-controller/workspace
       - ./cert/private/:/opt/domain-controller/conf/certificates/
