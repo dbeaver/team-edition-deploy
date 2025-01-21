@@ -11,7 +11,7 @@ networks:
 services:
   haproxy:
     restart: unless-stopped
-    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-haproxy:${CLOUDBEAVER_VERSION_TAG}
+    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-proxy:${CLOUDBEAVER_VERSION_TAG}
     network_mode: host
     environment:
       - PRODUCT_TYPE=te
