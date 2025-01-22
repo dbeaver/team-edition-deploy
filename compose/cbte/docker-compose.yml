@@ -4,14 +4,14 @@ volumes:
   dc_data: {}
   rm_data: {}
   tm_data: {}
-  haproxy_ssl_data: {}
-  haproxy_conf_data: {}
+  web_proxy_ssl_data: {}
+  web_proxy_conf_data: {}
 networks:
   cloudbeaver-te-private-net: null
 services:
-  haproxy:
+  web-proxy:
     restart: unless-stopped
-    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-proxy:${CLOUDBEAVER_VERSION_TAG}
+    image: ${IMAGE_SOURCE:-dbeaver}/haproxy:${CLOUDBEAVER_VERSION_TAG}
     ports:
       - 80:8080
       - 443:8443
@@ -21,8 +21,8 @@ services:
     networks:
       - cloudbeaver-te-private-net
     volumes:
-      - haproxy_conf_data:/etc/haproxy/conf/
-      - haproxy_ssl_data:/etc/haproxy/ssl/
+      - web_proxy_conf_data:/etc/haproxy/conf/
+      - web_proxy_ssl_data:/etc/haproxy/ssl/
     depends_on:
       - cloudbeaver-te
       - cloudbeaver-dc
