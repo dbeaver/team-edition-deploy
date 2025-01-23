@@ -9,8 +9,8 @@ volumes:
   dc_data: {}
   rm_data: {}
   tm_data: {}
-  web_proxy_ssl_data: {}
-  web_proxy_conf_data: {}
+  nginx_ssl_data: {}
+  nginx_conf_data: {}
 networks:
   cloudbeaver-te-private-net: null
 services:
@@ -26,8 +26,8 @@ services:
     networks:
       - cloudbeaver-te-private-net
     volumes:
-      - web_proxy_conf_data:/etc/haproxy/conf/:z
-      - web_proxy_ssl_data:/etc/haproxy/ssl/:z
+      - nginx_conf_data:/etc/haproxy/conf/:z
+      - nginx_ssl_data:/etc/haproxy/ssl/:z
     depends_on:
       - cloudbeaver-te
       - cloudbeaver-dc
