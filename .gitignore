@@ -1,3 +1,4 @@
+compose/cbte/cert/custom/*
 compose/cbte/cert/*/*.key
 compose/cbte/cert/*/*.crt
 compose/cbte/.env
