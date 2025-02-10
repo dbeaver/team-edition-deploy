@@ -1,4 +1,4 @@
-compose/cbte/cert/custom/*
+compose/cbte/trusted-cacerts/*
 compose/cbte/cert/*/*.key
 compose/cbte/cert/*/*.crt
 compose/cbte/.env
