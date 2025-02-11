@@ -7,33 +7,19 @@ metadata:
   annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
-    {{- if .Values.certificateARN }}
-    alb.ingress.kubernetes.io/certificate-arn: "{{ .Values.certificateARN }}"
-    {{- end }}
     {{- if eq "https" .Values.httpScheme }}
+    alb.ingress.kubernetes.io/certificate-arn: "{{ .Values.certificateARN }}"
     alb.ingress.kubernetes.io/ssl-redirect: '443'
-    {{- end }}
+    alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-TLS13-1-2-2021-06
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    {{- else }}
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
+    {{- end }}
     alb.ingress.kubernetes.io/rewrite-target: "/$1$2"
-    alb.ingress.kubernetes.io/affinity: "cookie"
-    alb.ingress.kubernetes.io/affinity-mode: "persistent"
-    alb.ingress.kubernetes.io/session-cookie-name: "cb-node-id"
-    alb.ingress.kubernetes.io/session-cookie-path: "/"
-    alb.ingress.kubernetes.io/session-cookie-domain: "{{ .Values.cloudbeaverBaseDomain }}"
-    alb.ingress.kubernetes.io/session-cookie-change-on-failure: "true"
-    alb.ingress.kubernetes.io/session-cookie-secure: "true"
-    alb.ingress.kubernetes.io/session-cookie-max-age: "345600"
     alb.ingress.kubernetes.io/proxy-body-size: "500m"
-    alb.ingress.kubernetes.io/proxy-read-timeout: "3600"
-    alb.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    alb.ingress.kubernetes.io/load-balancer-target-group-attributes: stickiness.enabled=true,stickiness.lb_cookie.duration_seconds=345600,idle_timeout.timeout_seconds=3600
 spec:
   ingressClassName: alb
-{{- if eq "https" .Values.httpScheme }}
-  tls:
-    - hosts:
-      - {{ .Values.cloudbeaverBaseDomain }}
-      secretName: {{ .Release.Name }}-ingress-tls
-{{- end }}
   rules:
   - host: "{{ .Values.cloudbeaverBaseDomain }}"
     http:
