@@ -97,6 +97,7 @@ services:
       - dc_data:/opt/domain-controller/workspace:z
       - ./cert/private/:/opt/domain-controller/conf/certificates/:z
       - ./cert/public/:/opt/domain-controller/conf/certificates/public/:z
+      - ./trusted-cacerts/:/opt/domain-controller/conf/certificates/custom/:z      
     expose:
       - 8970
     networks:
@@ -109,6 +110,7 @@ services:
       replicas: ${REPLICA_COUNT_TE:-1}
     volumes:
       - ./cert/public/:/opt/cloudbeaver/conf/certificates/:z
+      - ./trusted-cacerts/:/opt/cloudbeaver/conf/certificates/custom/:z
     environment:
       - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
     expose:
@@ -130,6 +132,7 @@ services:
     volumes:
       - rm_data:/opt/resource-manager/workspace:z
       - ./cert/public/:/opt/resource-manager/conf/certificates/:z
+      - ./trusted-cacerts/:/opt/resource-manager/conf/certificates/custom/:z      
     depends_on:
       - cloudbeaver-dc
     expose:
@@ -146,6 +149,7 @@ services:
       - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
     volumes:
       - ./cert/public/:/opt/query-manager/conf/certificates/:z
+      - ./trusted-cacerts/:/opt/query-manager/conf/certificates/custom/:z
     depends_on:
       - cloudbeaver-dc
     expose:
@@ -163,6 +167,7 @@ services:
     volumes:
       - tm_data:/opt/task-manager/workspace:z
       - ./cert/public/:/opt/task-manager/conf/certificates/:z
+      - ./trusted-cacerts/:/opt/task-manager/conf/certificates/custom/:z
     depends_on:
       - cloudbeaver-dc
     expose:
