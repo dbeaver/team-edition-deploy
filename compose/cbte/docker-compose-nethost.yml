@@ -6,6 +6,7 @@ volumes:
   tm_data: {}
   nginx_ssl_data: {}
   nginx_conf_data: {}
+  trusted_cacerts: {}
 networks:
   cloudbeaver-te-private-net: null
 services:
@@ -86,7 +87,7 @@ services:
       - dc_data:/opt/domain-controller/workspace
       - ./cert/private/:/opt/domain-controller/conf/certificates/
       - ./cert/public/:/opt/domain-controller/conf/certificates/public/
-      - ./trusted-cacerts/:/opt/domain-controller/conf/certificates/custom/
+      - trusted_cacerts:/opt/domain-controller/conf/certificates/custom/
     network_mode: host
 
   cloudbeaver-te:
@@ -96,7 +97,7 @@ services:
       replicas: ${REPLICA_COUNT_TE:-1}
     volumes:
       - ./cert/public/:/opt/cloudbeaver/conf/certificates/
-      - ./trusted-cacerts/:/opt/cloudbeaver/conf/certificates/custom/
+      - trusted_cacerts:/opt/cloudbeaver/conf/certificates/custom/
     environment:
       - CLOUDBEAVER_DC_SERVER_URL=http://127.0.0.1:8970/dc
     expose:
@@ -117,7 +118,7 @@ services:
     volumes:
       - rm_data:/opt/resource-manager/workspace
       - ./cert/public/:/opt/resource-manager/conf/certificates/
-      - ./trusted-cacerts/:/opt/resource-manager/conf/certificates/custom/      
+      - trusted_cacerts:/opt/resource-manager/conf/certificates/custom/      
     depends_on:
       - cloudbeaver-dc
     network_mode: host
@@ -131,7 +132,7 @@ services:
       - CLOUDBEAVER_DC_SERVER_URL=http://127.0.0.1:8970/dc
     volumes:
       - ./cert/public/:/opt/query-manager/conf/certificates/
-      - ./trusted-cacerts/:/opt/query-manager/conf/certificates/custom/
+      - trusted_cacerts:/opt/query-manager/conf/certificates/custom/
     depends_on:
       - cloudbeaver-dc
     network_mode: host
@@ -146,7 +147,7 @@ services:
     volumes:
       - tm_data:/opt/task-manager/workspace
       - ./cert/public/:/opt/task-manager/conf/certificates/
-      - ./trusted-cacerts/:/opt/task-manager/conf/certificates/custom/
+      - trusted_cacerts:/opt/task-manager/conf/certificates/custom/
     depends_on:
       - cloudbeaver-dc
     network_mode: host
