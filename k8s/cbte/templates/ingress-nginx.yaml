@@ -9,7 +9,6 @@ metadata:
     {{- if eq "https" .Values.httpScheme }}
     ingress.kubernetes.io/ssl-redirect: "true"
     {{- end }}
-    nginx.ingress.kubernetes.io/rewrite-target: "/$1$2"
     nginx.ingress.kubernetes.io/affinity: "cookie"
     nginx.ingress.kubernetes.io/affinity-mode: "persistent"
     nginx.ingress.kubernetes.io/session-cookie-name: "cb-node-id"
@@ -21,6 +20,7 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-body-size: "500m"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"    
+    nginx.ingress.kubernetes.io/rewrite-target: "/$1$2"
     nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
 {{- if eq "https" .Values.httpScheme }}
@@ -40,6 +40,32 @@ spec:
               name: cloudbeaver-te
               port:
                 number: 8978
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-{{ .Release.Name }}-backend
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    {{- if eq "https" .Values.httpScheme }}
+    ingress.kubernetes.io/ssl-redirect: "true"
+    {{- end }}
+    nginx.ingress.kubernetes.io/proxy-body-size: "500m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/rewrite-target: "/$1$2"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  {{- if eq "https" .Values.httpScheme }}
+  tls:
+    - hosts:
+      - {{ .Values.cloudbeaverBaseDomain }}
+      secretName: {{ .Release.Name }}-ingress-tls
+  {{- end }}
+  rules:
+  - host: "{{ .Values.cloudbeaverBaseDomain }}"
+    http:
+      paths:
         - path: /(dc/|dc$)(.*)
           pathType: ImplementationSpecific
           backend:
