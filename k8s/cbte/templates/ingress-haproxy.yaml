@@ -30,6 +30,28 @@ spec:
               name: cloudbeaver-te
               port:
                 number: 8978
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-{{ .Release.Name }}-backend
+  annotations:
+    haproxy-ingress.github.io/ingress.class: "haproxy"
+    {{- if eq "https" .Values.httpScheme }}
+    haproxy-ingress.github.io/ssl-redirect: "true"
+    {{- end }}
+    haproxy-ingress.github.io/proxy-body-size: "500m"
+spec:
+  {{- if eq "https" .Values.httpScheme }}
+  tls:
+    - hosts:
+      - {{ .Values.cloudbeaverBaseDomain }}
+      secretName: {{ .Release.Name }}-ingress-tls
+  {{- end }}
+  rules:
+  - host: "{{ .Values.cloudbeaverBaseDomain }}"
+    http:
+      paths:
         - path: /dc
           pathType: Prefix
           backend:
@@ -55,7 +77,7 @@ spec:
           pathType: Prefix
           backend:
             service:
-              name: cloudbeaver-qm
+              name: cloudbeaver-tm
               port:
                 number: 8973                
 {{ end }}
