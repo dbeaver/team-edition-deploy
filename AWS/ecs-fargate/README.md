@@ -23,7 +23,6 @@ git clone https://github.com/dbeaver/cloudbeaver-deploy.git
    - If you plan to use the PostgreSQL internal container:
      - Navigate to `team-edition-deploy/AWS/ecs-fargate`  
      - Open `variables.tf`.
-     - Update database password in `cloudbeaver-db-init.sql` file. Replace  `DCpassword`, `QMpassword`, and `TMpassword` with your database password.
      - Update `variables.tf` file. Modify `POSTGRES_PASSWORD` field in `cloudbeaver-db-env` vatiables.
 
    - If you plan to use an RDS-based database:
