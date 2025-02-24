@@ -63,7 +63,6 @@ services:
     image: ${PODMAN_IMAGE_SOURCE:-docker.io/dbeaver}/cloudbeaver-postgres:14
     volumes:
       - metadata_data:/var/lib/postgresql/data:z
-      - ./cloudbeaver-db-init.sql:/docker-entrypoint-initdb.d/cb-init.sql:z
     environment:
       - POSTGRES_DB=cloudbeaver
       - POSTGRES_USER=${CLOUDBEAVER_DB_USER}
