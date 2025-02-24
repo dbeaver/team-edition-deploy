@@ -37,7 +37,7 @@ services:
       - cloudbeaver-tm
   kafka:
     restart: unless-stopped
-    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-kafka:3.8
+    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-kafka:3.9
     network_mode: host
     environment:
       - KAFKA_CFG_NODE_ID=0
