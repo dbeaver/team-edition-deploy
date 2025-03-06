@@ -31,6 +31,12 @@ Ensure all TCP ports from the below list are available in your network stack.
  > - For deployment with Podman please ensure made the [following steps](#podman-prerequisites) before configuring the Team Edition cluster.
 > - If you want to deploy Team Edition on RedHat, please ensure made the [following steps](#redhat-prerequisites) before configuring the cluster.
 
+## User and permissions changes  
+
+Starting from DBeaver Team Edition v25.0 process inside the container now runs as the ‘dbeaver’ user (‘UID=8978’), instead of ‘root’.  
+If a user with ‘UID=8978’ already exists in your environment, permission conflicts may occur.  
+Additionally, the default Docker volumes directory’s ownership has changed.  
+Previously, the volumes were owned by the ‘root’ user, but now they are owned by the ‘dbeaver’ user (‘UID=8978’).  
 
 ## Configuring and starting Team Edition cluster
 
