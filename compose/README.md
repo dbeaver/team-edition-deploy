@@ -85,7 +85,7 @@ If you want to use another database on your side, you can do it according to the
 
 1. Navigate to `team-edition-deploy/compose/cbte` folder, and open `.env.example` file.
 2. Change `USE_EXTERNAL_DB` to `true` value.
-3. Change `CLOUDBEAVER_DB_DRIVER` to driver for a database you want to use, for example: `postgres-jdbc`/`mysql8`/`oracle_thin`
+3. Change `CLOUDBEAVER_DB_DRIVER` to driver for a database you want to use, for example: `postgres-jdbc`/`mariaDB`/`oracle_thin`
 4. Enter the authentication data for your database in the fields `CLOUDBEAVER_DB_URL` `CLOUDBEAVER_DB_USER` `CLOUDBEAVER_DB_PASSWORD`
 
 
@@ -110,14 +110,25 @@ If you want to use another database on your side, you can do it according to the
    CREATE SCHEMA IF NOT EXISTS tm;
 ```
 
-#### Configure MySQL database
+#### Configure MySQL/MariaDB database
 
-   Connect to your MySQL database and run:
+**Note:** The MySQL driver is not included in Team Edition by default. To use MySQL as an internal database, you can connect using the MariaDB driver.
+
+Connect to your MariaDB or MySQL database and run:
 ```
    CREATE SCHEMA IF NOT EXISTS dc;
    CREATE SCHEMA IF NOT EXISTS qm;
    CREATE SCHEMA IF NOT EXISTS tm;
 ```
+
+You might need to add additional parameters to the `CLOUDBEAVER_DB_URL`:
+
+- `allowPublicKeyRetrieval=true` — to allow the client to automatically request the public key from the server.
+- `autoReconnect=true` — to prevent the connection from closing after 8 hours of inactivity.
+
+##### Example:
+
+`CLOUDBEAVER_DB_URL=jdbc:mariadb://127.0.0.1:3306/cloudbeaver?autoReconnect=true&allowPublicKeyRetrieval=true`
 
 #### PostgreSQL update procedure
 
