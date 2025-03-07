@@ -6,6 +6,7 @@ volumes:
   tm_data: {}
   nginx_ssl_data: {}
   nginx_conf_data: {}
+  trusted_cacerts: {}
 networks:
   cloudbeaver-te-private-net: null
 services:
@@ -36,7 +37,7 @@ services:
       - cloudbeaver-tm
   kafka:
     restart: unless-stopped
-    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-kafka:3.8
+    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-kafka:3.9
     network_mode: host
     environment:
       - KAFKA_CFG_NODE_ID=0
@@ -53,7 +54,6 @@ services:
     image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-postgres:14
     volumes:
       - metadata_data:/var/lib/postgresql/data
-      - ./cloudbeaver-db-init.sql:/docker-entrypoint-initdb.d/cb-init.sql
     environment:
       - POSTGRES_DB=cloudbeaver
       - POSTGRES_USER=${CLOUDBEAVER_DB_USER}
@@ -86,6 +86,7 @@ services:
       - dc_data:/opt/domain-controller/workspace
       - ./cert/private/:/opt/domain-controller/conf/certificates/
       - ./cert/public/:/opt/domain-controller/conf/certificates/public/
+      - trusted_cacerts:/opt/domain-controller/conf/certificates/custom/
     network_mode: host
 
   cloudbeaver-te:
@@ -95,6 +96,7 @@ services:
       replicas: ${REPLICA_COUNT_TE:-1}
     volumes:
       - ./cert/public/:/opt/cloudbeaver/conf/certificates/
+      - trusted_cacerts:/opt/cloudbeaver/conf/certificates/custom/
     environment:
       - CLOUDBEAVER_DC_SERVER_URL=http://127.0.0.1:8970/dc
     expose:
@@ -115,6 +117,7 @@ services:
     volumes:
       - rm_data:/opt/resource-manager/workspace
       - ./cert/public/:/opt/resource-manager/conf/certificates/
+      - trusted_cacerts:/opt/resource-manager/conf/certificates/custom/      
     depends_on:
       - cloudbeaver-dc
     network_mode: host
@@ -128,6 +131,7 @@ services:
       - CLOUDBEAVER_DC_SERVER_URL=http://127.0.0.1:8970/dc
     volumes:
       - ./cert/public/:/opt/query-manager/conf/certificates/
+      - trusted_cacerts:/opt/query-manager/conf/certificates/custom/
     depends_on:
       - cloudbeaver-dc
     network_mode: host
@@ -142,6 +146,7 @@ services:
     volumes:
       - tm_data:/opt/task-manager/workspace
       - ./cert/public/:/opt/task-manager/conf/certificates/
+      - trusted_cacerts:/opt/task-manager/conf/certificates/custom/
     depends_on:
       - cloudbeaver-dc
     network_mode: host

@@ -23,6 +23,13 @@
 * `git` and `kubectl` installed
 * [Nginx load balancer](https://docs.nginx.com/nginx-ingress-controller/installation/installation-with-helm/) and [Kubernetes Helm plugin](https://helm.sh/docs/topics/plugins/) added to your `k8s`
 
+### User and permissions changes
+
+Starting from DBeaver Team Edition v25.0 process inside the container now runs as the ‘dbeaver’ user (‘UID=8978’), instead of ‘root’.  
+If a user with ‘UID=8978’ already exists in your environment, permission conflicts may occur.  
+Additionally, the default Docker volumes directory’s ownership has changed.  
+Previously, the volumes were owned by the ‘root’ user, but now they are owned by the ‘dbeaver’ user (‘UID=8978’).  
+
 ### Deployment
 
 #### How to run services
