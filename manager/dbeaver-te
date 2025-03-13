@@ -151,7 +151,7 @@ checkCloudBeaverUpdateVersion() {
 			then
 					TEAM_EDITION_NEW_TAG_int=99999
 			else	
-					TEAM_EDITION_NEW_TAG=$(echo "$TEAM_EDITION_NEW_TAG" | awk -F. '{print ($3 == "" ? $1"."$2".0" : $0)}')
+					TEAM_EDITION_NEW_TAG=$(echo "$TEAM_EDITION_NEW_TAG" | awk -F. '{print $1"."($2 != "" ? $2 : "0")"."($3 != "" ? $3 : "0")}')
 					TEAM_EDITION_NEW_TAG_int=$(echo "$TEAM_EDITION_NEW_TAG" | sed 's/\.//g')
 			fi
 
@@ -227,7 +227,7 @@ updateCloudbeaver() {
     checkCloudBeaverUpdateVersion "$1"
     
     if [ "$TEAM_EDITION_UPDATE_AVAILABLE" == true ]; then
-        TEAM_EDITION_NEW_TAG=$(echo "$TEAM_EDITION_NEW_TAG" | awk -F. '{print ($3 == "" ? $1"."$2".0" : $0)}')
+        TEAM_EDITION_NEW_TAG=$(echo "$TEAM_EDITION_NEW_TAG" | awk -F. '{print $1"."($2 != "" ? $2 : "0")"."($3 != "" ? $3 : "0")}')
         PROJECT_NAME=$COMPOSE_PROJECT_NAME
 
         docker compose -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml --env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env down --remove-orphans
