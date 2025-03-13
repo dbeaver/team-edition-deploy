@@ -150,7 +150,8 @@ checkCloudBeaverUpdateVersion() {
 			if [ $TEAM_EDITION_NEW_TAG == "ea" ]
 			then
 					TEAM_EDITION_NEW_TAG_int=99999
-			else
+			else	
+					TEAM_EDITION_NEW_TAG=$(echo "$TEAM_EDITION_NEW_TAG" | awk -F. '{print ($3 == "" ? $1"."$2".0" : $0)}')
 					TEAM_EDITION_NEW_TAG_int=$(echo "$TEAM_EDITION_NEW_TAG" | sed 's/\.//g')
 			fi
 
@@ -222,15 +223,38 @@ stopCloudbeaver() {
 }
 
 updateCloudbeaver() {
-	[ "$(docker ps -a | grep $TEAM_EDITION_IMAGE)" ]
-	checkCloudBeaverUpdateVersion "$1"
-	if [ "$TEAM_EDITION_UPDATE_AVAILABLE" == true ]
-	then
-		sed -i "s/CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_TAG/CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_NEW_TAG/g" /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env 
-		rm /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml
-		cd /opt/dbeaver-team-server/team-edition-deploy/ && git fetch &&  git checkout --force $TEAM_EDITION_NEW_TAG
-		docker compose -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml --env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env --project-directory /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ up -d --remove-orphans
-	fi
+    [ "$(docker ps -a | grep $TEAM_EDITION_IMAGE)" ]
+    checkCloudBeaverUpdateVersion "$1"
+    
+    if [ "$TEAM_EDITION_UPDATE_AVAILABLE" == true ]; then
+        TEAM_EDITION_NEW_TAG=$(echo "$TEAM_EDITION_NEW_TAG" | awk -F. '{print ($3 == "" ? $1"."$2".0" : $0)}')
+        PROJECT_NAME=$COMPOSE_PROJECT_NAME
+
+        docker compose -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml --env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env down --remove-orphans
+		
+        retries=20 
+        while [ "$(docker ps -q --filter "name=${PROJECT_NAME}-")" ]; do
+            if [ "$retries" -le 0 ]; then
+				echo ""  
+                echo "Some containers are still running.."
+                exit 1
+            fi
+            echo -n "."
+            sleep 1
+            retries=$((retries - 1))
+        done
+        echo "All containers stopped."
+
+        sleep 5
+		
+		cp /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml /tmp/docker-compose.yml
+		echo "Preveous docker-compose.yml copied to /tmp/docker-compose.yml"
+        cd /opt/dbeaver-team-server/team-edition-deploy/ && git fetch && git checkout --force $TEAM_EDITION_NEW_TAG
+        sed -i "s/CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_TAG/CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_NEW_TAG/g" /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env 
+		export CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_NEW_TAG
+
+        docker compose -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml --env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env --project-directory /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ up -d --remove-orphans --pull always
+    fi
 }
 
 
