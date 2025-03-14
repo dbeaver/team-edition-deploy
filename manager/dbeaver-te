@@ -278,39 +278,39 @@ updateCloudbeaver() {
         BACKUP_DIR="/opt/dbeaver-team-server/team-edition-deploy-${TEAM_EDITION_TAG}-${TIMESTAMP}"
         
         # Check if user has write permission for /opt/dbeaver-team-server/team-edition-deploy/
-		if [ ! -w "/opt/dbeaver-team-server/team-edition-deploy/" ]; then
-			OWNER=$(ls -ld /opt/dbeaver-team-server/team-edition-deploy/ | awk '{print $3}')
-			GROUP=$(ls -ld /opt/dbeaver-team-server/team-edition-deploy/ | awk '{print $4}')
-
-			echo "Error: No write permission for /opt/dbeaver-team-server/team-edition-deploy/."
-			echo "Directory is owned by: $OWNER (group: $GROUP)."
-			
-			if [ "$(whoami)" != "$OWNER" ]; then
-				echo "You are currently logged in as $(whoami). Try switching to user: $OWNER"
-				echo "Use: sudo su $OWNER "
-			fi
-			printSupportMessage
-			exit 1
-		fi
-
+        if [ ! -w "/opt/dbeaver-team-server/team-edition-deploy/" ]; then
+        	OWNER=$(ls -ld /opt/dbeaver-team-server/team-edition-deploy/ | awk '{print $3}')
+        	GROUP=$(ls -ld /opt/dbeaver-team-server/team-edition-deploy/ | awk '{print $4}')
+        
+        	echo "Error: No write permission for /opt/dbeaver-team-server/team-edition-deploy/."
+        	echo "Directory is owned by: $OWNER (group: $GROUP)."
+        	
+        	if [ "$(whoami)" != "$OWNER" ]; then
+        		echo "You are currently logged in as $(whoami). Try switching to user: $OWNER"
+        		echo "Use: sudo su $OWNER "
+        	fi
+        	printSupportMessage
+        	exit 1
+        fi
+        
         # Check .git directory and fetch latest changes
         cd /opt/dbeaver-team-server/team-edition-deploy/
-		if [ ! -d "/opt/dbeaver-team-server/team-edition-deploy/.git" ]; then
-			echo "==============================================================================="
-			echo "Error: .git directory not found. The repository may be missing or corrupted."
-			echo "Please clone the repository again."
-			echo "==============================================================================="
-			printSupportMessage
-			exit 1
-		fi
+        if [ ! -d "/opt/dbeaver-team-server/team-edition-deploy/.git" ]; then
+        	echo "==============================================================================="
+        	echo "Error: .git directory not found. The repository may be missing or corrupted."
+        	echo "Please clone the repository again."
+        	echo "==============================================================================="
+        	printSupportMessage
+        	exit 1
+        fi
         git fetch || { 
-			echo "==============================================================================="
+        	echo "==============================================================================="
         	echo "Error: Failed to fetch latest changes from repository."
-			echo "==============================================================================="
-			printSupportMessage
+        	echo "==============================================================================="
+        	printSupportMessage
         	exit 1
         }
-
+        
         # Stop team-edition-deploy
         docker compose \
             -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml \
@@ -318,24 +318,24 @@ updateCloudbeaver() {
             --project-directory /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ \
             down \
             --remove-orphans
-
+        
         # Backup current configuration
         mkdir -p $BACKUP_DIR
         rsync -av --exclude='cert' --exclude='nginx' /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ "$BACKUP_DIR"
         echo "Preveous team-edition-deploy configuration copied to $BACKUP_DIR"
-
-		# Checkout new version
+        
+        # Checkout new version
         git checkout --force $TEAM_EDITION_NEW_TAG || { 
-			echo "==============================================================================="
+        	echo "==============================================================================="
         	echo "Error: Failed to checkout version $TEAM_EDITION_NEW_TAG."
-			echo "==============================================================================="
-			rollbackCloudBeaver "$BACKUP_DIR" "$TEAM_EDITION_TAG"
-			printSupportMessage
+        	echo "==============================================================================="
+        	rollbackCloudBeaver "$BACKUP_DIR" "$TEAM_EDITION_TAG"
+        	printSupportMessage
         }
         sed -i \
             "s/CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_TAG/CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_NEW_TAG/g" \
             /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env
-
+        
         export CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_NEW_TAG
         
         # Start team-edition-deploy with new version and check status
@@ -358,11 +358,11 @@ updateCloudbeaver() {
             let "TEAM_EDITION_STATUS_RETRY-=1"
             sleep 1
         done
-
-		# Rollback to previous version if team-edition-deploy failed to start during 5 minutes
+        
+        # Rollback to previous version if team-edition-deploy failed to start during 5 minutes
         echo -e "\nERROR: CloudBeaver failed to start. Rolling back to previous version..."
         rollbackCloudBeaver "$BACKUP_DIR" "$TEAM_EDITION_TAG"
-		printSupportMessage
+        printSupportMessage
 
     fi
 }
