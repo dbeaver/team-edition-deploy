@@ -66,7 +66,7 @@ checkInternetConnection() {
 }
 
 getAvailableVersions() {
-	curl -s https://hub.docker.com/v2/repositories/dbeaver/"$TEAM_EDITION_IMAGE"/tags | jq '."results"[]["name"]'
+	curl -s https://hub.docker.com/v2/repositories/dbeaver/"$TEAM_EDITION_IMAGE"/tags | jq -r '.results[].name | select(test("^[0-9]+\\.[0-9]+\\.[0-9]+$"))'
 }
 
 configureenvfile()
@@ -129,6 +129,10 @@ checkCloudBeaverUpdateVersion() {
 		fi
 		TEAM_EDITION_UPDATE_AVAILABLE=true
 	else
+		if [[ ! "$1" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+			echo "ERROR: Invalid version format <$1>. Expected format: x.x.x"
+			exit 1
+		fi
 		TEAM_EDITION_NEW_TAG="$1"
 		if [ $TEAM_EDITION_TAG == $TEAM_EDITION_NEW_TAG ]
 		then
@@ -141,21 +145,7 @@ checkCloudBeaverUpdateVersion() {
 		if [ "$NEW_TAG_AVAILABLE_RESPONSE" == "200" ]
 		then
 			echo "...ok"
-			if [ $TEAM_EDITION_TAG == "ea" ]
-			then
-					TEAM_EDITION_TAG_int=99999
-			else
-					TEAM_EDITION_TAG_int=$(echo "$TEAM_EDITION_TAG" | sed 's/\.//g')
-			fi
-			if [ $TEAM_EDITION_NEW_TAG == "ea" ]
-			then
-					TEAM_EDITION_NEW_TAG_int=99999
-			else	
-					TEAM_EDITION_NEW_TAG=$(echo "$TEAM_EDITION_NEW_TAG" | awk -F. '{print $1"."($2 != "" ? $2 : "0")"."($3 != "" ? $3 : "0")}')
-					TEAM_EDITION_NEW_TAG_int=$(echo "$TEAM_EDITION_NEW_TAG" | sed 's/\.//g')
-			fi
-
-			if [ $TEAM_EDITION_TAG_int -gt $TEAM_EDITION_NEW_TAG_int ]
+			if [ "$(echo -e "$TEAM_EDITION_NEW_TAG\n$TEAM_EDITION_TAG" | sort -V | head -n1)" = "$TEAM_EDITION_NEW_TAG" ]
 			then
 				echo "DBeaver team does not recommend to downgrading the DBeaver Team Edition Server due to the enhancements and fixes."
 				read -r -p "Are you sure to downgrade DBeaver Team Edition Server? [y/N] " response
@@ -222,38 +212,71 @@ stopCloudbeaver() {
 	echo "DBeaver Team Edition Server stopped."
 }
 
+rollbackCloudBeaver() {
+    BACKUP_DIR="$1"
+    BACKUP_VERSION="$2"
+
+	docker compose -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml --env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env down --remove-orphans
+
+	cd /opt/dbeaver-team-server/team-edition-deploy/ && git fetch && git checkout --force $TEAM_EDITION_NEW_TAG
+
+    rsync -av --exclude='cert' --exclude='nginx' "$BACKUP_DIR/" /opt/dbeaver-team-server/team-edition-deploy/
+
+	sed -i "s/CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_NEW_TAG/CLOUDBEAVER_VERSION_TAG=$BACKUP_VERSION/g" /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env 
+	export CLOUDBEAVER_VERSION_TAG=$BACKUP_VERSION
+
+    docker compose -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml --env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env --project-directory /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ up -d --remove-orphans --pull always
+
+	TEAM_EDITION_STATUS_RETRY=300
+	until [ $TEAM_EDITION_STATUS_RETRY -lt 0 ]; do
+		checkCloudBeaverStatus
+		if [ "$TEAM_EDITION_STATUS" == true ]; then
+			echo -e "\nDBeaver Team Edition Server started successfully!"
+			return 0
+		fi
+		echo -n "."
+		let "TEAM_EDITION_STATUS_RETRY-=1"
+		sleep 1
+	done
+
+}
+
 updateCloudbeaver() {
     [ "$(docker ps -a | grep $TEAM_EDITION_IMAGE)" ]
     checkCloudBeaverUpdateVersion "$1"
     
     if [ "$TEAM_EDITION_UPDATE_AVAILABLE" == true ]; then
-        TEAM_EDITION_NEW_TAG=$(echo "$TEAM_EDITION_NEW_TAG" | awk -F. '{print $1"."($2 != "" ? $2 : "0")"."($3 != "" ? $3 : "0")}')
-        PROJECT_NAME=$COMPOSE_PROJECT_NAME
-
+        TIMESTAMP=$(date +%Y-%m-%d_%H-%M)
+        BACKUP_DIR="/opt/dbeaver-team-server/team-edition-deploy-${TEAM_EDITION_TAG}-${TIMESTAMP}"
+        
         docker compose -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml --env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env down --remove-orphans
 		
-        retries=20 
-        while [ "$(docker ps -q --filter "name=${PROJECT_NAME}-")" ]; do
-            if [ "$retries" -le 0 ]; then
-				echo ""  
-                echo "Some containers are still running.."
-                exit 1
-            fi
-            echo -n "."
-            sleep 1
-            retries=$((retries - 1))
-        done
-        echo "All containers stopped."
+		mkdir -p $BACKUP_DIR
+        rsync -av --exclude='cert' --exclude='nginx' /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ "$BACKUP_DIR"
 
-        sleep 5
-		
-        cp /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml /tmp/docker-compose.yml
         echo "Preveous docker-compose.yml copied to /tmp/docker-compose.yml"
         cd /opt/dbeaver-team-server/team-edition-deploy/ && git fetch && git checkout --force $TEAM_EDITION_NEW_TAG
         sed -i "s/CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_TAG/CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_NEW_TAG/g" /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env 
         export CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_NEW_TAG
 
         docker compose -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml --env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env --project-directory /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ up -d --remove-orphans --pull always
+        
+        TEAM_EDITION_STATUS_RETRY=300
+        until [ $TEAM_EDITION_STATUS_RETRY -lt 0 ]; do
+            checkCloudBeaverStatus
+            if [ "$TEAM_EDITION_STATUS" == true ]; then
+                echo -e "\nDBeaver Team Edition Server started successfully!"
+                return 0
+            fi
+            echo -n "."
+            let "TEAM_EDITION_STATUS_RETRY-=1"
+            sleep 1
+        done
+
+        echo -e "\nERROR: CloudBeaver failed to start. Rolling back to previous version..."
+
+        rollbackCloudBeaver "$BACKUP_DIR" "$TEAM_EDITION_TAG"
+
     fi
 }
 
