@@ -218,7 +218,7 @@ rollbackCloudBeaver() {
 
 	docker compose -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml --env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env down --remove-orphans
 
-	cd /opt/dbeaver-team-server/team-edition-deploy/ && git fetch && git checkout --force $TEAM_EDITION_NEW_TAG
+	cd /opt/dbeaver-team-server/team-edition-deploy/ && git fetch && git checkout --force $BACKUP_VERSION
 
 	rsync -av --exclude='cert' --exclude='nginx' "$BACKUP_DIR/" /opt/dbeaver-team-server/team-edition-deploy/
 
@@ -254,7 +254,7 @@ updateCloudbeaver() {
 		mkdir -p $BACKUP_DIR
         rsync -av --exclude='cert' --exclude='nginx' /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ "$BACKUP_DIR"
 
-        echo "Preveous docker-compose.yml copied to /tmp/docker-compose.yml"
+        echo "Preveous team-edition-deploy configuration copied to $BACKUP_DIR"
         cd /opt/dbeaver-team-server/team-edition-deploy/ && git fetch && git checkout --force $TEAM_EDITION_NEW_TAG
         sed -i "s/CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_TAG/CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_NEW_TAG/g" /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env 
         export CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_NEW_TAG
