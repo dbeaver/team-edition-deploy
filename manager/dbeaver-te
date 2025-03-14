@@ -218,7 +218,9 @@ rollbackCloudBeaver() {
 
 	docker compose -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml --env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env down --remove-orphans
 
-	cd /opt/dbeaver-team-server/team-edition-deploy/ && git fetch && git checkout --force $BACKUP_VERSION
+	cd /opt/dbeaver-team-server/team-edition-deploy/ || echo "Error: Failed to change directory!"
+	git fetch || echo "Error: Failed to fetch latest changes from repository."
+	git checkout --force $BACKUP_VERSION || echo "Error: Failed to checkout version $BACKUP_VERSION."
 
 	rsync -av --exclude='cert' --exclude='nginx' "$BACKUP_DIR/" /opt/dbeaver-team-server/team-edition-deploy/
 
@@ -243,22 +245,33 @@ rollbackCloudBeaver() {
 
 updateCloudbeaver() {
     [ "$(docker ps -a | grep $TEAM_EDITION_IMAGE)" ]
-    checkCloudBeaverUpdateVersion "$1"
+	# Check if update is available
+    checkCloudBeaverUpdateVersion "$1" 
     
     if [ "$TEAM_EDITION_UPDATE_AVAILABLE" == true ]; then
         TIMESTAMP=$(date +%Y-%m-%d_%H-%M)
         BACKUP_DIR="/opt/dbeaver-team-server/team-edition-deploy-${TEAM_EDITION_TAG}-${TIMESTAMP}"
-        
+
+        # Stop team-edition-deploy and backup current configuration
         docker compose -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml --env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env down --remove-orphans
-		
 		mkdir -p $BACKUP_DIR
         rsync -av --exclude='cert' --exclude='nginx' /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ "$BACKUP_DIR"
+		echo "Preveous team-edition-deploy configuration copied to $BACKUP_DIR"
 
-        echo "Preveous team-edition-deploy configuration copied to $BACKUP_DIR"
-        cd /opt/dbeaver-team-server/team-edition-deploy/ && git fetch && git checkout --force $TEAM_EDITION_NEW_TAG
+		# Checkout to new version
+        cd /opt/dbeaver-team-server/team-edition-deploy/
+		git fetch || { 
+			echo "Error: Failed to fetch latest changes from repository. Rolling back to previous version..."
+			rollbackCloudBeaver "$BACKUP_DIR" "$TEAM_EDITION_TAG"
+		}
+		git checkout --force $TEAM_EDITION_NEW_TAG || { 
+			echo "Error: Failed to checkout version $TEAM_EDITION_NEW_TAG. Rolling back to previous version..."
+			rollbackCloudBeaver "$BACKUP_DIR" "$TEAM_EDITION_TAG"
+		}
         sed -i "s/CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_TAG/CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_NEW_TAG/g" /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env 
         export CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_NEW_TAG
 
+		# Start team-edition-deploy with new version and check status
         docker compose -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml --env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env --project-directory /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ up -d --remove-orphans --pull always
         
         TEAM_EDITION_STATUS_RETRY=300
@@ -273,8 +286,8 @@ updateCloudbeaver() {
             sleep 1
         done
 
+		# Rollback to previous version if team-edition-deploy failed to start during 5 minutes
         echo -e "\nERROR: CloudBeaver failed to start. Rolling back to previous version..."
-
         rollbackCloudBeaver "$BACKUP_DIR" "$TEAM_EDITION_TAG"
 
     fi
