@@ -185,7 +185,13 @@ startCloudbeaver() {
 	checkCloudBeaverStatus
 	if [ "$TEAM_EDITION_STATUS" == false ]
 	then
-		docker compose -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml --env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env --project-directory /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ up -d 
+		docker compose \
+			-f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml \
+			--env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env \
+			--project-directory /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ \
+			up -d \
+			--remove-orphans \
+			--pull always
 
 		TEAM_EDITION_STATUS_RETRY=300
 		until [ $TEAM_EDITION_STATUS_RETRY -lt 0 ]
@@ -216,7 +222,13 @@ rollbackCloudBeaver() {
 	BACKUP_DIR="$1"
 	BACKUP_VERSION="$2"
 
-	docker compose -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml --env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env down --remove-orphans
+	docker compose \
+        -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml \
+        --env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env \
+        --project-directory /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ \
+        down \
+        --remove-orphans
+
 
 	cd /opt/dbeaver-team-server/team-edition-deploy/ || echo "Error: Failed to change directory!"
 	git fetch || echo "Error: Failed to fetch latest changes from repository."
@@ -227,7 +239,12 @@ rollbackCloudBeaver() {
 	sed -i "s/CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_NEW_TAG/CLOUDBEAVER_VERSION_TAG=$BACKUP_VERSION/g" /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env 
 	export CLOUDBEAVER_VERSION_TAG=$BACKUP_VERSION
 
-	docker compose -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml --env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env --project-directory /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ up -d --remove-orphans --pull always
+	docker compose \
+        -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml \
+        --env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env \
+        --project-directory /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ \
+        up -d \
+        --remove-orphans
 
 	TEAM_EDITION_STATUS_RETRY=300
 	until [ $TEAM_EDITION_STATUS_RETRY -lt 0 ]; do
@@ -253,7 +270,12 @@ updateCloudbeaver() {
         BACKUP_DIR="/opt/dbeaver-team-server/team-edition-deploy-${TEAM_EDITION_TAG}-${TIMESTAMP}"
 
         # Stop team-edition-deploy and backup current configuration
-        docker compose -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml --env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env down --remove-orphans
+		docker compose \
+            -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml \
+            --env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env \
+            --project-directory /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ \
+            down \
+            --remove-orphans
 		mkdir -p $BACKUP_DIR
         rsync -av --exclude='cert' --exclude='nginx' /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ "$BACKUP_DIR"
 		echo "Preveous team-edition-deploy configuration copied to $BACKUP_DIR"
@@ -272,7 +294,13 @@ updateCloudbeaver() {
         export CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_NEW_TAG
 
 		# Start team-edition-deploy with new version and check status
-        docker compose -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml --env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env --project-directory /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ up -d --remove-orphans --pull always
+		docker compose \
+			-f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml \
+			--env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env \
+			--project-directory /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ \
+			up -d \
+			--remove-orphans \
+			--pull always
         
         TEAM_EDITION_STATUS_RETRY=300
         until [ $TEAM_EDITION_STATUS_RETRY -lt 0 ]; do
@@ -382,7 +410,11 @@ restoreBackup(){
 
     rm -rf $TEMP_DIR
 	docker compose -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml down 
-	docker compose -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml --env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env --project-directory /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ up -d 
+	docker compose \
+		-f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml \
+		--env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env \
+		--project-directory /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ \
+		up -d
 }
 
 case $1 in
