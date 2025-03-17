@@ -400,16 +400,14 @@ createBackup(){
         docker exec $PROJECT_NAME-"$PG_SERVICE"-1 pg_dump $DB_NAME --username $CLOUDBEAVER_DB_USER --format c > $BACKUP_PATH/"$PG_SERVICE".backup
     fi
 
-    if [ "$include_certs" = true ]; then
-		CERT_BASE_PATH=$(
-			docker inspect -f \
-			'{{ range .Mounts }}{{ if and (eq .Type "bind") (eq .Destination "/opt/cloudbeaver/conf/certificates") }}\
-			{{ .Source }}{{ end }}{{ end }}' \
-			"$PROJECT_NAME-cloudbeaver-te-1"
-		)
-        CERT_PATH="${CERT_BASE_PATH%/*}" 
-        tar -czf $BACKUP_PATH/"cert.tar.gz" -C "$CERT_PATH" .
-    fi
+	if [ "$include_certs" = true ]; then
+		CERT_BASE_PATH=$(docker inspect "$PROJECT_NAME-cloudbeaver-te-1" | jq -r '
+			.[0].Mounts[] | select(.Type=="bind" and .Destination=="/opt/cloudbeaver/conf/certificates").Source
+		')
+
+		CERT_PATH="${CERT_BASE_PATH%/*}"
+		tar -czf "$BACKUP_PATH/cert.tar.gz" -C "$CERT_PATH" .
+	fi
 
     tar -czf "$BACKUP_PATH".tar.gz $BACKUP_PATH
 }
