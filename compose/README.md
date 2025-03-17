@@ -31,6 +31,12 @@ Ensure all TCP ports from the below list are available in your network stack.
  > - For deployment with Podman please ensure made the [following steps](#podman-prerequisites) before configuring the Team Edition cluster.
 > - If you want to deploy Team Edition on RedHat, please ensure made the [following steps](#redhat-prerequisites) before configuring the cluster.
 
+## User and permissions changes  
+
+Starting from DBeaver Team Edition v25.0 process inside the container now runs as the ‘dbeaver’ user (‘UID=8978’), instead of ‘root’.  
+If a user with ‘UID=8978’ already exists in your environment, permission conflicts may occur.  
+Additionally, the default Docker volumes directory’s ownership has changed.  
+Previously, the volumes were owned by the ‘root’ user, but now they are owned by the ‘dbeaver’ user (‘UID=8978’).  
 
 ## Configuring and starting Team Edition cluster
 
@@ -79,7 +85,7 @@ If you want to use another database on your side, you can do it according to the
 
 1. Navigate to `team-edition-deploy/compose/cbte` folder, and open `.env.example` file.
 2. Change `USE_EXTERNAL_DB` to `true` value.
-3. Change `CLOUDBEAVER_DB_DRIVER` to driver for a database you want to use, for example: `postgres-jdbc`/`mysql8`/`oracle_thin`
+3. Change `CLOUDBEAVER_DB_DRIVER` to driver for a database you want to use, for example: `postgres-jdbc`/`mariaDB`/`oracle_thin`
 4. Enter the authentication data for your database in the fields `CLOUDBEAVER_DB_URL` `CLOUDBEAVER_DB_USER` `CLOUDBEAVER_DB_PASSWORD`
 
 
@@ -104,14 +110,25 @@ If you want to use another database on your side, you can do it according to the
    CREATE SCHEMA IF NOT EXISTS tm;
 ```
 
-#### Configure MySQL database
+#### Configure MySQL/MariaDB database
 
-   Connect to your MySQL database and run:
+**Note:** The MySQL driver is not included in Team Edition by default. To use MySQL as an internal database, you can connect using the MariaDB driver.
+
+Connect to your MariaDB or MySQL database and run:
 ```
    CREATE SCHEMA IF NOT EXISTS dc;
    CREATE SCHEMA IF NOT EXISTS qm;
    CREATE SCHEMA IF NOT EXISTS tm;
 ```
+
+You might need to add additional parameters to the `CLOUDBEAVER_DB_URL`:
+
+- `allowPublicKeyRetrieval=true` — to allow the client to automatically request the public key from the server.
+- `autoReconnect=true` — to prevent the connection from closing after 8 hours of inactivity.
+
+##### Example:
+
+`CLOUDBEAVER_DB_URL=jdbc:mariadb://127.0.0.1:3306/cloudbeaver?autoReconnect=true&allowPublicKeyRetrieval=true`
 
 #### PostgreSQL update procedure
 

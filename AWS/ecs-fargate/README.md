@@ -23,7 +23,6 @@ git clone https://github.com/dbeaver/cloudbeaver-deploy.git
    - If you plan to use the PostgreSQL internal container:
      - Navigate to `team-edition-deploy/AWS/ecs-fargate`  
      - Open `variables.tf`.
-     - Update database password in `cloudbeaver-db-init.sql` file. Replace  `DCpassword`, `QMpassword`, and `TMpassword` with your database password.
      - Update `variables.tf` file. Modify `POSTGRES_PASSWORD` field in `cloudbeaver-db-env` vatiables.
 
    - If you plan to use an RDS-based database:
@@ -44,7 +43,7 @@ git clone https://github.com/dbeaver/cloudbeaver-deploy.git
    ![Region](images/region.png)
 
    - Ensure that the `alb_certificate_Identifier` variable contains the ID from [AWS Certificate Manager](#importing-an-ssl-certificate-in-aws) corresponding to the domain name specified   in the `CLOUDBEAVER_PUBLIC_URL` variable within `variables.tf`. The domain name in `CLOUDBEAVER_PUBLIC_URL` must match the domain for which the certificates have been issued.
-   - You can customize the deployment version by updating the `dbeaver_te_version` environment variable. The default version is `24.3.0`.
+   - You can customize the deployment version by updating the `dbeaver_te_version` environment variable. The default version is `25.0.0`.
 
 7. Run `terraform init` and then `terraform apply` in `ecs-fargate` directory to create the ECS cluster and complete the deployment.
 

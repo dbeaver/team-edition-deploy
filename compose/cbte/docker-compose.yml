@@ -32,7 +32,7 @@ services:
       - cloudbeaver-tm
   kafka:
     restart: unless-stopped
-    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-kafka:3.8
+    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-kafka:3.9
     hostname: kafka
     expose:
       - 9092
@@ -53,7 +53,6 @@ services:
     image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-postgres:14
     volumes:
       - metadata_data:/var/lib/postgresql/data
-      - ./cloudbeaver-db-init.sql:/docker-entrypoint-initdb.d/cb-init.sql
     environment:
       - POSTGRES_DB=cloudbeaver
       - POSTGRES_USER=${CLOUDBEAVER_DB_USER}
