@@ -9,10 +9,14 @@ mkdir -p "$INSTALL_DIR"
 ln -sf "$CURRENT_DIR/dbeaver-te" "$INSTALL_DIR/"
 chmod +x "$INSTALL_DIR/dbeaver-te"
 
+ln -sf "$CURRENT_DIR/compose-config-editor.py" "$INSTALL_DIR/"
+chmod +x "$INSTALL_DIR/compose-config-editor.py"
+
 if [[ ":$PATH:" != *":$INSTALL_DIR:"* ]]; then
     echo "export PATH=\"$INSTALL_DIR:\$PATH\"" >> ~/.bashrc
     source ~/.bashrc
 fi
 
 CBTE_DIR=$(realpath "$CURRENT_DIR/../compose/cbte")
-sed -i "s|/opt/dbeaver-team-server/team-edition-deploy/compose/cbte/|$CBTE_DIR/|g" "$INSTALL_DIR/dbeaver-te"
+sed -i "s|/opt/dbeaver-team-server/team-edition-deploy/compose/cbte/|$CBTE_DIR/|g" "$INSTALL_DIR/dbeaver-te" 
+sed -i "s|/usr/local/bin/compose-config-editor.py|$INSTALL_DIR/compose-config-editor.py/|g" "$INSTALL_DIR/dbeaver-te"
