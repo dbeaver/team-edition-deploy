@@ -337,14 +337,14 @@ updateCloudbeaver() {
             /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env
         
         export CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_NEW_TAG
-
-		# Update docker-compose volumes
-		docker run --rm \
-			-v /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml:/docker-compose.yml \
-			-v /opt/dbeaver-team-server/team-edition-deploy/manager/compose-config-editor.py:/compose-config-editor.py \
-			--env-file=/opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env \
-			python:alpine sh -c "pip install PyYAML && python /compose-config-editor.py"
-
+        
+        # Update docker-compose volumes
+        docker run --rm \
+            -v /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml:/docker-compose.yml \
+            -v /opt/dbeaver-team-server/team-edition-deploy/manager/compose-config-editor.py:/compose-config-editor.py \
+            --env-file=/opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env \
+            python:alpine sh -c "pip install PyYAML && python /compose-config-editor.py"
+        
         
         # Start team-edition-deploy with new version and check status
         docker compose \
