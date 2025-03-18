@@ -339,19 +339,19 @@ updateCloudbeaver() {
         export CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_NEW_TAG
         
         # Update docker-compose volumes
-        docker run --rm \
-            -v /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml:/docker-compose.yml \
-            -v /usr/local/bin/dbeaver-compose-config-editor.py:/dbeaver-compose-config-editor.py \
-            --env-file=/opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env \
-            python:alpine sh -c "pip install PyYAML && python /dbeaver-compose-config-editor.py" || {
-                echo "==============================================================================="
-                echo "Error: Failed to patch docker-compose.yml using dbeaver-compose-config-editor.py."
-                echo "==============================================================================="
-                rollbackCloudBeaver "$BACKUP_DIR" "$TEAM_EDITION_TAG"
-                printSupportMessage
-                exit 1
-            }
-        
+
+        if [ $DBEAVER_TEAM_EDITION_AMI ]; then
+            /usr/local/bin/dbeaver-compose-config-editor.py \
+                -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml \
+                -e /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env || {
+                    echo "==============================================================================="
+                    echo "Error: Failed to patch docker-compose.yml using dbeaver-compose-config-editor.py."
+                    echo "==============================================================================="
+                    rollbackCloudBeaver "$BACKUP_DIR" "$TEAM_EDITION_TAG"
+                    printSupportMessage
+                    exit 1
+                }
+        fi
         
         # Start team-edition-deploy with new version and check status
         docker compose \
