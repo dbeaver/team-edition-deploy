@@ -390,15 +390,11 @@ createBackup(){
     services="cloudbeaver-dc cloudbeaver-tm cloudbeaver-rm"
 
     skip_db=false
-    include_certs=false
 
     for arg in "$@"; do
         case "$arg" in
             --skip-db-service)
                 skip_db=true
-                ;;
-            --include-certs)
-                include_certs=true
                 ;;
         esac
     done
@@ -415,19 +411,17 @@ createBackup(){
         docker exec $PROJECT_NAME-"$PG_SERVICE"-1 pg_dump $DB_NAME --username $CLOUDBEAVER_DB_USER --format c > $BACKUP_PATH/"$PG_SERVICE".backup
     fi
 
-	if [ "$include_certs" = true ]; then
-		CERT_BASE_PATH=$(docker inspect "$PROJECT_NAME-cloudbeaver-te-1" | jq -r '
-			.[0].Mounts[] | select(.Type=="bind" and .Destination=="/opt/cloudbeaver/conf/certificates").Source
-		')
+	CERT_BASE_PATH=$(docker inspect "$PROJECT_NAME-cloudbeaver-te-1" | jq -r '
+		.[0].Mounts[] | select(.Type=="bind" and .Destination=="/opt/cloudbeaver/conf/certificates").Source
+	')
 
-		CERT_PATH="${CERT_BASE_PATH%/*}"
-		tar -czf "$BACKUP_PATH/cert.tar.gz" -C "$CERT_PATH" .
+	CERT_PATH="${CERT_BASE_PATH%/*}"
+	tar -czf "$BACKUP_PATH/cert.tar.gz" -C "$CERT_PATH" .
 
-		TRUSTED_CERT_VOLUME_PATH="/opt/cloudbeaver/conf/certificates/custom"
-		docker compose exec -T cloudbeaver-te sh -c \
-			"if [ -d '${TRUSTED_CERT_VOLUME_PATH}' ] && [ \"\$(ls -A '${TRUSTED_CERT_VOLUME_PATH}')\" ]; then tar -czf - -C '${TRUSTED_CERT_VOLUME_PATH}' .; fi" \
-			> "$BACKUP_PATH/trusted-cacerts.tar.gz"
-	fi
+	TRUSTED_CERT_VOLUME_PATH="/opt/cloudbeaver/conf/certificates/custom"
+	docker compose exec -T cloudbeaver-te sh -c \
+		"if [ -d '${TRUSTED_CERT_VOLUME_PATH}' ] && [ \"\$(ls -A '${TRUSTED_CERT_VOLUME_PATH}')\" ]; then tar -czf - -C '${TRUSTED_CERT_VOLUME_PATH}' .; fi" \
+		> "$BACKUP_PATH/trusted-cacerts.tar.gz"
 
     tar -czf "$BACKUP_PATH".tar.gz $BACKUP_PATH
 }
