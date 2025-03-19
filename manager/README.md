@@ -33,6 +33,6 @@ This will open the `.env` file, where you can change the parameters you want, th
 
 You can easily make backups of your cluster state, which will include service volumes, database dumps and internal certificates.
 
-The command `createBackup` creates a backup of your cluster, but you can also use the `--skip-db-service` flag to skip creating a database dump if you are using an [external database](../compose#using-external-db).
+The command `createBackup` creates a backup of your cluster with internal certs and backup your internal database.
 
 The command `restoreBackup` restores your cluster from backup, your cluster should already be running.
