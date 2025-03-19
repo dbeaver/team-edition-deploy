@@ -387,47 +387,25 @@ createBackup(){
     PROJECT_NAME=$COMPOSE_PROJECT_NAME
     BACKUP_PATH="./backup/$PROJECT_NAME"_$(date +%d%m%Y)
     mkdir -p $BACKUP_PATH
+	DC_CONTAINER="$PROJECT_NAME-cloudbeaver-dc-1"
     services="cloudbeaver-dc cloudbeaver-tm cloudbeaver-rm"
-
-    skip_db=false
-    include_certs=false
-
-    for arg in "$@"; do
-        case "$arg" in
-            --skip-db-service)
-                skip_db=true
-                ;;
-            --include-certs)
-                include_certs=true
-                ;;
-        esac
-    done
 
     for SERVICE in $services; do
         VOLUME_PATH=$(docker inspect -f '{{ range .Mounts }}{{ if eq .Type "volume" }}{{ println .Destination }}{{ end }}{{ end }}' $PROJECT_NAME-"$SERVICE"-1 | grep '/workspace$')
-		docker compose exec -T $SERVICE sh -c "if [ -d '${VOLUME_PATH}' ] && [ \"\$(ls -A ${VOLUME_PATH})\" ]; then tar -czf - -C ${VOLUME_PATH} .;fi" > $BACKUP_PATH/"$SERVICE".tar.gz
+		docker exec "$PROJECT_NAME-$SERVICE-1" sh -c "if [ -d '${VOLUME_PATH}' ] && [ \"\$(ls -A ${VOLUME_PATH})\" ]; then tar -czf - -C ${VOLUME_PATH} .;fi" > $BACKUP_PATH/"$SERVICE".tar.gz
 
     done
 
-    if [ "$skip_db" = false ]; then
+    if [ "$USE_EXTERNAL_DB" = false ]; then
         PG_SERVICE="postgres"
         DB_NAME="cloudbeaver"
         docker exec $PROJECT_NAME-"$PG_SERVICE"-1 pg_dump $DB_NAME --username $CLOUDBEAVER_DB_USER --format c > $BACKUP_PATH/"$PG_SERVICE".backup
     fi
-
-	if [ "$include_certs" = true ]; then
-		CERT_BASE_PATH=$(docker inspect "$PROJECT_NAME-cloudbeaver-te-1" | jq -r '
-			.[0].Mounts[] | select(.Type=="bind" and .Destination=="/opt/cloudbeaver/conf/certificates").Source
-		')
-
-		CERT_PATH="${CERT_BASE_PATH%/*}"
-		tar -czf "$BACKUP_PATH/cert.tar.gz" -C "$CERT_PATH" .
-
-		TRUSTED_CERT_VOLUME_PATH="/opt/cloudbeaver/conf/certificates/custom"
-		docker compose exec -T cloudbeaver-te sh -c \
-			"if [ -d '${TRUSTED_CERT_VOLUME_PATH}' ] && [ \"\$(ls -A '${TRUSTED_CERT_VOLUME_PATH}')\" ]; then tar -czf - -C '${TRUSTED_CERT_VOLUME_PATH}' .; fi" \
-			> "$BACKUP_PATH/trusted-cacerts.tar.gz"
-	fi
+    
+    CERT_VOLUME_PATH="/opt/domain-controller/conf/certificates"
+    
+    docker exec "$DC_CONTAINER" tar -czf /tmp/cert.tar.gz -C "$CERT_VOLUME_PATH" .
+    docker cp "$DC_CONTAINER:/tmp/cert.tar.gz" "$BACKUP_PATH/cert.tar.gz"
 
     tar -czf "$BACKUP_PATH".tar.gz $BACKUP_PATH
 }
@@ -444,6 +422,7 @@ restoreBackup(){
     BACKUP_FOLDER_NAME="${ARCHIVE_NAME%.tar.gz}"
     BACKUP_DIR="$TEMP_DIR/backup/$BACKUP_FOLDER_NAME"
     ARCHIVE_DATE=$(echo $ARCHIVE_NAME | grep -o '[0-9]\{8\}')
+	DC_CONTAINER="$PROJECT_NAME-cloudbeaver-dc-1"
 
     services="cloudbeaver-dc cloudbeaver-tm cloudbeaver-rm"
     for SERVICE in $services; do
@@ -452,12 +431,12 @@ restoreBackup(){
         if [ -f "$BACKUP_ARCHIVE_PATH" ]; then
             echo "Restoring $SERVICE..."
 			docker cp $BACKUP_ARCHIVE_PATH $PROJECT_NAME-"$SERVICE"-1:/tmp/${SERVICE}.tar.gz
-			docker compose exec -T $SERVICE tar -xzvf /tmp/${SERVICE}.tar.gz -C $VOLUME_PATH || { 
+			docker exec "$PROJECT_NAME-$SERVICE-1" tar -xzvf /tmp/${SERVICE}.tar.gz -C $VOLUME_PATH || { 
 				echo "Error restoring $SERVICE workspace!"
 				printSupportMessage
 				exit 1
 			}
-			docker compose exec -T $SERVICE rm /tmp/${SERVICE}.tar.gz
+			docker exec "$PROJECT_NAME-$SERVICE-1" rm /tmp/${SERVICE}.tar.gz
         else
             echo "Backup archive $BACKUP_ARCHIVE_PATH not found."
 			printSupportMessage
@@ -476,44 +455,24 @@ restoreBackup(){
     fi
 
 	CERT_BASE_PATH=$(
-		docker inspect -f '{{ range .Mounts }}{{ if and (eq .Type "bind") (eq .Destination "/opt/cloudbeaver/conf/certificates") }}{{ .Source }}{{ end }}{{ end }}' \
-		"$PROJECT_NAME-cloudbeaver-te-1"
-	)
-
-	CERT_ARCHIVE_PATH="$BACKUP_DIR/cert.tar.gz"
-	if [ -n "$CERT_BASE_PATH" ] && [ -f "$CERT_ARCHIVE_PATH" ]; then
-		echo "Restoring certificates to $CERT_BASE_PATH"
-		tar -xzvf "$CERT_ARCHIVE_PATH" -C "$CERT_BASE_PATH" || { 
-			echo "Error restoring certificates!"
-			printSupportMessage
-			exit 1
-		}
-	else
-		echo "Certificates backup or path not found."
-		printSupportMessage
-		exit 1
-	fi
-
-	CERT_ARCHIVE_PATH="$BACKUP_DIR/trusted-cacerts.tar.gz"
-	TRUSTED_CERT_VOLUME_PATH="/opt/cloudbeaver/conf/certificates/custom"
-	TE_CONTAINER="$PROJECT_NAME-cloudbeaver-te-1"
-
-	if [ -f "$CERT_ARCHIVE_PATH" ] && [ -s "$CERT_ARCHIVE_PATH" ]; then
-		echo "Restoring TE trusted certificates..."
-
-		docker cp "$CERT_ARCHIVE_PATH" "$TE_CONTAINER:/tmp/trusted-cacerts.tar.gz"
-
-		docker compose exec -T cloudbeaver-te \
-			tar -xzf "/tmp/trusted-cacerts.tar.gz" -C "$TRUSTED_CERT_VOLUME_PATH" || { 
-				echo "Error restoring TE trusted certificates!"
-				printSupportMessage
-				exit 1
-			}
-
-		docker compose exec -T cloudbeaver-te rm -f "/tmp/trusted-cacerts.tar.gz"
-	else
-		echo "TE trusted certificates archive not found or empty. Skipping restore (this is OK)."
-	fi
+		docker inspect -f '{{ range .Mounts }}{{ if and (eq .Type "bind") (eq .Destination "/opt/domain-controller/conf/certificates") }}{{ .Source }}{{ end }}{{ end }}' \
+		"$DC_CONTAINER"
+    )
+    
+    CERT_ARCHIVE_PATH="$BACKUP_DIR/cert.tar.gz"
+    if [ -n "$CERT_BASE_PATH" ] && [ -f "$CERT_ARCHIVE_PATH" ]; then
+    	echo "Restoring all certificates to $CERT_BASE_PATH..."
+        docker cp "$CERT_ARCHIVE_PATH" "$DC_CONTAINER:/tmp/cert.tar.gz"
+    	docker exec "$DC_CONTAINER" sh -c "tar -xzvf /tmp/cert.tar.gz -C /opt/domain-controller/conf/certificates && rm -f /tmp/cert.tar.gz" || { 
+    		echo "Error restoring certificates!"
+    		printSupportMessage
+    		exit 1
+    	}
+    else
+    	echo "Certificates backup or path not found."
+    	printSupportMessage
+    	exit 1
+    fi
 	
     rm -rf $TEMP_DIR
     docker compose -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml down 
