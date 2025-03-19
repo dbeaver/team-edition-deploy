@@ -274,7 +274,7 @@ updateCloudbeaver() {
     checkCloudBeaverUpdateVersion "$1" 
     
     if [ "$TEAM_EDITION_UPDATE_AVAILABLE" == true ]; then
-        TIMESTAMP=$(date +%Y-%m-%d_%H-%M)
+        TIMESTAMP=$(date +%m-%d-%Y_%H-%M)
         BACKUP_DIR="/opt/dbeaver-team-server/team-edition-deploy-${TEAM_EDITION_TAG}-${TIMESTAMP}"
         
         # Check if user has write permission for /opt/dbeaver-team-server/team-edition-deploy/
@@ -337,6 +337,21 @@ updateCloudbeaver() {
             /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env
         
         export CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_NEW_TAG
+        
+        # Update docker-compose volumes
+
+        if [ $DBEAVER_TEAM_EDITION_AMI ]; then
+            /usr/local/bin/dbeaver-compose-config-editor.py \
+                -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml \
+                -e /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env || {
+                    echo "==============================================================================="
+                    echo "Error: Failed to patch docker-compose.yml using dbeaver-compose-config-editor.py."
+                    echo "==============================================================================="
+                    rollbackCloudBeaver "$BACKUP_DIR" "$TEAM_EDITION_TAG"
+                    printSupportMessage
+                    exit 1
+                }
+        fi
         
         # Start team-edition-deploy with new version and check status
         docker compose \
