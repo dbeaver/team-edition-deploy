@@ -340,8 +340,8 @@ updateCloudbeaver() {
         
         # Update docker-compose volumes
 
-        if [ $DBEAVER_TEAM_EDITION_AMI ]; then
-            /usr/local/bin/dbeaver-compose-config-editor.py \
+        if [ "$DBEAVER_TEAM_EDITION_AMI"  ]; then
+            "$HOME/.local/bin/dbeaver-compose-config-editor.py" \
                 -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml \
                 -e /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env || {
                     echo "==============================================================================="
