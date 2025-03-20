@@ -16,7 +16,7 @@ The `stop` and `start` commands will help you easily manage the state of the clu
 
 ### Configuration
 
-To configure your server, you can enter the command `dbever-te configure`.
+To configure your server, you can enter the command `dbeaver-te configure`.
 This will open the `.env` file, where you can change the parameters you want, then press `Ctrl+S` to save variables and `Ctrl+X` to exit the editor.
 
 
