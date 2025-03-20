@@ -15,4 +15,4 @@ if [[ ":$PATH:" != *":$INSTALL_DIR:"* ]]; then
 fi
 
 CBTE_DIR=$(realpath "$CURRENT_DIR/../compose/cbte")
-sed -i "s|/opt/dbeaver-team-server/team-edition-deploy/compose/cbte/|$CBTE_DIR/|g" "$INSTALL_DIR/dbeaver-te"
+sed -i "s|/opt/dbeaver-team-server/team-edition-deploy/compose/cbte/|$CBTE_DIR/|g" "$INSTALL_DIR/dbeaver-te" 

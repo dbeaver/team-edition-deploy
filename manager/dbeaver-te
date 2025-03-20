@@ -55,6 +55,17 @@ DBeaver TE server home directory:
 EOF
 }
 
+printSupportMessage() {
+    cat << EOF
+
+===============================================================================
+If you have any questions or encounter any issues,  
+please feel free to contact our support team:  
+https://dbeaver.com/tickets/
+===============================================================================
+
+EOF
+}
 
 checkInternetConnection() {
 	curl -s -o /dev/null  https://hub.docker.com
@@ -66,7 +77,7 @@ checkInternetConnection() {
 }
 
 getAvailableVersions() {
-	curl -s https://hub.docker.com/v2/repositories/dbeaver/"$TEAM_EDITION_IMAGE"/tags | jq '."results"[]["name"]'
+	curl -s https://hub.docker.com/v2/repositories/dbeaver/"$TEAM_EDITION_IMAGE"/tags | jq -r '.results[].name | select(test("^[0-9]+\\.[0-9]+\\.[0-9]+$"))'
 }
 
 configureenvfile()
@@ -129,6 +140,10 @@ checkCloudBeaverUpdateVersion() {
 		fi
 		TEAM_EDITION_UPDATE_AVAILABLE=true
 	else
+		if [[ ! "$1" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+			echo "ERROR: Invalid version format <$1>. Expected format: x.x.x"
+			exit 1
+		fi
 		TEAM_EDITION_NEW_TAG="$1"
 		if [ $TEAM_EDITION_TAG == $TEAM_EDITION_NEW_TAG ]
 		then
@@ -141,20 +156,7 @@ checkCloudBeaverUpdateVersion() {
 		if [ "$NEW_TAG_AVAILABLE_RESPONSE" == "200" ]
 		then
 			echo "...ok"
-			if [ $TEAM_EDITION_TAG == "ea" ]
-			then
-					TEAM_EDITION_TAG_int=99999
-			else
-					TEAM_EDITION_TAG_int=$(echo "$TEAM_EDITION_TAG" | sed 's/\.//g')
-			fi
-			if [ $TEAM_EDITION_NEW_TAG == "ea" ]
-			then
-					TEAM_EDITION_NEW_TAG_int=99999
-			else
-					TEAM_EDITION_NEW_TAG_int=$(echo "$TEAM_EDITION_NEW_TAG" | sed 's/\.//g')
-			fi
-
-			if [ $TEAM_EDITION_TAG_int -gt $TEAM_EDITION_NEW_TAG_int ]
+			if [ "$(echo -e "$TEAM_EDITION_NEW_TAG\n$TEAM_EDITION_TAG" | sort -V | head -n1)" = "$TEAM_EDITION_NEW_TAG" ]
 			then
 				echo "DBeaver team does not recommend to downgrading the DBeaver Team Edition Server due to the enhancements and fixes."
 				read -r -p "Are you sure to downgrade DBeaver Team Edition Server? [y/N] " response
@@ -194,7 +196,13 @@ startCloudbeaver() {
 	checkCloudBeaverStatus
 	if [ "$TEAM_EDITION_STATUS" == false ]
 	then
-		docker compose -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml --env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env --project-directory /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ up -d 
+		docker compose \
+			-f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml \
+			--env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env \
+			--project-directory /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ \
+			up -d \
+			--remove-orphans \
+			--pull always
 
 		TEAM_EDITION_STATUS_RETRY=300
 		until [ $TEAM_EDITION_STATUS_RETRY -lt 0 ]
@@ -221,16 +229,157 @@ stopCloudbeaver() {
 	echo "DBeaver Team Edition Server stopped."
 }
 
+rollbackCloudBeaver() {
+	BACKUP_DIR="$1"
+	BACKUP_VERSION="$2"
+
+	docker compose \
+        -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml \
+        --env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env \
+        --project-directory /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ \
+        down \
+        --remove-orphans
+
+	rsync -av --exclude='cert' --exclude='nginx' "$BACKUP_DIR/" /opt/dbeaver-team-server/team-edition-deploy/
+
+    sed -i \
+        "s/CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_NEW_TAG/CLOUDBEAVER_VERSION_TAG=$BACKUP_VERSION/g" \
+        /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env 
+	export CLOUDBEAVER_VERSION_TAG=$BACKUP_VERSION
+
+	docker compose \
+        -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml \
+        --env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env \
+        --project-directory /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ \
+        up -d \
+        --remove-orphans
+
+	TEAM_EDITION_STATUS_RETRY=300
+	until [ $TEAM_EDITION_STATUS_RETRY -lt 0 ]; do
+		checkCloudBeaverStatus
+		if [ "$TEAM_EDITION_STATUS" == true ]; then
+			echo -e "\nDBeaver Team Edition Server started successfully!"
+			return 0
+		fi
+		echo -n "."
+		let "TEAM_EDITION_STATUS_RETRY-=1"
+		sleep 1
+	done
+
+}
+
 updateCloudbeaver() {
-	[ "$(docker ps -a | grep $TEAM_EDITION_IMAGE)" ]
-	checkCloudBeaverUpdateVersion "$1"
-	if [ "$TEAM_EDITION_UPDATE_AVAILABLE" == true ]
-	then
-		sed -i "s/CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_TAG/CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_NEW_TAG/g" /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env 
-		rm /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml
-		cd /opt/dbeaver-team-server/team-edition-deploy/ && git fetch &&  git checkout --force $TEAM_EDITION_NEW_TAG
-		docker compose -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml --env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env --project-directory /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ up -d --remove-orphans
-	fi
+    [ "$(docker ps -a | grep $TEAM_EDITION_IMAGE)" ]
+    # Check if update is available
+    checkCloudBeaverUpdateVersion "$1" 
+    
+    if [ "$TEAM_EDITION_UPDATE_AVAILABLE" == true ]; then
+        TIMESTAMP=$(date +%m-%d-%Y_%H-%M)
+        BACKUP_DIR="/opt/dbeaver-team-server/team-edition-deploy-${TEAM_EDITION_TAG}-${TIMESTAMP}"
+        
+        # Check if user has write permission for /opt/dbeaver-team-server/team-edition-deploy/
+        if [ ! -w "/opt/dbeaver-team-server/team-edition-deploy/" ]; then
+        	OWNER=$(ls -ld /opt/dbeaver-team-server/team-edition-deploy/ | awk '{print $3}')
+        	GROUP=$(ls -ld /opt/dbeaver-team-server/team-edition-deploy/ | awk '{print $4}')
+        
+        	echo "Error: No write permission for /opt/dbeaver-team-server/team-edition-deploy/."
+        	echo "Directory is owned by: $OWNER (group: $GROUP)."
+        	
+        	if [ "$(whoami)" != "$OWNER" ]; then
+        		echo "You are currently logged in as $(whoami). Try switching to user: $OWNER"
+        		echo "Use: sudo su $OWNER "
+        	fi
+        	printSupportMessage
+        	exit 1
+        fi
+        
+        # Check .git directory and fetch latest changes
+        cd /opt/dbeaver-team-server/team-edition-deploy/
+        if [ ! -d "/opt/dbeaver-team-server/team-edition-deploy/.git" ]; then
+        	echo "==============================================================================="
+        	echo "Error: .git directory not found. The repository may be missing or corrupted."
+        	echo "Please clone the repository again."
+        	echo "==============================================================================="
+        	printSupportMessage
+        	exit 1
+        fi
+        git fetch || { 
+        	echo "==============================================================================="
+        	echo "Error: Failed to fetch latest changes from repository."
+        	echo "==============================================================================="
+        	printSupportMessage
+        	exit 1
+        }
+        
+        # Stop team-edition-deploy
+        docker compose \
+            -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml \
+            --env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env \
+            --project-directory /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ \
+            down \
+            --remove-orphans
+        
+        # Backup current configuration
+        mkdir -p $BACKUP_DIR
+        rsync -av --exclude='cert' --exclude='nginx' /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ "$BACKUP_DIR"
+        echo "Preveous team-edition-deploy configuration copied to $BACKUP_DIR"
+        
+        # Checkout new version
+        git checkout --force $TEAM_EDITION_NEW_TAG || { 
+        	echo "==============================================================================="
+        	echo "Error: Failed to checkout version $TEAM_EDITION_NEW_TAG."
+        	echo "==============================================================================="
+        	rollbackCloudBeaver "$BACKUP_DIR" "$TEAM_EDITION_TAG"
+        	printSupportMessage
+        }
+        sed -i \
+            "s/CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_TAG/CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_NEW_TAG/g" \
+            /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env
+        
+        export CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_NEW_TAG
+        
+        # Update docker-compose volumes
+
+        if [ "$DBEAVER_TEAM_EDITION_AMI"  ]; then
+            "$HOME/.local/bin/dbeaver-compose-config-editor.py" \
+                -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml \
+                -e /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env || {
+                    echo "==============================================================================="
+                    echo "Error: Failed to patch docker-compose.yml using dbeaver-compose-config-editor.py."
+                    echo "==============================================================================="
+                    rollbackCloudBeaver "$BACKUP_DIR" "$TEAM_EDITION_TAG"
+                    printSupportMessage
+                    exit 1
+                }
+        fi
+        
+        # Start team-edition-deploy with new version and check status
+        docker compose \
+        	-f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml \
+        	--env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env \
+        	--project-directory /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ \
+        	up -d \
+        	--remove-orphans \
+        	--pull always
+        
+        TEAM_EDITION_STATUS_RETRY=300
+        until [ $TEAM_EDITION_STATUS_RETRY -lt 0 ]; do
+            checkCloudBeaverStatus
+            if [ "$TEAM_EDITION_STATUS" == true ]; then
+                echo -e "\nDBeaver Team Edition Server started successfully!"
+                return 0
+            fi
+            echo -n "."
+            let "TEAM_EDITION_STATUS_RETRY-=1"
+            sleep 1
+        done
+        
+        # Rollback to previous version if team-edition-deploy failed to start during 5 minutes
+        echo -e "\nERROR: CloudBeaver failed to start. Rolling back to previous version..."
+        rollbackCloudBeaver "$BACKUP_DIR" "$TEAM_EDITION_TAG"
+        printSupportMessage
+
+    fi
 }
 
 
@@ -238,39 +387,25 @@ createBackup(){
     PROJECT_NAME=$COMPOSE_PROJECT_NAME
     BACKUP_PATH="./backup/$PROJECT_NAME"_$(date +%d%m%Y)
     mkdir -p $BACKUP_PATH
+	DC_CONTAINER="$PROJECT_NAME-cloudbeaver-dc-1"
     services="cloudbeaver-dc cloudbeaver-tm cloudbeaver-rm"
 
-    skip_db=false
-    include_certs=false
-
-    for arg in "$@"; do
-        case "$arg" in
-            --skip-db-service)
-                skip_db=true
-                ;;
-            --include-certs)
-                include_certs=true
-                ;;
-        esac
-    done
-
     for SERVICE in $services; do
-        VOLUME_PATH=$(docker inspect -f '{{ range .Mounts }}{{ if eq .Type "volume" }}{{ println .Destination }}{{ end }}{{ end }}' $PROJECT_NAME-"$SERVICE"-1 | head -1)
-		docker compose exec -T $SERVICE sh -c "if [ -d '${VOLUME_PATH}' ] && [ \"\$(ls -A ${VOLUME_PATH})\" ]; then tar -czf - -C ${VOLUME_PATH} .;fi" > $BACKUP_PATH/"$SERVICE".tar.gz
+        VOLUME_PATH=$(docker inspect -f '{{ range .Mounts }}{{ if eq .Type "volume" }}{{ println .Destination }}{{ end }}{{ end }}' $PROJECT_NAME-"$SERVICE"-1 | grep '/workspace$')
+		docker exec "$PROJECT_NAME-$SERVICE-1" sh -c "if [ -d '${VOLUME_PATH}' ] && [ \"\$(ls -A ${VOLUME_PATH})\" ]; then tar -czf - -C ${VOLUME_PATH} .;fi" > $BACKUP_PATH/"$SERVICE".tar.gz
 
     done
 
-    if [ "$skip_db" = false ]; then
+    if [ "$USE_EXTERNAL_DB" = false ]; then
         PG_SERVICE="postgres"
         DB_NAME="cloudbeaver"
         docker exec $PROJECT_NAME-"$PG_SERVICE"-1 pg_dump $DB_NAME --username $CLOUDBEAVER_DB_USER --format c > $BACKUP_PATH/"$PG_SERVICE".backup
     fi
-
-    if [ "$include_certs" = true ]; then
-        CERT_BASE_PATH=$(docker inspect -f '{{ range .Mounts }}{{ if and (eq .Type "bind") (eq .Destination "/opt/cloudbeaver/conf/certificates") }}{{ .Source }}{{ end }}{{ end }}' $PROJECT_NAME-cloudbeaver-te-1)
-        CERT_PATH="${CERT_BASE_PATH%/*}" 
-        tar -czf $BACKUP_PATH/"cert.tar.gz" -C "$CERT_PATH" .
-    fi
+    
+    CERT_VOLUME_PATH="/opt/domain-controller/conf/certificates"
+    
+    docker exec "$DC_CONTAINER" tar -czf /tmp/cert.tar.gz -C "$CERT_VOLUME_PATH" .
+    docker cp "$DC_CONTAINER:/tmp/cert.tar.gz" "$BACKUP_PATH/cert.tar.gz"
 
     tar -czf "$BACKUP_PATH".tar.gz $BACKUP_PATH
 }
@@ -287,18 +422,25 @@ restoreBackup(){
     BACKUP_FOLDER_NAME="${ARCHIVE_NAME%.tar.gz}"
     BACKUP_DIR="$TEMP_DIR/backup/$BACKUP_FOLDER_NAME"
     ARCHIVE_DATE=$(echo $ARCHIVE_NAME | grep -o '[0-9]\{8\}')
+	DC_CONTAINER="$PROJECT_NAME-cloudbeaver-dc-1"
 
-    services="cloudbeaver-dc cloudbeaver-qm cloudbeaver-rm cloudbeaver-te"
+    services="cloudbeaver-dc cloudbeaver-tm cloudbeaver-rm"
     for SERVICE in $services; do
         BACKUP_ARCHIVE_PATH="$BACKUP_DIR/${SERVICE}.tar.gz"
-        VOLUME_PATH=$(docker inspect -f '{{ range .Mounts }}{{ if eq .Type "volume" }}{{ println .Destination }}{{ end }}{{ end }}' $PROJECT_NAME-"$SERVICE"-1 | head -1)
+        VOLUME_PATH=$(docker inspect -f '{{ range .Mounts }}{{ if eq .Type "volume" }}{{ println .Destination }}{{ end }}{{ end }}' $PROJECT_NAME-"$SERVICE"-1 | grep '/workspace$')
         if [ -f "$BACKUP_ARCHIVE_PATH" ]; then
             echo "Restoring $SERVICE..."
 			docker cp $BACKUP_ARCHIVE_PATH $PROJECT_NAME-"$SERVICE"-1:/tmp/${SERVICE}.tar.gz
-			docker compose exec -T $SERVICE tar -xzvf /tmp/${SERVICE}.tar.gz -C $VOLUME_PATH
-			docker compose exec -T $SERVICE rm /tmp/${SERVICE}.tar.gz
+			docker exec "$PROJECT_NAME-$SERVICE-1" tar -xzvf /tmp/${SERVICE}.tar.gz -C $VOLUME_PATH || { 
+				echo "Error restoring $SERVICE workspace!"
+				printSupportMessage
+				exit 1
+			}
+			docker exec "$PROJECT_NAME-$SERVICE-1" rm /tmp/${SERVICE}.tar.gz
         else
             echo "Backup archive $BACKUP_ARCHIVE_PATH not found."
+			printSupportMessage
+			exit 1
         fi
     done
 
@@ -308,21 +450,37 @@ restoreBackup(){
         docker exec -i $PROJECT_NAME-"postgres"-1 pg_restore --dbname cloudbeaver --username $CLOUDBEAVER_DB_USER --clean --if-exists < "$DB_BACKUP"
     else
         echo "PostgreSQL backup file not found."
+		printSupportMessage
+		exit 1
     fi
 
-    CERT_BASE_PATH=$(docker inspect -f '{{ range .Mounts }}{{ if and (eq .Type "bind") (eq .Destination "/opt/cloudbeaver/conf/certificates") }}{{ .Source }}{{ end }}{{ end }}' $PROJECT_NAME-cloudbeaver-te-1)
-    CERT_PATH="${CERT_BASE_PATH%/*}"  
+	CERT_BASE_PATH=$(
+		docker inspect -f '{{ range .Mounts }}{{ if and (eq .Type "bind") (eq .Destination "/opt/domain-controller/conf/certificates") }}{{ .Source }}{{ end }}{{ end }}' \
+		"$DC_CONTAINER"
+    )
+    
     CERT_ARCHIVE_PATH="$BACKUP_DIR/cert.tar.gz"
-    if [ -f "$CERT_ARCHIVE_PATH" ]; then
-        echo "Restoring certificates to $CERT_PATH"
-        tar -xzvf $CERT_ARCHIVE_PATH -C $CERT_PATH
+    if [ -n "$CERT_BASE_PATH" ] && [ -f "$CERT_ARCHIVE_PATH" ]; then
+    	echo "Restoring all certificates to $CERT_BASE_PATH..."
+        docker cp "$CERT_ARCHIVE_PATH" "$DC_CONTAINER:/tmp/cert.tar.gz"
+    	docker exec "$DC_CONTAINER" sh -c "tar -xzvf /tmp/cert.tar.gz -C /opt/domain-controller/conf/certificates && rm -f /tmp/cert.tar.gz" || { 
+    		echo "Error restoring certificates!"
+    		printSupportMessage
+    		exit 1
+    	}
     else
-        echo "Certificates backup $CERT_ARCHIVE_PATH not found."
+    	echo "Certificates backup or path not found."
+    	printSupportMessage
+    	exit 1
     fi
-
+	
     rm -rf $TEMP_DIR
-	docker compose -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml down 
-	docker compose -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml --env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env --project-directory /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ up -d 
+    docker compose -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml down 
+    docker compose \
+        -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml \
+        --env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env \
+        --project-directory /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ \
+        up -d
 }
 
 case $1 in
