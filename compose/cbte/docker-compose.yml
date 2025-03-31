@@ -12,7 +12,7 @@ networks:
 services:
   web-proxy:
     restart: unless-stopped
-    image: ${IMAGE_SOURCE}/cloudbeaver-${PROXY_TYPE:-haproxy}:${CLOUDBEAVER_VERSION_TAG}
+    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-${PROXY_TYPE:-haproxy}:${CLOUDBEAVER_VERSION_TAG}
     ports:
       - 80:8080
       - 443:8443
