@@ -88,7 +88,6 @@ services:
       - CLOUDBEAVER_QM_BACKEND_DB_DRIVER=${CLOUDBEAVER_DB_DRIVER}
       - CLOUDBEAVER_DC_BACKEND_DB_DRIVER=${CLOUDBEAVER_DB_DRIVER}
       - CLOUDBEAVER_TM_BACKEND_DB_DRIVER=${CLOUDBEAVER_DB_DRIVER}
-      - CLOUDBEAVER_DMSVC_URL=http://web-proxy:11000
     volumes:
       - dc_data:/opt/domain-controller/workspace:z
       - ./cert/private/:/opt/domain-controller/conf/certificates/:z
