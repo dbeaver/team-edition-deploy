@@ -1,0 +1,28 @@
+server {
+    listen ${NGINX_LISTEN_PORT_HTTP};
+    listen [::]:${NGINX_LISTEN_PORT_HTTP};
+
+    server_name _;
+    include /etc/nginx/conf.d/dbeaver-te.locations;
+
+    # Block Team Edition desktop clients from connecting
+    if ($http_user_agent ~* ^DBeaver\ Team\ Edition) {
+        return 403;
+    }
+
+    # return 307 https://$host$request_uri;
+}
+
+server {
+    listen ${NGINX_LISTEN_PORT_HTTPS} ssl;
+    server_name _;
+    ssl_certificate /etc/nginx/ssl/live/databases.team/fullchain.pem;
+    ssl_certificate_key /etc/nginx/ssl/live/databases.team/privkey.pem;
+
+    include /etc/nginx/conf.d/dbeaver-te.locations;
+
+    # Block Team Edition desktop clients from connecting
+    if ($http_user_agent ~* ^DBeaver\ Team\ Edition) {
+        return 403;
+    }
+}

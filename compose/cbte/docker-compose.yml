@@ -12,7 +12,9 @@ networks:
 services:
   nginx:
     restart: unless-stopped
-    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-nginx:${CLOUDBEAVER_VERSION_TAG}
+    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-nginx:${CLOUDBEAVER_VERSION_TAG}-blocked-desktop-client
+    build:
+      context: nginx-with-blocked-desktop-client
     ports:
       - 80:8080
       - 443:8443
