@@ -39,7 +39,6 @@ spec:
               name: {{ .Release.Name }}-tm-data
             - name: cross-ssl-cert
               mountPath: /opt/task-manager/conf/certificates
-              readOnly: true
       {{- if .Values.cloudbeaver.pullCredsName }}
       imagePullSecrets:
         - name: {{ .Values.cloudbeaver.pullCredsName }}
