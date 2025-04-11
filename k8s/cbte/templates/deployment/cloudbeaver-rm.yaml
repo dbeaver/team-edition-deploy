@@ -38,7 +38,6 @@ spec:
               name: {{ .Release.Name }}-rm-data
             - name: cross-ssl-cert
               mountPath: /opt/resource-manager/conf/certificates
-              readOnly: true
       {{- if .Values.cloudbeaver.pullCredsName }}
       imagePullSecrets:
         - name: {{ .Values.cloudbeaver.pullCredsName }}

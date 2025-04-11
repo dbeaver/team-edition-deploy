@@ -72,7 +72,6 @@ spec:
               mountPath: /opt/domain-controller/workspace
             - name: private-cers
               mountPath: /opt/domain-controller/conf/certificates
-              readOnly: true
       {{- if .Values.cloudbeaver.pullCredsName }}
       imagePullSecrets:
         - name: {{ .Values.cloudbeaver.pullCredsName }}
