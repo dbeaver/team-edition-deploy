@@ -1,3 +1,3 @@
 ARG TEVERSION
 FROM dbeaver/cloudbeaver-tm:$TEVERSION
-COPY "cert/public" "/etc/cloudbeaver/public" 
+COPY --chown=8978:8978 "cert/public" "/etc/cloudbeaver/public" 
