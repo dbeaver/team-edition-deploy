@@ -328,6 +328,8 @@ resource "aws_ecs_task_definition" "dbeaver_dc" {
   cpu                      = 1024
   memory                   = 2048
   execution_role_arn       = aws_iam_role.ecsTaskExecutionRole.arn
+  task_role_arn = aws_iam_role.ecs_task_role_exec.arn
+
   volume {
     name      = "${var.deployment_id}-cloudbeaver_dc_data"
     efs_volume_configuration {
@@ -374,6 +376,7 @@ resource "aws_ecs_service" "dc" {
   task_definition = aws_ecs_task_definition.dbeaver_dc.arn
   launch_type     = "FARGATE"
   desired_count   = var.desired_count["dc"]
+  enable_execute_command = true
 
   network_configuration {
     security_groups = [aws_security_group.dbeaver_te.id]
@@ -420,6 +423,8 @@ resource "aws_ecs_task_definition" "dbeaver_rm" {
   cpu                      = 1024
   memory                   = 2048
   execution_role_arn       = aws_iam_role.ecsTaskExecutionRole.arn
+  task_role_arn = aws_iam_role.ecs_task_role_exec.arn
+
   volume {
     name      = "${var.deployment_id}-cloudbeaver_rm_data"
     efs_volume_configuration {
@@ -466,6 +471,7 @@ resource "aws_ecs_service" "rm" {
   task_definition = aws_ecs_task_definition.dbeaver_rm.arn
   launch_type     = "FARGATE"
   desired_count   = var.desired_count["rm"]
+  enable_execute_command = true
 
   network_configuration {
     security_groups = [aws_security_group.dbeaver_te.id]
@@ -512,6 +518,8 @@ resource "aws_ecs_task_definition" "dbeaver_qm" {
   cpu                      = 1024
   memory                   = 2048
   execution_role_arn       = aws_iam_role.ecsTaskExecutionRole.arn
+  task_role_arn = aws_iam_role.ecs_task_role_exec.arn
+
   container_definitions = jsonencode([{
     name        = "${var.deployment_id}-cloudbeaver-qm"
     image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/${var.deployment_id}-cloudbeaver-qm:${var.dbeaver_te_version}"
@@ -547,6 +555,7 @@ resource "aws_ecs_service" "qm" {
   task_definition = aws_ecs_task_definition.dbeaver_qm.arn
   launch_type     = "FARGATE"
   desired_count   = var.desired_count["qm"]
+  enable_execute_command = true
 
   network_configuration {
     security_groups  = [aws_security_group.dbeaver_te.id]
@@ -595,6 +604,8 @@ resource "aws_ecs_task_definition" "dbeaver_tm" {
   cpu                      = 2048
   memory                   = 4096
   execution_role_arn       = aws_iam_role.ecsTaskExecutionRole.arn
+  task_role_arn = aws_iam_role.ecs_task_role_exec.arn
+
   volume {
     name      = "${var.deployment_id}-cloudbeaver_tm_data"
     efs_volume_configuration {
@@ -641,6 +652,7 @@ resource "aws_ecs_service" "tm" {
   task_definition = aws_ecs_task_definition.dbeaver_tm.arn
   launch_type     = "FARGATE"
   desired_count   = var.desired_count["tm"]
+  enable_execute_command = true
 
   network_configuration {
     security_groups  = [aws_security_group.dbeaver_te.id]
@@ -688,6 +700,8 @@ resource "aws_ecs_task_definition" "dbeaver_te" {
   cpu                      = 4096
   memory                   = 8192
   execution_role_arn       = aws_iam_role.ecsTaskExecutionRole.arn
+  task_role_arn = aws_iam_role.ecs_task_role_exec.arn
+
 
   container_definitions = jsonencode([{
     name        = "${var.deployment_id}-cloudbeaver-te"
@@ -725,6 +739,7 @@ resource "aws_ecs_service" "te" {
   task_definition = aws_ecs_task_definition.dbeaver_te.arn
   launch_type     = "FARGATE"
   desired_count   = var.desired_count["te"]
+  enable_execute_command = true
 
   network_configuration {
     security_groups = [aws_security_group.dbeaver_te.id]
