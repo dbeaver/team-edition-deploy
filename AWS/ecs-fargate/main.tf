@@ -4,10 +4,6 @@ provider "aws" {
 
 resource "aws_ecs_cluster" "dbeaver_te" {
   name = "DBeaverTeamEdition-${var.deployment_id}"
-  depends_on = [
-    aws_ecr_repository.dbeaver_te,
-    null_resource.build_push_dkr_img
-  ]
 }
 
 locals {
@@ -189,7 +185,7 @@ resource "aws_ecs_task_definition" "dbeaver_db" {
   }
   container_definitions = jsonencode([{
     name        = "${var.deployment_id}-postgres"
-    image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/${var.deployment_id}-cloudbeaver-postgres:16"
+    image       = "dbeaver/cloudbeaver-postgres:16"
     essential   = true
     environment = var.cloudbeaver-db-env
     mountPoints = [{
@@ -363,7 +359,7 @@ resource "aws_ecs_task_definition" "dbeaver_dc" {
   }
   container_definitions = jsonencode([{
     name        = "${var.deployment_id}-cloudbeaver-dc"
-    image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/${var.deployment_id}-cloudbeaver-dc:${var.dbeaver_te_version}"
+    image       = "dbeaver/cloudbeaver-dc:${var.dbeaver_te_version}"
     essential   = true
     environment = local.updated_cloudbeaver_dc_env
     mountPoints = [{
@@ -459,17 +455,17 @@ resource "aws_ecs_task_definition" "dbeaver_rm" {
     }
   }
   volume {
-    name = "${var.deployment_id}-cloudbeaver_certificates"
+    name      = "${var.deployment_id}-cloudbeaver_certificates_public"
     efs_volume_configuration {
-      file_system_id     = aws_efs_file_system.cloudbeaver_certificates.id
-      root_directory = "/"
+      file_system_id = aws_efs_file_system.cloudbeaver_certificates.id
+      root_directory = "/public"
       transit_encryption = "ENABLED"
     }
   }
   
   container_definitions = jsonencode([{
     name        = "${var.deployment_id}-cloudbeaver-rm"
-    image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/${var.deployment_id}-cloudbeaver-rm:${var.dbeaver_te_version}"
+    image       = "dbeaver/cloudbeaver-rm:${var.dbeaver_te_version}"
     essential   = true
     environment = local.cloudbeaver_shared_env_modified
     mountPoints = [{
@@ -478,7 +474,7 @@ resource "aws_ecs_task_definition" "dbeaver_rm" {
     },
     {
       containerPath = "/opt/resource-manager/conf/certificates"
-      sourceVolume  = "${var.deployment_id}-cloudbeaver_certificates"
+      sourceVolume  = "${var.deployment_id}-cloudbeaver_certificates_public"
     }]
     logConfiguration = {
       logDriver = "awslogs"
@@ -557,22 +553,22 @@ resource "aws_ecs_task_definition" "dbeaver_qm" {
   memory                   = 2048
   execution_role_arn       = aws_iam_role.ecsTaskExecutionRole.arn
   volume {
-    name = "${var.deployment_id}-cloudbeaver_certificates"
+    name      = "${var.deployment_id}-cloudbeaver_certificates_public"
     efs_volume_configuration {
-      file_system_id     = aws_efs_file_system.cloudbeaver_certificates.id
-      root_directory = "/"
+      file_system_id = aws_efs_file_system.cloudbeaver_certificates.id
+      root_directory = "/public"
       transit_encryption = "ENABLED"
     }
   }
   container_definitions = jsonencode([{
     name        = "${var.deployment_id}-cloudbeaver-qm"
-    image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/${var.deployment_id}-cloudbeaver-qm:${var.dbeaver_te_version}"
+    image       = "dbeaver/cloudbeaver-qm:${var.dbeaver_te_version}"
     essential   = true
     environment = local.cloudbeaver_shared_env_modified
     mountPoints = [
     {
       containerPath = "/opt/query-manager/conf/certificates"
-      sourceVolume  = "${var.deployment_id}-cloudbeaver_certificates"
+      sourceVolume  = "${var.deployment_id}-cloudbeaver_certificates_public"
     }]
     logConfiguration = {
       logDriver = "awslogs"
@@ -660,16 +656,16 @@ resource "aws_ecs_task_definition" "dbeaver_tm" {
     }
   }
   volume {
-    name = "${var.deployment_id}-cloudbeaver_certificates"
+    name      = "${var.deployment_id}-cloudbeaver_certificates_public"
     efs_volume_configuration {
-      file_system_id     = aws_efs_file_system.cloudbeaver_certificates.id
-      root_directory = "/"
+      file_system_id = aws_efs_file_system.cloudbeaver_certificates.id
+      root_directory = "/public"
       transit_encryption = "ENABLED"
     }
   }
   container_definitions = jsonencode([{
     name        = "${var.deployment_id}-cloudbeaver-tm"
-    image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/${var.deployment_id}-cloudbeaver-tm:${var.dbeaver_te_version}"
+    image       = "dbeaver/cloudbeaver-tm:${var.dbeaver_te_version}"
     essential   = true
     environment = local.cloudbeaver_shared_env_modified
     mountPoints = [{
@@ -678,7 +674,7 @@ resource "aws_ecs_task_definition" "dbeaver_tm" {
     },
     {
       containerPath = "/opt/task-manager/conf/certificates"
-      sourceVolume  = "${var.deployment_id}-cloudbeaver_certificates"
+      sourceVolume  = "${var.deployment_id}-cloudbeaver_certificates_public"
     }]
     logConfiguration = {
       logDriver = "awslogs"
@@ -759,22 +755,21 @@ resource "aws_ecs_task_definition" "dbeaver_te" {
   execution_role_arn       = aws_iam_role.ecsTaskExecutionRole.arn
 
   volume {
-    name = "${var.deployment_id}-cloudbeaver_certificates"
+    name = "${var.deployment_id}-cloudbeaver_certificates_public"  
     efs_volume_configuration {
       file_system_id     = aws_efs_file_system.cloudbeaver_certificates.id
-      root_directory = "/"
+      root_directory     = "/public" 
       transit_encryption = "ENABLED"
     }
   }
   container_definitions = jsonencode([{
     name        = "${var.deployment_id}-cloudbeaver-te"
-    image       = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/${var.deployment_id}-cloudbeaver-te:${var.dbeaver_te_version}"
+    image       = "dbeaver/cloudbeaver-te:${var.dbeaver_te_version}"
     essential   = true
     environment = local.cloudbeaver_shared_env_modified
-    mountPoints = [
-    {
-      containerPath = "/opt/cloudbeaver/conf/certificates"
-      sourceVolume  = "${var.deployment_id}-cloudbeaver_certificates"
+    mountPoints = [{
+      containerPath = "/opt/cloudbeaver/conf/certificates"         
+      sourceVolume  = "${var.deployment_id}-cloudbeaver_certificates_public"
     }]
     logConfiguration = {
       logDriver = "awslogs"

@@ -72,10 +72,6 @@ variable "cloudbeaver-db-env" {
   ]
 }
 
-variable "ecr_repositories" {
-  type    = list
-  default = ["dc", "rm", "qm", "te", "tm", "postgres"]
-}
 
 variable "dbeaver_te_default_ns" {
   type    = string
@@ -195,10 +191,6 @@ variable "cloudbeaver-dc-env" {
       "value": "QMpassword"
   },
   {
-      "name": "CLOUDBEAVER_DC_CERT_PATH",
-      "value": "/etc/cloudbeaver/private"
-  },
-  {
       "name": "CLOUDBEAVER_PUBLIC_URL",
       "value": "https://cloudbeaver.io"
   }]
@@ -209,9 +201,5 @@ variable "cloudbeaver-shared-env" {
   default = [{
       "name": "CLOUDBEAVER_DC_SERVER_URL",
       "value": "http://cloudbeaver-dc:8970/dc"
-  },
-  {
-      "name": "CLOUDBEAVER_DC_CERT_PATH",
-      "value": "/etc/cloudbeaver/public"
   }]
 }
