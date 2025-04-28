@@ -49,8 +49,26 @@ resource "aws_iam_policy" "CloudbeaverTeamEditionEFSAccessPolicy" {
           aws_efs_file_system.cloudbeaver_db_data.arn,
           aws_efs_file_system.cloudbeaver_rm_data.arn,
           aws_efs_file_system.cloudbeaver_tm_data.arn,
-          aws_efs_file_system.cloudbeaver_dc_data.arn
+          aws_efs_file_system.cloudbeaver_dc_data.arn,
+          aws_efs_file_system.cloudbeaver_certificates.arn
         ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "elasticfilesystem:ClientMount",
+          "elasticfilesystem:ClientWrite",
+          "elasticfilesystem:ClientRootAccess"
+        ],
+        "Resource": [
+          "${aws_efs_file_system.cloudbeaver_certificates.arn}",
+          "${aws_efs_access_point.certs_public.arn}"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": "elasticfilesystem:DescribeAccessPoints",
+        "Resource": "*"
       }
     ]
   })

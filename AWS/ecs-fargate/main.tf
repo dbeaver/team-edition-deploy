@@ -152,6 +152,29 @@ resource "aws_efs_file_system" "cloudbeaver_certificates" {
   }
 }
 
+resource "aws_efs_access_point" "certs_public" {
+  file_system_id = aws_efs_file_system.cloudbeaver_certificates.id
+  root_directory {
+    path = "/public"
+
+    creation_info {
+      owner_uid   = 8978          
+      owner_gid   = 8978
+      permissions = "0755"        
+    }
+  }
+
+  posix_user {
+    uid = 8978
+    gid = 8978
+  }
+
+  tags = {
+    Env  = var.deployment_id
+    Name = "DBeaver TE PUBLIC CERTIFICATES MOUNTPOINT EFS"
+  }
+}
+
 resource "aws_efs_mount_target" "cloudbeaver_certificates_mt" {
   count           = length(aws_subnet.private_subnets)
   file_system_id  = aws_efs_file_system.cloudbeaver_certificates.id
@@ -457,9 +480,13 @@ resource "aws_ecs_task_definition" "dbeaver_rm" {
   volume {
     name      = "${var.deployment_id}-cloudbeaver_certificates_public"
     efs_volume_configuration {
-      file_system_id = aws_efs_file_system.cloudbeaver_certificates.id
-      root_directory = "/public"
+      file_system_id     = aws_efs_file_system.cloudbeaver_certificates.id
       transit_encryption = "ENABLED"
+
+      authorization_config {
+        access_point_id = aws_efs_access_point.certs_public.id
+        iam             = "DISABLED"
+      }
     }
   }
   
@@ -555,9 +582,13 @@ resource "aws_ecs_task_definition" "dbeaver_qm" {
   volume {
     name      = "${var.deployment_id}-cloudbeaver_certificates_public"
     efs_volume_configuration {
-      file_system_id = aws_efs_file_system.cloudbeaver_certificates.id
-      root_directory = "/public"
+      file_system_id     = aws_efs_file_system.cloudbeaver_certificates.id
       transit_encryption = "ENABLED"
+
+      authorization_config {
+        access_point_id = aws_efs_access_point.certs_public.id
+        iam             = "DISABLED"
+      }
     }
   }
   container_definitions = jsonencode([{
@@ -658,9 +689,13 @@ resource "aws_ecs_task_definition" "dbeaver_tm" {
   volume {
     name      = "${var.deployment_id}-cloudbeaver_certificates_public"
     efs_volume_configuration {
-      file_system_id = aws_efs_file_system.cloudbeaver_certificates.id
-      root_directory = "/public"
+      file_system_id     = aws_efs_file_system.cloudbeaver_certificates.id
       transit_encryption = "ENABLED"
+
+      authorization_config {
+        access_point_id = aws_efs_access_point.certs_public.id
+        iam             = "DISABLED"
+      }
     }
   }
   container_definitions = jsonencode([{
@@ -755,11 +790,15 @@ resource "aws_ecs_task_definition" "dbeaver_te" {
   execution_role_arn       = aws_iam_role.ecsTaskExecutionRole.arn
 
   volume {
-    name = "${var.deployment_id}-cloudbeaver_certificates_public"  
+    name      = "${var.deployment_id}-cloudbeaver_certificates_public"
     efs_volume_configuration {
       file_system_id     = aws_efs_file_system.cloudbeaver_certificates.id
-      root_directory     = "/public" 
       transit_encryption = "ENABLED"
+
+      authorization_config {
+        access_point_id = aws_efs_access_point.certs_public.id
+        iam             = "DISABLED"
+      }
     }
   }
   container_definitions = jsonencode([{
