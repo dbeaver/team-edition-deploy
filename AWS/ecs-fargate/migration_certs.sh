@@ -2,6 +2,7 @@
 set -e
 
 DEPLOYMENT_ID=$(grep -A3 'variable "deployment_id"' variables.tf | grep 'default' | head -n1 | cut -d'"' -f2)
+REGION=$(grep -A3 'variable "aws_region"' variables.tf | grep 'default' | head -n1 | cut -d'"' -f2)
 CLUSTER="DBeaverTeamEdition-$DEPLOYMENT_ID"
 SERVICE="$DEPLOYMENT_ID-cloudbeaver-dc"
 CONTAINER="$SERVICE"
@@ -11,7 +12,7 @@ TARGET_DIR="/opt/domain-controller/conf/certificates"
 
 [[ -d "$LOCAL_DIR" ]] || { echo "ERROR: directory $LOCAL_DIR not found. Please put your certs in this path $PWD/$LOCAL_DIR and try again."; exit 1; }
 
-TASK_ARN=$(aws ecs list-tasks --cluster "$CLUSTER" --service-name "$SERVICE" \
+TASK_ARN=$(aws ecs list-tasks --region "$REGION" --cluster "$CLUSTER" --service-name "$SERVICE" \
             --query 'taskArns[0]' --output text)
 [[ "$TASK_ARN" != "None" ]] || { echo "ERROR: no running task in $SERVICE"; exit 1; }
 
@@ -23,6 +24,7 @@ B64_PAYLOAD=$(base64 -w0 "$TMP_TAR")
 rm -f "$TMP_TAR"
 
 aws ecs execute-command \
+  --region "$REGION" \
   --cluster "$CLUSTER" \
   --task "$TASK_ARN" \
   --container "$CONTAINER" \

@@ -64,12 +64,12 @@ git clone https://github.com/dbeaver/cloudbeaver-deploy.git
 
    ![Identifier](images/identifier.png)
 
-## Upgrading to TE ≥ 25.1
+## Upgrading to Team Edition ≥ 25.1
 
 ### 1  Collect your current certificates
-Ensure that you have keys/certs into **`build/cert/`** with the exact layout:
+Ensure that you have keys/certs into **`team-edition-deploy/AWS/ecs-fargate/build/cert/`** with the exact layout:
 ```
-build/cert/
+team-edition-deploy/AWS/ecs-fargate/build/cert/
 ├─ private/
 │   ├─ dc-key.key
 │   ├─ secret-cert.crt
@@ -84,17 +84,19 @@ mkdir -p build/cert/public build/cert/private
 docker run --rm \
   -v "$(pwd)/build/cert":/out \
   <IMAGE_URI>:<OLD_TAG> \
-  bash -c 'cp /etc/cloudbeaver/private/*.key /out && \
-           cp /etc/cloudbeaver/private/* /out/private && \
+  bash -c 'cp /etc/cloudbeaver/private/* /out/private && \
            cp /etc/cloudbeaver/public/* /out/public/'
 ```
+Where `<IMAGE_URI>:<OLD_TAG>` is the Docker image stored in **AWS ECR**.
 
 ### 2  Upgrade your stack to 25.1
-Remove CLOUDBEAVER_DC_CERT_PATH from variables.tf
+Remove `CLOUDBEAVER_DC_CERT_PATH` from `variables.tf` – this path is no longer used.
 
 Apply Terraform as usual. The EFS volume for certificates will mount but remain empty until the next step.
 
 ### 3  Run the one‑shot migration script
+The script is located in team-edition-deploy/AWS/ecs-fargate  
+Run it **team-edition-deploy/AWS/ecs-fargate** so it can see build/cert/ and variables.tf  
 ```bash
 ./migration_certs.sh
 ```
