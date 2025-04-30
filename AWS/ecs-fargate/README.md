@@ -99,7 +99,7 @@ Run it in **team-edition-deploy/AWS/ecs-fargate** so it can see `build/cert/` an
 ```bash
 ./migration_certs.sh
 ```
-The script copies your local certificates from `build/cert/` into the container’s EFS volume mounted at /conf/certificates. 
+The script copies your local certificates from `build/cert/` into the container’s EFS volume mounted at `/conf/certificates`. 
 
 ## Version update
 
