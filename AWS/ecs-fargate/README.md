@@ -95,8 +95,7 @@ Remove `CLOUDBEAVER_DC_CERT_PATH` from `variables.tf` – this path is no longer
 Apply Terraform as usual. The EFS volume for certificates will mount but remain empty until the next step.
 
 ### 3  Run the one‑shot migration script
-The script is located in team-edition-deploy/AWS/ecs-fargate  
-Run it **team-edition-deploy/AWS/ecs-fargate** so it can see build/cert/ and variables.tf  
+Run it in **team-edition-deploy/AWS/ecs-fargate** so it can see build/cert/ and variables.tf  
 ```bash
 ./migration_certs.sh
 ```
