@@ -80,12 +80,12 @@ team-edition-deploy/AWS/ecs-fargate/build/cert/
 If you only have the Docker image
 
 Locate the `cloudbeaver-dc` image URI with two options:
-1. Automatic ask Terraform for the repository URL
+1. Automatic ask Terraform for the repository URL (`jq` must be installed)
 ```bash
 terraform show -json | jq -r '
   .values.root_module.resources[]
   | select(.type=="aws_ecr_repository")
-  | select(.values.name | test("cloudbeaver-dc$"))
+  | select(.values.name|test(".*cloudbeaver-dc"))
   | .values.repository_url'
 ```  
 2. Open the **AWS ECR** console and copy the URI of the `cloudbeaver-dc` repository yourself.
