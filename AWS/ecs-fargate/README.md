@@ -77,7 +77,20 @@ team-edition-deploy/AWS/ecs-fargate/build/cert/
 └─ public/
     └─ dc-cert.crt
 ```
-If you only have a Docker image, run:
+If you only have the Docker image
+
+Locate the `cloudbeaver-dc` image URI with two options:
+1. Automatic ask Terraform for the repository URL
+```bash
+terraform show -json | jq -r '
+  .values.root_module.resources[]
+  | select(.type=="aws_ecr_repository")
+  | select(.values.name | test("cloudbeaver-dc$"))
+  | .values.repository_url'
+```  
+2. Open the **AWS ECR** console and copy the URI of the `cloudbeaver-dc` repository yourself.
+
+Substitute the values you just found in place of <IMAGE_URI> and <OLD_TAG>, then run:
 ```bash
 mkdir -p build/cert/public build/cert/private
 
