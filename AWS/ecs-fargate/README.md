@@ -64,9 +64,21 @@ git clone https://github.com/dbeaver/cloudbeaver-deploy.git
 
    ![Identifier](images/identifier.png)
 
-## Upgrading to Team Edition ≥ 25.1
+## Upgrading to Team Edition ≥ 25.1.0
 
-### 1  Collect your current certificates
+### 1 Save your local variables.tf before you switch branches
+
+Because `team-edition-deploy/AWS/ecs-fargate/variables.tf` is tracked in Git, while this file has local changes, Git will refuse the checkout.
+
+Use git stash to tuck the file away, switch branches, and then bring it back:
+```bash
+cd team-edition-deploy/AWS/ecs-fargate
+git stash push -m "backup variables.tf" variables.tf
+git fetch --all
+git checkout 25.1.0 
+git stash pop
+```
+### 2  Collect your current certificates
 Ensure that you have keys/certs into **`team-edition-deploy/AWS/ecs-fargate/build/cert/`** with the exact layout:
 ```
 team-edition-deploy/AWS/ecs-fargate/build/cert/
@@ -102,12 +114,12 @@ docker run --rm \
 ```
 Where `<IMAGE_URI>:<OLD_TAG>` is the Docker image stored in **AWS ECR**.
 
-### 2  Upgrade your stack to 25.1
+### 3  Upgrade your stack to 25.1.0
 Remove `CLOUDBEAVER_DC_CERT_PATH` from `variables.tf` – this path is no longer used.
 
 Apply Terraform as usual. The EFS volume for certificates will mount but remain empty until the next step.
 
-### 3  Run the one‑shot migration script
+### 4  Run the one‑shot migration script
 Run it in **team-edition-deploy/AWS/ecs-fargate** so it can see `build/cert/` and `variables.tf`  
 ```bash
 ./migration_certs.sh
