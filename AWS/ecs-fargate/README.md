@@ -106,7 +106,7 @@ Substitute the values you just found in place of <IMAGE_URI> and <OLD_TAG>, then
 ```bash
 mkdir -p build/cert/public build/cert/private
 
-docker run --rm \
+docker run --rm --entrypoint="" \
   -v "$(pwd)/build/cert":/out \
   <IMAGE_URI>:<OLD_TAG> \
   bash -c 'cp /etc/cloudbeaver/private/* /out/private && \
@@ -115,9 +115,9 @@ docker run --rm \
 Where `<IMAGE_URI>:<OLD_TAG>` is the Docker image stored in **AWS ECR**.
 
 ### 3  Upgrade your stack to 25.1.0
-Remove `CLOUDBEAVER_DC_CERT_PATH` from `variables.tf` – this path is no longer used.
-
-Apply Terraform as usual. The EFS volume for certificates will mount but remain empty until the next step.
+1. Remove `CLOUDBEAVER_DC_CERT_PATH` from `variables.tf` – this path is no longer used.
+2. Apply Terraform as usual. The EFS volume for certificates will mount for each service.
+3. Wait until AWS ECS shows the new task-definition revision for each service.
 
 ### 4  Run the one‑shot migration script
 Run it in **team-edition-deploy/AWS/ecs-fargate** so it can see `build/cert/` and `variables.tf`  
