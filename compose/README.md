@@ -84,7 +84,7 @@ This step is only required for Nginx, as HAProxy resolves service names via Dock
 Web interface: open your browser and navigate to `https://<your-domain>` or `http://<server-ip>:<port>`.
 The first time you open it, you’ll be taken straight to the Admin Panel.
 
-[Desktop client](https://dbeaver.com/download/team-edition/): when you launch the DBeaver Team Edition desktop app, use the same URL (https://<your-domain> or http://<server-ip>:<port>) to connect to the server.
+[Desktop client](https://dbeaver.com/download/team-edition/): when you launch the DBeaver Team Edition desktop app, use the same URL (`https://<your-domain>` or `http://<server-ip>:<port>`) to connect to the server.
 
 ### Stopping the cluster
 `docker-compose down`
