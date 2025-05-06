@@ -86,7 +86,7 @@ The first time you open it, you’ll be taken straight to the Admin Panel.
 
 Desktop client: when you launch the DBeaver Team Edition desktop app, use the same URL (`https://<your-domain>` or `http://<server-ip>:<port>`) to connect to the server.
 
-Need the desktop client? Download it here: https://dbeaver.com/download/team-edition/
+Download the desktop client: [Download desktop client](https://dbeaver.com/download/team-edition/)
 
 ### Stopping the cluster
 `docker-compose down`
