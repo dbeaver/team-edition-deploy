@@ -75,14 +75,18 @@ This step is only required for Nginx, as HAProxy resolves service names via Dock
     - Navigate to `team-edition-deploy/compose/cbte`
     - Copy `.env.example` to `.env`
     - Edit `.env` file to set configuration properties
-3. [Configure SSL](../SSL/README.md#ssl-certificate-configuration)
+3. [Configure SSL and domain](../SSL/README.md#ssl-certificate-configuration)
 4. Start the cluster:
    - `docker-compose up -d` or `docker compose up -d`  
 
-### Services will be accessible in the next URIs
+### Accessing the product
 
-- https://__CLOUDBEAVER_DOMAIN__ - web interface. It will open the admin panel on the first start
-- https://__CLOUDBEAVER_DOMAIN__/dc - endpoint for desktop applications
+Web interface: open your browser and navigate to `https://<your-domain>` or `http://<server-ip>:<port>`.
+The first time you open it, you’ll be taken straight to the Admin Panel.
+
+Desktop client: when you launch the DBeaver Team Edition desktop app, use the same URL (`https://<your-domain>` or `http://<server-ip>:<port>`) to connect to the server.
+
+Need the desktop client? Download it here: https://dbeaver.com/download/team-edition/
 
 ### Stopping the cluster
 `docker-compose down`
