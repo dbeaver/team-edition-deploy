@@ -75,18 +75,10 @@ This step is only required for Nginx, as HAProxy resolves service names via Dock
     - Navigate to `team-edition-deploy/compose/cbte`
     - Copy `.env.example` to `.env`
     - Edit `.env` file to set configuration properties
-3. Configure domain name (optional):
-   - You may skip this step. In this case, the cluster will be configured for `localhost`.  
-   - Set the `CLOUDBEAVER_DOMAIN` property to the desired domain name.  
-   - Create DNS records for `CLOUDBEAVER_DOMAIN`.  
-4. [Configure SSL](../SSL/README.md#ssl-certificate-configuration)
-5. Start the cluster:
+3. [Configure SSL](../SSL/README.md#ssl-certificate-configuration)
+4. Start the cluster:
    - `docker-compose up -d` or `docker compose up -d`  
 
-### Services will be accessible in the next URIs
-
-- https://__CLOUDBEAVER_DOMAIN__ - web interface. It will open the admin panel on the first start
-- https://__CLOUDBEAVER_DOMAIN__/dc - endpoint for desktop applications
 
 ### Stopping the cluster
 `docker-compose down`
