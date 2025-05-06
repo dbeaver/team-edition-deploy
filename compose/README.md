@@ -79,6 +79,10 @@ This step is only required for Nginx, as HAProxy resolves service names via Dock
 4. Start the cluster:
    - `docker-compose up -d` or `docker compose up -d`  
 
+### Services will be accessible in the next URIs
+
+- https://__CLOUDBEAVER_DOMAIN__ - web interface. It will open the admin panel on the first start
+- https://__CLOUDBEAVER_DOMAIN__/dc - endpoint for desktop applications
 
 ### Stopping the cluster
 `docker-compose down`
