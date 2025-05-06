@@ -89,8 +89,15 @@ team-edition-deploy/AWS/ecs-fargate/build/cert/
 └─ public/
     └─ dc-cert.crt
 ```
-If you only have the Docker image
-
+**If you only have the Docker image**  
+**Login to ECR** *(skip if you can already `docker pull`)*  
+```bash
+REGION=<aws_region>
+ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+aws ecr get-login-password --region $REGION \
+| docker login --username AWS --password-stdin \
+  $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com
+```
 Locate the `cloudbeaver-dc` image URI with two options:
 1. Automatic ask Terraform for the repository URL (`jq` must be installed)
 ```bash
