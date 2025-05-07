@@ -22,7 +22,7 @@ git clone https://github.com/dbeaver/cloudbeaver-deploy.git
 5. Choose configuration for your cluster database:
    - If you plan to use the PostgreSQL internal container:
      - Navigate to `team-edition-deploy/AWS/ecs-fargate`  
-     - Copy `example.variables.tf` to `variables.tf`
+     - Copy `variables.example.tf` to `variables.tf`
      - Open `variables.tf`.
      - Update `variables.tf` file. Modify `POSTGRES_PASSWORD` field in `cloudbeaver-db-env` vatiables.
 
