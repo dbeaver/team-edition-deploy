@@ -38,7 +38,7 @@ Previously, the volumes were owned by the ‘root’ user, but now they are owne
 
 1. Clone this repository from GitHub: `git clone https://github.com/dbeaver/team-edition-deploy`
 2. `cd team-edition-deploy/k8s/cbte`
-3. `cp ./values.example.yaml ./values.yaml`
+3. `cp ./values.yaml.example ./values.yaml`
 4. Edit chart values in `values.yaml` (use any text editor).
 5. Configure domain and SSL certificate:
   - Add an A record in your DNS hosting for a value of `cloudbeaverBaseDomain` variable with load balancer IP address.
