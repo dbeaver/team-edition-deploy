@@ -64,74 +64,7 @@ git clone https://github.com/dbeaver/cloudbeaver-deploy.git
 
    ![Identifier](images/identifier.png)
 
-## Upgrading to Team Edition ≥ 25.1.0
-
-### 1 Save your local variables.tf before you switch branches
-
-Because `team-edition-deploy/AWS/ecs-fargate/variables.tf` is tracked in Git, while this file has local changes, Git will refuse the checkout.
-
-Use git stash to tuck the file away, switch branches, and then bring it back:
-```bash
-cd team-edition-deploy/AWS/ecs-fargate
-git stash push -m "backup variables.tf" variables.tf
-git fetch --all
-git checkout 25.1.0 
-git stash pop
-```
-### 2  Collect your current certificates
-Ensure that you have keys/certs into **`team-edition-deploy/AWS/ecs-fargate/build/cert/`** with the exact layout:
-```
-team-edition-deploy/AWS/ecs-fargate/build/cert/
-├─ private/
-│   ├─ dc-key.key
-│   ├─ secret-cert.crt
-│   └─ secret-key.key
-└─ public/
-    └─ dc-cert.crt
-```
-**If you only have the Docker image**  
-**Login to ECR** *(skip if you can already `docker pull`)*  
-```bash
-REGION=<aws_region>
-ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-aws ecr get-login-password --region $REGION \
-| docker login --username AWS --password-stdin \
-  $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com
-```
-Locate the `cloudbeaver-dc` image URI with two options:
-1. Automatic ask Terraform for the repository URL (`jq` must be installed)
-```bash
-terraform show -json | jq -r '
-  .values.root_module.resources[]
-  | select(.type=="aws_ecr_repository")
-  | select(.values.name|test(".*cloudbeaver-dc"))
-  | .values.repository_url'
-```  
-2. Open the **AWS ECR** console and copy the URI of the `cloudbeaver-dc` repository yourself.
-
-Substitute the values you just found in place of <IMAGE_URI> and <OLD_TAG>, then run:
-```bash
-mkdir -p build/cert/public build/cert/private
-
-docker run --rm --entrypoint="" \
-  -v "$(pwd)/build/cert":/out \
-  <IMAGE_URI>:<OLD_TAG> \
-  bash -c 'cp /etc/cloudbeaver/private/* /out/private && \
-           cp /etc/cloudbeaver/public/* /out/public/'
-```
-Where `<IMAGE_URI>:<OLD_TAG>` is the Docker image stored in **AWS ECR**.
-
-### 3  Upgrade your stack to 25.1.0
-1. Remove `CLOUDBEAVER_DC_CERT_PATH` from `variables.tf` – this path is no longer used.
-2. Apply Terraform as usual. The EFS volume for certificates will mount for each service.
-3. Wait until AWS ECS shows the new task-definition revision for each service.
-
-### 4  Run the one‑shot migration script
-Run it in **team-edition-deploy/AWS/ecs-fargate** so it can see `build/cert/` and `variables.tf`  
-```bash
-./migration_certs.sh
-```
-The script copies your local certificates from `build/cert/` into the container’s EFS volume mounted at `/conf/certificates`. 
+## [Upgrading to Team Edition ≥ 25.1.0](./Upgrade_to_25.1.0.md#upgrading-to-team-edition-2510)
 
 ## Version update
 
