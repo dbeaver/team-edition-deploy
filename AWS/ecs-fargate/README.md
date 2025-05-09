@@ -64,9 +64,10 @@ git clone https://github.com/dbeaver/cloudbeaver-deploy.git
 
    ![Identifier](images/identifier.png)
 
-## [Upgrading to Team Edition ≥ 25.1.0](./Upgrade_to_25.1.0.md#upgrading-to-team-edition-2510)
 
 ## Version update
+
+**Note:** If you need to upgrade to Team Edition 25.1.0 or later from an earlier version, please follow [this guide](./upgrade-to-25-1.md).
 
 1. Navigate to the `team-edition-deploy/AWS/ecs-fargate` directory.
 
