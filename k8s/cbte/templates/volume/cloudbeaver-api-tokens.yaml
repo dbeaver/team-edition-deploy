@@ -13,5 +13,5 @@ spec:
   {{- end }}
   resources:
     requests:
-      storage: 1Mi
+      storage: 1Gi
 status: {}
