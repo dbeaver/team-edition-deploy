@@ -175,6 +175,16 @@ resource "aws_efs_access_point" "certs_public" {
   }
 }
 
+resource "aws_efs_file_system" "api_tokens" {
+  creation_token   = "${var.deployment_id}-api_tokens"
+  performance_mode = "generalPurpose"
+  throughput_mode  = "bursting"
+  encrypted        = "false"
+  tags = {
+    Env  = var.deployment_id
+    Name = "DBeaver TE API TOKENS EFS"
+  }
+}
 resource "aws_efs_mount_target" "cloudbeaver_certificates_mt" {
   count           = length(aws_subnet.private_subnets)
   file_system_id  = aws_efs_file_system.cloudbeaver_certificates.id
@@ -182,6 +192,12 @@ resource "aws_efs_mount_target" "cloudbeaver_certificates_mt" {
   security_groups = [aws_security_group.dbeaver_efs.id]
 }
 
+resource "aws_efs_mount_target" "api_tokens_mt" {
+  count           = length(aws_subnet.private_subnets)
+  file_system_id  = aws_efs_file_system.api_tokens.id
+  subnet_id       = aws_subnet.private_subnets[count.index].id
+  security_groups = [aws_security_group.dbeaver_efs.id]
+}
 
 ################################################################################
 # Postgres
@@ -382,6 +398,14 @@ resource "aws_ecs_task_definition" "dbeaver_dc" {
       transit_encryption = "ENABLED"
     }
   }
+  volume {
+    name = "${var.deployment_id}-api_tokens"
+    efs_volume_configuration {
+      file_system_id     = aws_efs_file_system.api_tokens.id
+      root_directory = "/"
+      transit_encryption = "ENABLED"
+    }
+  }
   container_definitions = jsonencode([{
     name        = "${var.deployment_id}-cloudbeaver-dc"
     image       = "dbeaver/cloudbeaver-dc:${var.dbeaver_te_version}"
@@ -394,6 +418,10 @@ resource "aws_ecs_task_definition" "dbeaver_dc" {
     {
       containerPath = "/opt/domain-controller/conf/certificates"
       sourceVolume  = "${var.deployment_id}-cloudbeaver_certificates"
+    },
+    {
+      containerPath = "/opt/domain-controller/conf/keys"
+      sourceVolume  = "${var.deployment_id}-api_tokens"
     }
     ]
     logConfiguration = {

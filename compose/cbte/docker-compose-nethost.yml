@@ -7,6 +7,7 @@ volumes:
   nginx_ssl_data: {}
   nginx_conf_data: {}
   trusted_cacerts: {}
+  api_tokens: {}
 networks:
   cloudbeaver-te-private-net: null
 services:
@@ -81,6 +82,7 @@ services:
       - ./cert/private/:/opt/domain-controller/conf/certificates/
       - ./cert/public/:/opt/domain-controller/conf/certificates/public/
       - trusted_cacerts:/opt/domain-controller/conf/certificates/custom/
+      - api_tokens:/opt/domain-controller/conf/keys/
     network_mode: host
 
   cloudbeaver-te:
