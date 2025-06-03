@@ -23,7 +23,6 @@ orchestrators.
 - An OCI container management tool such as Docker or Podman
 - Docker Compose v2 **version 2.10 or above** or Podman Compose
     - If you install `docker-compose-plugin`, make sure to use the `docker compose` command instead of `docker-compose`.
-    - Likewise, if you use podman, make sure to use the `podman compose` command instead of `docker-compose`.
 
 Ensure all TCP ports from the below list are available in your network stack.
  - 80/tcp
