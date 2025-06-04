@@ -8,9 +8,11 @@ import (
 )
 
 func ensureOSSpecificDependenciesAreInstalled(printer Printer) error {
+	printer.Println("Checking if WSL is installed...")
 	wslStatusCmd := exec.Command("wsl.exe", "--status")
 	_, err := wslStatusCmd.Output()
 	if err == nil {
+		printer.Println("WSL is installed")
 		return nil
 	}
 	slog.Info("error caught while executing 'wsl.exe --status': " + err.Error())
