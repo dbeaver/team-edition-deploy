@@ -15,7 +15,7 @@ func (t *Tool) ensureOSSpecificDependenciesAreInstalled() error {
 	slog.Info("error caught while executing 'wsl.exe --status': " + err.Error())
 	if exitErr, isExitErr := err.(*exec.ExitError); isExitErr {
 		// stderr should contain the instructions on how to install WSL
-		t.printlnBytes(exitErr.Stderr)
+		t.printer.Println(string(exitErr.Stderr))
 	}
 	return lib.WrapError("WSL is not installed, but it's a hard requirement", err)
 }

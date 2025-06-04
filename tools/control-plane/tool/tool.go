@@ -11,17 +11,16 @@ import (
 	"strings"
 )
 
-type stdOutErrPrinter interface {
+type Printer interface {
 	Println(i ...any)
-	PrintErr(i ...any)
 }
 
 type Tool struct {
 	ws      workspace
-	printer stdOutErrPrinter
+	printer Printer
 }
 
-func StartTool(printer stdOutErrPrinter) (Tool, error) {
+func StartTool(printer Printer) (Tool, error) {
 	ws, err := initWorkspace()
 	if err != nil {
 		return Tool{}, lib.WrapError("unable to initialize workspace", err)
@@ -60,13 +59,13 @@ func (t *Tool) EnsureDependenciesAreInstalled() error {
 		if err != nil {
 			return err
 		}
-		t.printfln("Installing podman-compose...")
+		t.printer.Println("Installing podman-compose...")
 		outBytes, err := exec.Command(pythonPath, pip, "install", "podman-compose").Output()
 		if err != nil {
 			slog.Error(string(outBytes))
 			return lib.WrapError("unable to install podman-compose", err)
 		}
-		t.println("Successfully installed podman-compose")
+		t.printer.Println("Successfully installed podman-compose")
 	}
 
 	return nil
@@ -99,18 +98,6 @@ func (t *Tool) EnsureRepoIsCloned(repoName string) error {
 	return nil
 }
 
-func (t *Tool) println(s string) {
-	t.printer.Println(s)
-}
-
-func (t *Tool) printfln(format string, a ...any) {
-	t.println(fmt.Sprintf(format, a...))
-}
-
-func (t *Tool) printlnBytes(bytes []byte) {
-	t.println(string(bytes))
-}
-
 func (t *Tool) findUnzipPath(downloadURL string) (string, error) {
 	zipFileName := filepath.Base(downloadURL)
 	nameWithoutExt, ok := strings.CutSuffix(zipFileName, ".zip")
@@ -121,10 +108,10 @@ func (t *Tool) findUnzipPath(downloadURL string) (string, error) {
 }
 
 func (t *Tool) ensureBinaryDependencyInstalled(dependency *binaryInZipDependency) (string, error) {
-	t.printfln("Ensuring %s is installed...", dependency.displayName)
+	t.printer.Println(fmt.Sprintf("Ensuring %s is installed...", dependency.displayName))
 	if dependency.isSystemWideOk {
 		if path, err := exec.LookPath(dependency.executable); err == nil {
-			t.println(dependency.displayName + " is found on the system. Reusing it")
+			t.printer.Println(dependency.displayName + " is found on the system. Reusing it")
 			return path, nil
 		}
 	}
@@ -145,7 +132,7 @@ func (t *Tool) ensureBinaryDependencyInstalled(dependency *binaryInZipDependency
 		executablePath += ".exe"
 	}
 	if _, err := os.Stat(executablePath); err == nil {
-		t.println(dependency.displayName + " is installed already")
+		t.printer.Println(dependency.displayName + " is installed already")
 		if err = prependToPathVariable(executableDirPath); err != nil {
 			return "", lib.WrapError("unable to prepend "+executableDirPath+" to PATH variable", err)
 		}
@@ -153,7 +140,7 @@ func (t *Tool) ensureBinaryDependencyInstalled(dependency *binaryInZipDependency
 	}
 
 	// No, we didn't. Let's download it then
-	t.printfln("Downloading %s...", dependency.displayName)
+	t.printer.Println(fmt.Sprintf("Downloading %s...", dependency.displayName))
 	tmpDir, err := t.ws.TempDir()
 	if err != nil {
 		return "", lib.WrapError("unable to get temporary directory to download a file to", err)
@@ -169,25 +156,25 @@ func (t *Tool) ensureBinaryDependencyInstalled(dependency *binaryInZipDependency
 	if err = unzipFile(zipFilePath, unzipPath); err != nil {
 		return "", err
 	}
-	t.println("Successfully downloaded " + dependency.displayName)
+	t.printer.Println("Successfully downloaded " + dependency.displayName)
 	return executablePath, prependToPathVariable(executableDirPath)
 }
 
 func (t *Tool) ensureDependencyInstalled(dependency *dependency) (string, error) {
-	t.printfln("Ensuring %s is installed...", dependency.displayName)
+	t.printer.Println(fmt.Sprintf("Ensuring %s is installed...", dependency.displayName))
 	filePath := filepath.Join(t.ws.DependenciesPath(), filepath.Base(dependency.downloadURL))
 	exists, err := fileExists(filePath)
 	if err != nil {
 		return "", lib.WrapError(fmt.Sprintf("unable to figure out if %s is downloaded", dependency.displayName), err)
 	}
 	if exists {
-		t.println(dependency.displayName + " is installed already")
+		t.printer.Println(dependency.displayName + " is installed already")
 		return filePath, nil
 	}
-	t.printfln("Downloading %s...", dependency.displayName)
+	t.printer.Println(fmt.Sprintf("Downloading %s...", dependency.displayName))
 	err = downloadFile(dependency.downloadURL, filePath)
 	if err == nil {
-		t.println("Successfully downloaded " + dependency.displayName)
+		t.printer.Println("Successfully downloaded " + dependency.displayName)
 	}
 	return filePath, err
 }
