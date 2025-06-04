@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 )
 
@@ -190,7 +191,7 @@ func (t *Tool) ensureBinaryDependencyInstalled(dependency *binaryInZipDependency
 	}
 	executableDirPath := filepath.Join(path...)
 	executablePath := filepath.Join(executableDirPath, dependency.executable)
-	if lib.IsWindows() {
+	if runtime.GOOS == osWindows {
 		executablePath += ".exe"
 	}
 	if _, err := os.Stat(executablePath); err == nil {

@@ -6,7 +6,6 @@ import (
 	"io"
 	"log/slog"
 	"os"
-	"runtime"
 )
 
 func WrapError(errorMessage string, original error) error {
@@ -26,10 +25,6 @@ type Optional[T any] struct {
 
 func OptionalOf[T any](value T) Optional[T] {
 	return Optional[T]{Value: value, IsPresent: true}
-}
-
-func IsWindows() bool {
-	return runtime.GOOS == "windows"
 }
 
 func FileExists(path string) (bool, error) {

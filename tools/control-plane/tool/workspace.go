@@ -1,9 +1,12 @@
 package tool
 
 import (
+	"errors"
+	"io/fs"
 	"log/slog"
 	"os"
 	"path/filepath"
+	"runtime"
 	"time"
 
 	"cbctl/lib"
@@ -79,4 +82,32 @@ func (ws *workspace) Close() error {
 
 func (ws *workspace) DependenciesPath() string {
 	return filepath.Join(ws.path, ".dependencies")
+}
+
+func dbeaverDataParentLocation() (string, error) {
+	switch runtime.GOOS {
+	case osDarwin:
+		homePath, err := os.UserHomeDir()
+		if err != nil {
+			return "", lib.WrapError("unable to determine location of DBeaverData's parent directory", err)
+		}
+		return filepath.Join(homePath, "Library"), nil
+	case osLinux:
+		if xdgDataHomePath, found := os.LookupEnv("XDG_DATA_HOME"); found && fs.ValidPath(xdgDataHomePath) {
+			return xdgDataHomePath, nil
+		}
+		homePath, err := os.UserHomeDir()
+		if err != nil {
+			return "", lib.WrapError("unable to determine location of DBeaverData's parent directory", err)
+		}
+		return filepath.Join(homePath, ".local", "share"), nil
+	case osWindows:
+		if appDataPath, found := os.LookupEnv("APPDATA"); found && fs.ValidPath(appDataPath) {
+			return appDataPath, nil
+		}
+		return "", errors.New("unable to determine location of DBeaverData's parent directory")
+	default:
+		// Should never happen, but just in case
+		return "", errors.New("unsupported operating system: " + runtime.GOOS)
+	}
 }
