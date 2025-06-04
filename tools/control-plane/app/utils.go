@@ -41,36 +41,41 @@ func unzipFile(zipPath, destDir string) error {
 		return err
 	}
 	defer lib.CloseOrWarn(zipReader)
-
 	for _, file := range zipReader.File {
-		filePath := filepath.Join(destDir, file.Name)
-		if !strings.HasPrefix(filePath, filepath.Clean(destDir)+string(os.PathSeparator)) {
-			return errors.New("illegal file path: " + file.Name)
-		}
-		if file.FileInfo().IsDir() {
-			if err := os.MkdirAll(filePath, file.Mode()); err != nil {
-				return err
-			}
-			continue
-		}
-		if err := os.MkdirAll(filepath.Dir(filePath), 0700); err != nil {
-			return err
-		}
-		destFile, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, file.Mode())
-		if err != nil {
-			return err
-		}
-		defer lib.CloseOrWarn(destFile)
-		srcFile, err := file.Open()
-		if err != nil {
-			return err
-		}
-		defer lib.CloseOrWarn(srcFile)
-		_, err = io.Copy(destFile, srcFile)
-		if err != nil {
+		if err := unzipElement(file, destDir); err != nil {
 			return err
 		}
 	}
+	return nil
+}
 
+func unzipElement(file *zip.File, destDir string) error {
+	filePath := filepath.Join(destDir, file.Name)
+	if !strings.HasPrefix(filePath, filepath.Clean(destDir)+string(os.PathSeparator)) {
+		return errors.New("illegal file path: " + file.Name)
+	}
+	if file.FileInfo().IsDir() {
+		if err := os.MkdirAll(filePath, file.Mode()); err != nil {
+			return err
+		}
+		return nil
+	}
+	if err := os.MkdirAll(filepath.Dir(filePath), 0700); err != nil {
+		return err
+	}
+	destFile, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, file.Mode())
+	if err != nil {
+		return err
+	}
+	defer lib.CloseOrWarn(destFile)
+	srcFile, err := file.Open()
+	if err != nil {
+		return err
+	}
+	defer lib.CloseOrWarn(srcFile)
+	_, err = io.Copy(destFile, srcFile)
+	if err != nil {
+		return err
+	}
 	return nil
 }
