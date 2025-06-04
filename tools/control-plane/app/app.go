@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"strings"
 )
 
@@ -80,6 +81,36 @@ func (t *App) ConfigureHost() error {
 	default:
 		// This should never happen, but let's handle it gracefully at least to make the compiler happy
 		return errors.New("unexpected application error")
+	}
+
+	combinedOutBytes, err := exec.Command(
+		"wsl.exe",
+		"-d",
+		podmanMachineName,
+		"--exec",
+		"ip",
+		"addr",
+		"show",
+		"eth0",
+	).CombinedOutput()
+	if err != nil {
+		return lib.WrapError("unable to get IP address of the WSL machine", err)
+	}
+	ip, err := parseWSLMachineIPAddr(string(combinedOutBytes))
+	if err != nil {
+		return lib.WrapError("unable to parse WSL machine IP address", err)
+	}
+	if err = setProxyToIP(ip, 80); err != nil {
+		return lib.WrapError("unable to set proxy to WSL machine IP address, port 80", err)
+	}
+	if err = setProxyToIP(ip, 443); err != nil {
+		return lib.WrapError("unable to set proxy to WSL machine IP address, port 443", err)
+	}
+	if err = setFirewallToAllowTrafficToPort(80); err != nil {
+		return lib.WrapError("unable to set firewall rule for port 80", err)
+	}
+	if err = setFirewallToAllowTrafficToPort(443); err != nil {
+		return lib.WrapError("unable to set firewall rule for port 443", err)
 	}
 
 	return nil
@@ -291,4 +322,61 @@ func inspectPodmanMachine() (podmanMachineInspectionResult, error) {
 	default:
 		return vmInUnknownState, errors.New("unknown Podman machine state: " + string(state))
 	}
+}
+
+func parseWSLMachineIPAddr(ipCmdOutput string) (string, error) {
+	_, after, ok := strings.Cut(ipCmdOutput, "inet ")
+	if !ok {
+		slog.Error("unable to carve out IP address from the following (where is 'inet ')?: " + ipCmdOutput)
+		return "", errors.New("unable to find 'inet ' in the output of 'ip addr show eth0'")
+	}
+	cidr, _, ok := strings.Cut(after, " brd ")
+	if !ok {
+		slog.Error("unable to carve out IP address from the following (where is ' brd ')?: " + ipCmdOutput)
+		return "", errors.New("unable to find ' brd ' in the output of 'ip addr show eth0'")
+	}
+	ip, _, _ := strings.Cut(cidr, "/")
+	slog.Info("IP address of the WSL machine appears to be " + ip)
+	return ip, nil
+}
+
+func setProxyToIP(ip string, port uint) error {
+	portStr := strconv.Itoa(int(port))
+	combinedOutBytes, err := exec.Command(
+		"netsh",
+		"interface",
+		"portproxy",
+		"add",
+		"v4tov4",
+		"listenport="+portStr,
+		"listenaddress=0.0.0.0",
+		"connectport="+portStr,
+		"connectaddress="+ip,
+	).CombinedOutput()
+	if err != nil {
+		slog.Info("error setting proxy", "error", err, "output", string(combinedOutBytes))
+		return lib.WrapError("unable to set proxy", err)
+	}
+	return nil
+}
+
+func setFirewallToAllowTrafficToPort(port uint) error {
+	combinedOutBytes, err := exec.Command(
+		"New-NetFirewallRule",
+		"-DisplayName",
+		fmt.Sprintf("Allow Inbound TCP %d for WSL", port),
+		"-Direction",
+		"Inbound",
+		"-Action",
+		"Allow",
+		"-Protocol",
+		"TCP",
+		"-LocalPort",
+		fmt.Sprintf("%d", port),
+	).CombinedOutput()
+	if err != nil {
+		slog.Info("error setting firewall rule", "error", err, "output", string(combinedOutBytes))
+		return lib.WrapError(fmt.Sprintf("unable to set firewall rule for port %d", port), err)
+	}
+	return nil
 }
