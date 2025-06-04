@@ -36,7 +36,7 @@ func (t *Tool) Close() error {
 }
 
 func (t *Tool) EnsureDependenciesAreInstalled() error {
-	if err := t.ensureOSSpecificDependenciesAreInstalled(); err != nil {
+	if err := ensureOSSpecificDependenciesAreInstalled(t.printer); err != nil {
 		return err
 	}
 	if _, err := t.ensureBinaryDependencyInstalled(&dependencyGit); err != nil {
@@ -59,13 +59,13 @@ func (t *Tool) EnsureDependenciesAreInstalled() error {
 		if err != nil {
 			return err
 		}
-		t.printer.Println("Installing podman-compose...")
+		t.printer.Println("Ensuring podman-compose is installed...")
 		outBytes, err := exec.Command(pythonPath, pip, "install", "podman-compose").Output()
 		if err != nil {
 			slog.Error(string(outBytes))
 			return lib.WrapError("unable to install podman-compose", err)
 		}
-		t.printer.Println("Successfully installed podman-compose")
+		t.printer.Println("podman-compose is installed")
 	}
 
 	return nil
