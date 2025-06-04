@@ -9,9 +9,7 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
-	"os/exec"
 	"path/filepath"
-	"strconv"
 	"strings"
 )
 
@@ -75,64 +73,4 @@ func unzipFile(zipPath, destDir string) error {
 	}
 
 	return nil
-}
-
-func isPythonInstalledAndAtLeast(major, minor, micro int) bool {
-	version, err := getPythonVersion()
-	if err != nil {
-		slog.Warn("unable to get Python version: " + err.Error())
-		return false
-	}
-	isAtLeast, err := isSemanticVersionAtLeast(version, major, minor, micro)
-	if err != nil {
-		slog.Warn(fmt.Sprintf("unable to check if Python version is at least %d.%d.%d: %s",
-			major, minor, micro, err.Error()))
-		return false
-	}
-	return isAtLeast
-}
-
-func getPythonVersion() (string, error) {
-	pythonCmd := exec.Command("python3", "--version")
-	outputBytes, err := pythonCmd.Output()
-	if err != nil {
-		return "", err
-	}
-	// Version output is expected to be in the format "Python X.Y.Z"
-	output, ok := strings.CutPrefix(string(outputBytes), "Python")
-	if !ok {
-		return "", errors.New("unexpected Python version format: " + output)
-	}
-	return strings.TrimSpace(output), nil
-}
-
-// FIXME: accept unsigned ints only
-func isSemanticVersionAtLeast(version string, major, minor, micro int) (bool, error) {
-	realMajorString, realMinorMicroString, ok := strings.Cut(version, ".")
-	if !ok {
-		return false, errors.New("unexpected version format: " + version)
-	}
-	realMajor, err := strconv.Atoi(realMajorString)
-	if err != nil {
-		return false, lib.WrapError(fmt.Sprintf("unable to parse the major version '%s'", realMajorString), err)
-	}
-	if realMajor < major {
-		return false, nil
-	}
-	realMinorString, realMicroString, ok := strings.Cut(realMinorMicroString, ".")
-	if !ok {
-		return false, errors.New("unexpected version format: " + version)
-	}
-	realMinor, err := strconv.Atoi(realMinorString)
-	if err != nil {
-		return false, lib.WrapError(fmt.Sprintf("unable to parse the minor version '%s'", realMinorString), err)
-	}
-	if realMinor < minor {
-		return false, nil
-	}
-	realMicro, err := strconv.Atoi(realMicroString)
-	if err != nil {
-		return false, lib.WrapError(fmt.Sprintf("unable to parse the micro version '%s'", realMinorString), err)
-	}
-	return realMicro >= micro, nil
 }
