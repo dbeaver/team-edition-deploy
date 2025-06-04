@@ -31,7 +31,11 @@ func StartTool(printer stdOutErrPrinter) (Tool, error) {
 	if err != nil {
 		return Tool{}, lib.WrapError("unable to initialize workspace", err)
 	}
-	return Tool{ws: ws, printer: printer}, nil
+	return Tool{
+		ws:              ws,
+		printer:         printer,
+		dependencyPaths: make(map[string]string, 3),
+	}, nil
 }
 
 func (t *Tool) Close() error {
