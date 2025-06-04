@@ -1,4 +1,4 @@
-package tool
+package app
 
 import (
 	"cbctl/lib"
@@ -17,34 +17,34 @@ type Printer interface {
 	Println(i ...any)
 }
 
-type Tool struct {
+type App struct {
 	ws      workspace
 	printer Printer
 }
 
-func Run(printer Printer, f func(t *Tool) error) error {
+func Run(printer Printer, f func(t *App) error) error {
 	ws, err := initWorkspace()
 	if err != nil {
 		return lib.WrapError("unable to initialize workspace", err)
 	}
-	t := Tool{ws: ws, printer: printer}
+	t := App{ws: ws, printer: printer}
 	defer lib.CloseOrWarn(&t)
 	return f(&t)
 }
 
-func (t *Tool) Close() error {
+func (t *App) Close() error {
 	return t.ws.Close()
 }
 
-func (t *Tool) Start() error {
+func (t *App) Start() error {
 	return errors.New("method is not implemented yet") // TODO: implement
 }
 
-func (t *Tool) Stop() error {
+func (t *App) Stop() error {
 	return errors.New("method is not implemented yet") // TODO: implement
 }
 
-func (t *Tool) ConfigureHost() error {
+func (t *App) ConfigureHost() error {
 	pathWithPodman, err := t.installationPathOfBinaryDependency(&dependencyPodman)
 	if err != nil {
 		return lib.WrapError("unable to get Podman installation path", err)
@@ -85,7 +85,7 @@ func (t *Tool) ConfigureHost() error {
 	return nil
 }
 
-func (t *Tool) EnsureDependenciesAreInstalled() error {
+func (t *App) EnsureDependenciesAreInstalled() error {
 	if err := ensureOSSpecificDependenciesAreInstalled(t.printer); err != nil {
 		return err
 	}
@@ -121,7 +121,7 @@ func (t *Tool) EnsureDependenciesAreInstalled() error {
 	return nil
 }
 
-func (t *Tool) EnsureRepoIsCloned(repoName string) (string, error) {
+func (t *App) EnsureRepoIsCloned(repoName string) (string, error) {
 	repoURL := "https://github.com/dbeaver/" + repoName
 	localRepoPath := filepath.Join(t.ws.Path(), repoName)
 	localRepoStat, err := os.Stat(localRepoPath)
@@ -148,7 +148,7 @@ func (t *Tool) EnsureRepoIsCloned(repoName string) (string, error) {
 	return localRepoPath, nil
 }
 
-func (t *Tool) findUnzipPath(downloadURL string) (string, error) {
+func (t *App) findUnzipPath(downloadURL string) (string, error) {
 	zipFileName := filepath.Base(downloadURL)
 	nameWithoutExt, ok := strings.CutSuffix(zipFileName, ".zip")
 	if !ok {
@@ -157,7 +157,7 @@ func (t *Tool) findUnzipPath(downloadURL string) (string, error) {
 	return filepath.Join(t.ws.DependenciesPath(), nameWithoutExt), nil
 }
 
-func (t *Tool) installationPathOfBinaryDependency(dependency *binaryInZipDependency) (string, error) {
+func (t *App) installationPathOfBinaryDependency(dependency *binaryInZipDependency) (string, error) {
 	unzipPath, err := t.findUnzipPath(dependency.downloadURL)
 	if err != nil {
 		return "", err
@@ -170,7 +170,7 @@ func (t *Tool) installationPathOfBinaryDependency(dependency *binaryInZipDepende
 	return filepath.Join(path...), nil
 }
 
-func (t *Tool) ensureBinaryDependencyInstalled(dependency *binaryInZipDependency) (string, error) {
+func (t *App) ensureBinaryDependencyInstalled(dependency *binaryInZipDependency) (string, error) {
 	t.printer.Println(fmt.Sprintf("Ensuring %s is installed...", dependency.displayName))
 	if dependency.isSystemWideOk {
 		if path, err := exec.LookPath(dependency.executable); err == nil {
@@ -223,7 +223,7 @@ func (t *Tool) ensureBinaryDependencyInstalled(dependency *binaryInZipDependency
 	return executablePath, prependToPathVariable(executableDirPath)
 }
 
-func (t *Tool) ensureDependencyInstalled(dependency *dependency) (string, error) {
+func (t *App) ensureDependencyInstalled(dependency *dependency) (string, error) {
 	t.printer.Println(fmt.Sprintf("Ensuring %s is installed...", dependency.displayName))
 	filePath := filepath.Join(t.ws.DependenciesPath(), filepath.Base(dependency.downloadURL))
 	exists, err := lib.FileExists(filePath)

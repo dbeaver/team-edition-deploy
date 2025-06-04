@@ -1,4 +1,4 @@
-package tool
+package app
 
 const (
 	AppName           = "cbctl"

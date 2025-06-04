@@ -1,8 +1,8 @@
 package cmd
 
 import (
+	"cbctl/app"
 	"cbctl/lib"
-	"cbctl/tool"
 	"fmt"
 	"github.com/spf13/cobra"
 	"io"
@@ -14,7 +14,7 @@ var configureProductCmd = &cobra.Command{
 	Use:   "product",
 	Short: "Configure a product",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return tool.Run(cmd, func(t *tool.Tool) error {
+		return app.Run(cmd, func(t *app.App) error {
 			repoPath, err := t.EnsureRepoIsCloned("team-edition-deploy")
 			if err != nil {
 				return err

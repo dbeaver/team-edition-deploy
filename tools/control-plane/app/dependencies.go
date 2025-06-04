@@ -1,4 +1,4 @@
-package tool
+package app
 
 import (
 	"cbctl/lib"

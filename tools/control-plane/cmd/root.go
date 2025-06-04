@@ -3,17 +3,17 @@ package cmd
 import (
 	"os"
 
-	"cbctl/tool"
+	"cbctl/app"
 
 	"github.com/spf13/cobra"
 )
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   tool.AppName,
+	Use:   app.AppName,
 	Short: "CloudBeaver control plane",
 	// This long description is inspired by kubectl
-	Long: tool.AppName + " controls DBeaver Team Edition backend.",
+	Long: app.AppName + " controls DBeaver Team Edition backend.",
 	//Long: tool.AppName + " controls CloudBeaver Enterprise Edition, CloudBeaver AWS, and DBeaver Team Edition backends.", TODO
 }
 

@@ -1,15 +1,15 @@
 package cmd
 
 import (
-	"cbctl/tool"
+	"cbctl/app"
 	"github.com/spf13/cobra"
 )
 
 var versionCmd = &cobra.Command{
 	Use:   "version",
-	Short: "Print " + tool.AppName + " version",
+	Short: "Print " + app.AppName + " version",
 	Run: func(cmd *cobra.Command, args []string) {
-		cmd.Println(tool.AppName + " " + tool.AppVersion)
+		cmd.Println(app.AppName + " " + app.AppVersion)
 	},
 }
 

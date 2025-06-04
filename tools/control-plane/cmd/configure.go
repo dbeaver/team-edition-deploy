@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"cbctl/tool"
+	"cbctl/app"
 	"github.com/spf13/cobra"
 )
 
@@ -9,7 +9,7 @@ var configureCmd = &cobra.Command{
 	Use:   "configure",
 	Short: "Configure a product or the host machine",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return tool.Run(cmd, func(t *tool.Tool) error {
+		return app.Run(cmd, func(t *app.App) error {
 			return t.Start()
 		})
 	},
