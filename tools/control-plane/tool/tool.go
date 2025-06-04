@@ -20,19 +20,26 @@ type Tool struct {
 	printer Printer
 }
 
-func StartTool(printer Printer) (Tool, error) {
+func Run(printer Printer, f func(t *Tool) error) error {
 	ws, err := initWorkspace()
 	if err != nil {
-		return Tool{}, lib.WrapError("unable to initialize workspace", err)
+		return lib.WrapError("unable to initialize workspace", err)
 	}
-	return Tool{
-		ws:      ws,
-		printer: printer,
-	}, nil
+	t := Tool{ws: ws, printer: printer}
+	defer lib.CloseOrWarn(&t)
+	return f(&t)
 }
 
 func (t *Tool) Close() error {
 	return t.ws.Close()
+}
+
+func (t *Tool) Start() error {
+	return errors.New("method is not implemented yet") // TODO: implement
+}
+
+func (t *Tool) Stop() error {
+	return errors.New("method is not implemented yet") // TODO: implement
 }
 
 func (t *Tool) EnsureDependenciesAreInstalled() error {
@@ -71,7 +78,7 @@ func (t *Tool) EnsureDependenciesAreInstalled() error {
 	return nil
 }
 
-func (t *Tool) EnsureRepoIsCloned(repoName string) error {
+func (t *Tool) EnsureRepoIsCloned(repoName string) (string, error) {
 	repoURL := "https://github.com/dbeaver/" + repoName
 	localRepoPath := filepath.Join(t.ws.Path(), repoName)
 	localRepoStat, err := os.Stat(localRepoPath)
@@ -80,22 +87,22 @@ func (t *Tool) EnsureRepoIsCloned(repoName string) error {
 		outBytes, err := execCmd.Output()
 		if err != nil {
 			slog.Error(string(outBytes))
-			return lib.WrapError("unable to clone repo "+repoURL, err)
+			return "", lib.WrapError("unable to clone repo "+repoURL, err)
 		}
 	} else if err != nil {
-		return lib.WrapError(fmt.Sprintf("unable to detect if %s is cloned", repoURL), err)
+		return "", lib.WrapError(fmt.Sprintf("unable to detect if %s is cloned", repoURL), err)
 	} else if !localRepoStat.IsDir() {
-		return errors.New(localRepoPath + " is not a directory")
+		return "", errors.New(localRepoPath + " is not a directory")
 	} else {
 		gitMetaStat, err := os.Stat(filepath.Join(localRepoPath, ".git"))
 		if err != nil {
-			return lib.WrapError(fmt.Sprintf("unable to detect if %s is a git repository", localRepoPath), err)
+			return "", lib.WrapError(fmt.Sprintf("unable to detect if %s is a git repository", localRepoPath), err)
 		}
 		if !gitMetaStat.IsDir() {
-			return errors.New(localRepoPath + " is not a git repository")
+			return "", errors.New(localRepoPath + " is not a git repository")
 		}
 	}
-	return nil
+	return localRepoPath, nil
 }
 
 func (t *Tool) findUnzipPath(downloadURL string) (string, error) {
@@ -163,7 +170,7 @@ func (t *Tool) ensureBinaryDependencyInstalled(dependency *binaryInZipDependency
 func (t *Tool) ensureDependencyInstalled(dependency *dependency) (string, error) {
 	t.printer.Println(fmt.Sprintf("Ensuring %s is installed...", dependency.displayName))
 	filePath := filepath.Join(t.ws.DependenciesPath(), filepath.Base(dependency.downloadURL))
-	exists, err := fileExists(filePath)
+	exists, err := lib.FileExists(filePath)
 	if err != nil {
 		return "", lib.WrapError(fmt.Sprintf("unable to figure out if %s is downloaded", dependency.displayName), err)
 	}

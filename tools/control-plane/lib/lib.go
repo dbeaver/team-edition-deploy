@@ -1,9 +1,11 @@
 package lib
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"log/slog"
+	"os"
 	"runtime"
 )
 
@@ -28,4 +30,15 @@ func OptionalOf[T any](value T) Optional[T] {
 
 func IsWindows() bool {
 	return runtime.GOOS == "windows"
+}
+
+func FileExists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if errors.Is(err, os.ErrNotExist) {
+		return false, nil
+	}
+	return false, err
 }

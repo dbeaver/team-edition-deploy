@@ -5,16 +5,16 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var startCmd = &cobra.Command{
-	Use:   "start",
-	Short: "Start a product",
+var stopCmd = &cobra.Command{
+	Use:   "stop",
+	Short: "Stop a product",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return tool.Run(cmd, func(t *tool.Tool) error {
-			return t.Start()
+			return t.Stop()
 		})
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(startCmd)
+	rootCmd.AddCommand(stopCmd)
 }
