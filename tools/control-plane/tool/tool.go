@@ -11,19 +11,14 @@ import (
 	"strings"
 )
 
-const (
-	pipInstallationScriptURL = "https://bootstrap.pypa.io/get-pip.py"
-)
-
 type stdOutErrPrinter interface {
 	Println(i ...any)
 	PrintErr(i ...any)
 }
 
 type Tool struct {
-	ws              workspace
-	printer         stdOutErrPrinter
-	dependencyPaths map[string]string
+	ws      workspace
+	printer stdOutErrPrinter
 }
 
 func StartTool(printer stdOutErrPrinter) (Tool, error) {
@@ -32,9 +27,8 @@ func StartTool(printer stdOutErrPrinter) (Tool, error) {
 		return Tool{}, lib.WrapError("unable to initialize workspace", err)
 	}
 	return Tool{
-		ws:              ws,
-		printer:         printer,
-		dependencyPaths: make(map[string]string, 3),
+		ws:      ws,
+		printer: printer,
 	}, nil
 }
 
@@ -42,40 +36,37 @@ func (t *Tool) Close() error {
 	return t.ws.Close()
 }
 
-func (t *Tool) Workspace() *workspace {
-	return &t.ws
-}
-
 func (t *Tool) EnsureDependenciesAreInstalled() error {
 	if err := t.ensureOSSpecificDependenciesAreInstalled(); err != nil {
 		return err
 	}
-	if git, err := t.ensureInstalled(dependencyGit); err != nil {
+	if _, err := t.ensureBinaryDependencyInstalled(&dependencyGit); err != nil {
 		return err
-	} else {
-		t.dependencyPaths["git"] = git
 	}
-	if podman, err := t.ensureInstalled(dependencyPodman); err != nil {
+	if _, err := t.ensureBinaryDependencyInstalled(&dependencyPodman); err != nil {
 		return err
-	} else {
-		t.dependencyPaths["podman"] = podman
 	}
 
 	if _, err := exec.LookPath("podman-compose"); err != nil {
-		python, err := t.ensureInstalled(dependencyPython)
+		pythonPath, err := t.ensureBinaryDependencyInstalled(&dependencyPython)
 		if err != nil {
 			return err
 		}
-		pipInstallScriptPath := filepath.Join(filepath.Dir(python), filepath.Base(pipInstallationScriptURL))
-		err = downloadFile(pipInstallationScriptURL, pipInstallScriptPath)
+		scriptsDir := filepath.Join(pythonPath, "Scripts")
+		if err = prependToPathVariable(scriptsDir); err != nil {
+			return lib.WrapError(fmt.Sprintf("unable to prepend %s to PATH variable", scriptsDir), err)
+		}
+		pip, err := t.ensureDependencyInstalled(&dependencyPip)
 		if err != nil {
 			return err
 		}
-		installPipCmd := exec.Command(python, pipInstallScriptPath)
-		_, err = installPipCmd.Output()
+		t.printfln("Installing podman-compose...")
+		outBytes, err := exec.Command(pythonPath, pip, "install", "podman-compose").Output()
 		if err != nil {
-			return lib.WrapError("unable to install pip", err)
+			slog.Error(string(outBytes))
+			return lib.WrapError("unable to install podman-compose", err)
 		}
+		t.println("Successfully installed podman-compose")
 	}
 
 	return nil
@@ -129,50 +120,80 @@ func (t *Tool) findUnzipPath(downloadURL string) (string, error) {
 	return filepath.Join(t.ws.DependenciesPath(), nameWithoutExt), nil
 }
 
-func (t *Tool) ensureInstalled(dep dependency) (string, error) {
-	t.printfln("Ensuring %s is installed...", dep.displayName)
-	if dep.isSystemWideOk {
-		if path, err := exec.LookPath(dep.executable); err == nil {
-			t.println(dep.displayName + " is found on the system. Reusing it")
+func (t *Tool) ensureBinaryDependencyInstalled(dependency *binaryInZipDependency) (string, error) {
+	t.printfln("Ensuring %s is installed...", dependency.displayName)
+	if dependency.isSystemWideOk {
+		if path, err := exec.LookPath(dependency.executable); err == nil {
+			t.println(dependency.displayName + " is found on the system. Reusing it")
 			return path, nil
 		}
 	}
 
 	// Maybe we installed it before?
-	unzipPath, err := t.findUnzipPath(dep.downloadURL)
+	unzipPath, err := t.findUnzipPath(dependency.downloadURL)
 	if err != nil {
 		return "", err
 	}
-	path := make([]string, len(dep.executableSubpath)+1)
+	path := make([]string, len(dependency.executableSubpath)+1)
 	path[0] = unzipPath
-	for i := range dep.executableSubpath {
-		path[i+1] = dep.executableSubpath[i]
+	for i := range dependency.executableSubpath {
+		path[i+1] = dependency.executableSubpath[i]
 	}
-	executablePath := filepath.Join(filepath.Join(path...), dep.executable)
+	executableDirPath := filepath.Join(path...)
+	executablePath := filepath.Join(executableDirPath, dependency.executable)
 	if lib.IsWindows() {
 		executablePath += ".exe"
 	}
 	if _, err := os.Stat(executablePath); err == nil {
-		t.println(dep.displayName + " is installed already")
+		t.println(dependency.displayName + " is installed already")
+		if err = prependToPathVariable(executableDirPath); err != nil {
+			return "", lib.WrapError("unable to prepend "+executableDirPath+" to PATH variable", err)
+		}
 		return executablePath, nil
 	}
 
 	// No, we didn't. Let's download it then
-	t.printfln("Downloading %s...", dep.displayName)
+	t.printfln("Downloading %s...", dependency.displayName)
 	tmpDir, err := t.ws.TempDir()
 	if err != nil {
 		return "", lib.WrapError("unable to get temporary directory to download a file to", err)
 	}
-	zipFileName := filepath.Base(dep.downloadURL)
+	zipFileName := filepath.Base(dependency.downloadURL)
 	if zipFileName == "" || zipFileName == "." || zipFileName == "/" {
-		return "", errors.New("something is wrong with the download URL: " + dep.downloadURL)
+		return "", errors.New("something is wrong with the download URL: " + dependency.downloadURL)
 	}
 	zipFilePath := filepath.Join(tmpDir, zipFileName)
-	if err := downloadFile(dep.downloadURL, zipFilePath); err != nil {
+	if err := downloadFile(dependency.downloadURL, zipFilePath); err != nil {
 		return "", lib.WrapError("unable to download "+zipFileName, err)
 	}
 	if err = unzipFile(zipFilePath, unzipPath); err != nil {
 		return "", err
 	}
-	return executablePath, nil
+	t.println("Successfully downloaded " + dependency.displayName)
+	return executablePath, prependToPathVariable(executableDirPath)
+}
+
+func (t *Tool) ensureDependencyInstalled(dependency *dependency) (string, error) {
+	t.printfln("Ensuring %s is installed...", dependency.displayName)
+	filePath := filepath.Join(t.ws.DependenciesPath(), filepath.Base(dependency.downloadURL))
+	exists, err := fileExists(filePath)
+	if err != nil {
+		return "", lib.WrapError(fmt.Sprintf("unable to figure out if %s is downloaded", dependency.displayName), err)
+	}
+	if exists {
+		t.println(dependency.displayName + " is installed already")
+		return filePath, nil
+	}
+	t.printfln("Downloading %s...", dependency.displayName)
+	err = downloadFile(dependency.downloadURL, filePath)
+	if err == nil {
+		t.println("Successfully downloaded " + dependency.displayName)
+	}
+	return filePath, err
+}
+
+func prependToPathVariable(dir string) error {
+	currentPath := os.Getenv("PATH")
+	newPath := dir + string(os.PathListSeparator) + currentPath
+	return os.Setenv("PATH", newPath)
 }
