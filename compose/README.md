@@ -1,7 +1,8 @@
-# Team Edition Installation with Docker Compose
+# Team Edition Installation with Docker Compose or Podman Compose
 
-It is the simplest way to install DBeaver Team Edition.  
-All you need is a Linux machine with docker.
+DBeaver Team Edition is a containerized application that can be deployed using Docker Compose or Podman Compose.
+This guide provides prerequisites and step-by-step instructions for configuring and starting a Team Edition cluster with these
+orchestrators.
 
 - [System requirements](#system-requirements)
 - [Configuring and starting Team Edition cluster](#configuring-and-starting-team-edition-cluster)
@@ -15,21 +16,22 @@ All you need is a Linux machine with docker.
 
 ## System requirements
 
-
+- Linux, macOS, or Windows operating systems. We recommend Ubuntu 20.04 or newer
 - Minimum 16GB RAM
 - Minimum 50GB storage, > 100GB recommended
-- Ubuntu is recommended, but it also works on other Linux distributions, macOS, and Windows
-- [Docker](https://docs.docker.com/engine/install/ubuntu/) installed. Make sure you have chosen the right OS distro.
-- [docker-compose](https://docs.docker.com/compose/install/) binary installed and added to your PATH variable. Supported versions 2.10 and above
-    - If you install `docker-compose-plugin`, you must use the `docker compose` command instead of `docker-compose`.
+- Git
+- An OCI container management tool such as Docker or Podman
+- Docker Compose v2 **version 2.10 or above** or Podman Compose
+    - If you install `docker-compose-plugin`, make sure to use the `docker compose` command instead of `docker-compose`.
 
 Ensure all TCP ports from the below list are available in your network stack.
  - 80/tcp
  - 443/tcp (for HTTPS access)
 
- > Note:
- > - For deployment with Podman please ensure made the [following steps](#podman-prerequisites) before configuring the Team Edition cluster.
-> - If you want to deploy Team Edition on RedHat, please ensure made the [following steps](#redhat-prerequisites) before configuring the cluster.
+> Note:
+If you plan on deploying Team Edition with [Podman on Linux](#prerequisites-for-podman-on-linux), with [any container management tool
+on RHEL](#prerequisites-for-rehhat-enterprise-linux-docker-or-podman), or [on Windows](#windows-specific-instructions),
+please ensure you have met the prerequisites listed down below in corresponding sections or by clicking the links.
 
 ## User and permissions changes  
 
@@ -289,7 +291,7 @@ Adjust the values as needed to scale each service accordingly.
 
 ## Prerequisites
 
-### Podman prerequisites
+### Prerequisites for Podman on Linux
 
 To configure Team Edition with Podman, follow these steps:
 
@@ -307,7 +309,7 @@ podman-compose -f podman-compose.yml up -d
 ```
 or replace `docker-compose.yml` with `podman-compose.yml` and use `podman-compose` without compose project definition.
 
-## RedHat prerequisites
+### Prerequisites for RehHat Enterprise Linux (Docker or Podman)
 
 To configure Team Edition on RedHat, run these commands as user `root` before [Configuring and starting Team Edition cluster](#configuring-and-starting-team-edition-cluster):
 
@@ -319,3 +321,7 @@ setsebool -P httpd_can_network_relay 1
 setsebool -P httpd_can_network_connect 1
 semanage permissive -a httpd_t
 ```
+
+### Windows-specific instructions
+
+For Windows-specific instructions, please refer to the [Windows.md](Windows.md) file in this directory.
