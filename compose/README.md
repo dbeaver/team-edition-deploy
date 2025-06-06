@@ -290,7 +290,7 @@ After:
       o: bind
       device: /var/dbeaver/api_tokens
 ```
-4. Start your cluster:  
+3. Start your cluster:  
 - run `dbeaver-te start` if you use script manager  
 - or navigate to the directory `team-edition-deploy/compose/cbte` and run `docker-compose up -d`  
 
