@@ -16,7 +16,7 @@ orchestrators.
 
 ## System requirements
 
-- Linux, macOS, or Windows operating systems
+- Linux, macOS, or Windows operating systems. We recommend Ubuntu 20.04 or newer
 - Minimum 16GB RAM
 - Minimum 50GB storage, > 100GB recommended
 - Git
