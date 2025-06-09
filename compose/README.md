@@ -236,7 +236,7 @@ CLOUDBEAVER_VERSION_TAG=24.2.0
 - run `dbeaver-te start` if you use script manager
 - or navigate to the directory `team-edition-deploy/compose/cbte` and run `docker-compose up -d`  
 
-### Bug fixes in version update
+## Troubleshooting in version update
 
 If you experience errors when updating your cluster, like that:
 ```
