@@ -36,7 +36,6 @@ spec:
           volumeMounts:
             - name: cross-ssl-cert
               mountPath: /opt/cloudbeaver/conf/certificates
-              readOnly: true
       {{- if .Values.cloudbeaver.pullCredsName }}
       imagePullSecrets:
         - name: {{ .Values.cloudbeaver.pullCredsName }}

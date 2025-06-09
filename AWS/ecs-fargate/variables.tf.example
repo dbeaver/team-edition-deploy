@@ -13,7 +13,7 @@ variable "aws_region" {
 variable "dbeaver_te_version" {
   description = "The version of the cluster you want to deploy"
   type = string
-  default = "25.0.0"
+  default = "25.1.0"
 }
 
 variable "alb_certificate_Identifier" {
@@ -72,10 +72,6 @@ variable "cloudbeaver-db-env" {
   ]
 }
 
-variable "ecr_repositories" {
-  type    = list
-  default = ["dc", "rm", "qm", "te", "tm", "postgres"]
-}
 
 variable "dbeaver_te_default_ns" {
   type    = string
@@ -195,10 +191,6 @@ variable "cloudbeaver-dc-env" {
       "value": "QMpassword"
   },
   {
-      "name": "CLOUDBEAVER_DC_CERT_PATH",
-      "value": "/etc/cloudbeaver/private"
-  },
-  {
       "name": "CLOUDBEAVER_PUBLIC_URL",
       "value": "https://cloudbeaver.io"
   }]
@@ -209,9 +201,5 @@ variable "cloudbeaver-shared-env" {
   default = [{
       "name": "CLOUDBEAVER_DC_SERVER_URL",
       "value": "http://cloudbeaver-dc:8970/dc"
-  },
-  {
-      "name": "CLOUDBEAVER_DC_CERT_PATH",
-      "value": "/etc/cloudbeaver/public"
   }]
 }

@@ -1,7 +1,8 @@
-# Team Edition Installation with Docker Compose
+# Team Edition Installation with Docker Compose or Podman Compose
 
-It is the simplest way to install DBeaver Team Edition.  
-All you need is a Linux machine with docker.
+DBeaver Team Edition is a containerized application that can be deployed using Docker Compose or Podman Compose.
+This guide provides prerequisites and step-by-step instructions for configuring and starting a Team Edition cluster with these
+orchestrators.
 
 - [System requirements](#system-requirements)
 - [Configuring and starting Team Edition cluster](#configuring-and-starting-team-edition-cluster)
@@ -15,21 +16,22 @@ All you need is a Linux machine with docker.
 
 ## System requirements
 
-
+- Linux, macOS, or Windows operating systems. We recommend Ubuntu 20.04 or newer
 - Minimum 16GB RAM
 - Minimum 50GB storage, > 100GB recommended
-- Ubuntu is recommended, but it also works on other Linux distributions, macOS, and Windows
-- [Docker](https://docs.docker.com/engine/install/ubuntu/) installed. Make sure you have chosen the right OS distro.
-- [docker-compose](https://docs.docker.com/compose/install/) binary installed and added to your PATH variable. Supported versions 2.10 and above
-    - If you install `docker-compose-plugin`, you must use the `docker compose` command instead of `docker-compose`.
+- Git
+- An OCI container management tool such as Docker or Podman
+- Docker Compose v2 **version 2.10 or above** or Podman Compose
+    - If you install `docker-compose-plugin`, make sure to use the `docker compose` command instead of `docker-compose`.
 
 Ensure all TCP ports from the below list are available in your network stack.
  - 80/tcp
  - 443/tcp (for HTTPS access)
 
- > Note:
- > - For deployment with Podman please ensure made the [following steps](#podman-prerequisites) before configuring the Team Edition cluster.
-> - If you want to deploy Team Edition on RedHat, please ensure made the [following steps](#redhat-prerequisites) before configuring the cluster.
+> Note:
+If you plan on deploying Team Edition with [Podman on Linux](#prerequisites-for-podman-on-linux), with [any container management tool
+on RHEL](#prerequisites-for-rehhat-enterprise-linux-docker-or-podman), or [on Windows](#windows-specific-instructions),
+please ensure you have met the prerequisites listed down below in corresponding sections or by clicking the links.
 
 ## User and permissions changes  
 
@@ -37,6 +39,33 @@ Starting from DBeaver Team Edition v25.0 process inside the container now runs a
 If a user with ‘UID=8978’ already exists in your environment, permission conflicts may occur.  
 Additionally, the default Docker volumes directory’s ownership has changed.  
 Previously, the volumes were owned by the ‘root’ user, but now they are owned by the ‘dbeaver’ user (‘UID=8978’).  
+
+## Configuring proxy server (Nginx / HAProxy)
+
+Starting from v25.1, DBeaver Team Edition supports two types of proxy servers: Nginx and HAProxy. You can choose your preferred proxy type by setting the following variable in the .env file:
+
+`PROXY_TYPE=haproxy` # Available options: nginx, haproxy
+
+The default value is `haproxy`. Switching between proxy types is seamless: configuration files and SSL certificates are retained due to shared Docker volumes.  
+However, note that the container name has changed from `nginx` to `web-proxy`.
+
+### Proxy listen ports
+
+When using Docker Compose with host networking mode (network_mode: host), you may configure proxy ports using these environment variables:
+```
+LISTEN_PORT_HTTP=80
+LISTEN_PORT_HTTPS=443
+```
+These variables specify which ports the proxy listens to inside the container.
+
+### Notes for Nginx users
+
+If you use Nginx as your proxy server and customize the `COMPOSE_PROJECT_NAME` in your .env file, make sure to pass this variable explicitly to the container environment:
+```
+environment:
+  - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME}
+```
+This step is only required for Nginx, as HAProxy resolves service names via Docker DNS automatically.
 
 ## Configuring and starting Team Edition cluster
 
@@ -48,18 +77,16 @@ Previously, the volumes were owned by the ‘root’ user, but now they are owne
     - Navigate to `team-edition-deploy/compose/cbte`
     - Copy `.env.example` to `.env`
     - Edit `.env` file to set configuration properties
-3. Configure domain name (optional):
-   - You may skip this step. In this case, the cluster will be configured for `localhost`.  
-   - Set the `CLOUDBEAVER_DOMAIN` property to the desired domain name.  
-   - Create DNS records for `CLOUDBEAVER_DOMAIN`.  
-4. [Configure SSL](../SSL/README.md#ssl-certificate-configuration)
-5. Start the cluster:
+3. [Configure SSL and domain](../SSL/README.md#ssl-certificate-configuration)
+4. Start the cluster:
    - `docker-compose up -d` or `docker compose up -d`  
 
-### Services will be accessible in the next URIs
+### Accessing the product
 
-- https://__CLOUDBEAVER_DOMAIN__ - web interface. It will open the admin panel on the first start
-- https://__CLOUDBEAVER_DOMAIN__/dc - endpoint for desktop applications
+Web interface: open your browser and navigate to `https://<your-domain>` or `http://<server-ip>:<port>`.
+The first time you open it, you’ll be taken straight to the Admin Panel.
+
+[Desktop client](https://dbeaver.com/download/team-edition/): when you launch the DBeaver Team Edition desktop app, use the same URL (`https://<your-domain>` or `http://<server-ip>:<port>`) to connect to the server.
 
 ### Stopping the cluster
 `docker-compose down`
@@ -209,7 +236,7 @@ CLOUDBEAVER_VERSION_TAG=24.2.0
 - run `dbeaver-te start` if you use script manager
 - or navigate to the directory `team-edition-deploy/compose/cbte` and run `docker-compose up -d`  
 
-### Bug fixes in version update
+## Troubleshooting in version update
 
 If you experience errors when updating your cluster, like that:
 ```
@@ -233,6 +260,39 @@ docker volume rm cbte_nginx_conf_data
 - run `dbeaver-te start` if you use script manager
 - or navigate to the directory `team-edition-deploy/compose/cbte` and run `docker-compose up -d`
 
+---
+
+If you experience errors when updating your cluster, like that:
+```  
+validating /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml: volumes.api_tokens.driver_opts.device must be a string or number  
+```
+
+Follow the next steps:  
+
+
+1. Open the file: `team-edition-deploy/compose/cbte/docker-compose.yml`   
+2. Find the volume configuration for `api_tokens` and update it by replacing `null` with the correct host path `/var/dbeaver/api_tokens`  
+Before:
+```
+  api_tokens:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: null
+```
+After:
+```
+  api_tokens:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /var/dbeaver/api_tokens
+```
+3. Start your cluster:  
+- run `dbeaver-te start` if you use script manager  
+- or navigate to the directory `team-edition-deploy/compose/cbte` and run `docker-compose up -d`  
 
 ## Custom image source
 
@@ -264,7 +324,7 @@ Adjust the values as needed to scale each service accordingly.
 
 ## Prerequisites
 
-### Podman prerequisites
+### Prerequisites for Podman on Linux
 
 To configure Team Edition with Podman, follow these steps:
 
@@ -282,7 +342,7 @@ podman-compose -f podman-compose.yml up -d
 ```
 or replace `docker-compose.yml` with `podman-compose.yml` and use `podman-compose` without compose project definition.
 
-## RedHat prerequisites
+### Prerequisites for RehHat Enterprise Linux (Docker or Podman)
 
 To configure Team Edition on RedHat, run these commands as user `root` before [Configuring and starting Team Edition cluster](#configuring-and-starting-team-edition-cluster):
 
@@ -294,3 +354,7 @@ setsebool -P httpd_can_network_relay 1
 setsebool -P httpd_can_network_connect 1
 semanage permissive -a httpd_t
 ```
+
+### Windows-specific instructions
+
+For Windows-specific instructions, please refer to the [Windows.md](Windows.md) file in this directory.
