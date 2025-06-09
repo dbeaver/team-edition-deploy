@@ -22,6 +22,7 @@ git clone https://github.com/dbeaver/cloudbeaver-deploy.git
 5. Choose configuration for your cluster database:
    - If you plan to use the PostgreSQL internal container:
      - Navigate to `team-edition-deploy/AWS/ecs-fargate`  
+     - Copy `variables.tf.example` to `variables.tf`
      - Open `variables.tf`.
      - Update `variables.tf` file. Modify `POSTGRES_PASSWORD` field in `cloudbeaver-db-env` vatiables.
 
@@ -43,7 +44,7 @@ git clone https://github.com/dbeaver/cloudbeaver-deploy.git
    ![Region](images/region.png)
 
    - Ensure that the `alb_certificate_Identifier` variable contains the ID from [AWS Certificate Manager](#importing-an-ssl-certificate-in-aws) corresponding to the domain name specified   in the `CLOUDBEAVER_PUBLIC_URL` variable within `variables.tf`. The domain name in `CLOUDBEAVER_PUBLIC_URL` must match the domain for which the certificates have been issued.
-   - You can customize the deployment version by updating the `dbeaver_te_version` environment variable. The default version is `25.0.0`.
+   - You can customize the deployment version by updating the `dbeaver_te_version` environment variable. The default version is `25.1.0`.
 
 7. Run `terraform init` and then `terraform apply` in `ecs-fargate` directory to create the ECS cluster and complete the deployment.
 
@@ -64,7 +65,10 @@ git clone https://github.com/dbeaver/cloudbeaver-deploy.git
 
    ![Identifier](images/identifier.png)
 
+
 ## Version update
+
+**Note:** If you need to upgrade to Team Edition 25.1.0 or later from an earlier version, please follow [this guide](./upgrade-to-25-1.md).
 
 1. Navigate to the `team-edition-deploy/AWS/ecs-fargate` directory.
 

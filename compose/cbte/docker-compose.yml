@@ -7,28 +7,24 @@ volumes:
   nginx_ssl_data: {}
   nginx_conf_data: {}
   trusted_cacerts: {}
+  api_tokens: {}
 networks:
   cloudbeaver-te-private-net: null
 services:
-  nginx:
+  web-proxy:
     restart: unless-stopped
-    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-nginx:${CLOUDBEAVER_VERSION_TAG}
+    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-${PROXY_TYPE:-haproxy}:${CLOUDBEAVER_VERSION_TAG}
     ports:
       - 80:8080
       - 443:8443
     environment:
       - PRODUCT_TYPE=te
-      - REPLICA_COUNT_TE=${REPLICA_COUNT_TE:-1}
-      - REPLICA_COUNT_TM=${REPLICA_COUNT_TM:-1}
-      - REPLICA_COUNT_QM=${REPLICA_COUNT_QM:-1}
-      - REPLICA_COUNT_RM=${REPLICA_COUNT_RM:-1}
-      - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-dbeaver}
       - CLOUDBEAVER_WEB_SERVER_PORT=${CLOUDBEAVER_WEB_SERVER_PORT:-8978}
     networks:
       - cloudbeaver-te-private-net
     volumes:
-      - nginx_conf_data:/etc/nginx/product-conf/
-      - nginx_ssl_data:/etc/nginx/ssl/
+      - nginx_conf_data:/etc/${PROXY_TYPE:-haproxy}/product-conf/
+      - nginx_ssl_data:/etc/${PROXY_TYPE:-haproxy}/ssl/
     depends_on:
       - cloudbeaver-te
       - cloudbeaver-dc
@@ -93,6 +89,7 @@ services:
       - ./cert/private/:/opt/domain-controller/conf/certificates/
       - ./cert/public/:/opt/domain-controller/conf/certificates/public/
       - trusted_cacerts:/opt/domain-controller/conf/certificates/custom/
+      - api_tokens:/opt/domain-controller/conf/keys/
     expose:
       - 8970
     networks:

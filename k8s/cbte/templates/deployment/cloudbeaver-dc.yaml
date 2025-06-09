@@ -70,9 +70,10 @@ spec:
           volumeMounts:
             - name: {{ .Release.Name }}-dc-data
               mountPath: /opt/domain-controller/workspace
+            - name: {{ .Release.Name }}-api-tokens
+              mountPath: /opt/domain-controller/conf/keys
             - name: private-cers
               mountPath: /opt/domain-controller/conf/certificates
-              readOnly: true
       {{- if .Values.cloudbeaver.pullCredsName }}
       imagePullSecrets:
         - name: {{ .Values.cloudbeaver.pullCredsName }}
@@ -83,6 +84,9 @@ spec:
         - name: {{ .Release.Name }}-dc-data
           persistentVolumeClaim:
             claimName: {{ .Release.Name }}-dc-data
+        - name: {{ .Release.Name }}-api-tokens
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-api-tokens
         - name: private-cers
           projected:
             sources:
