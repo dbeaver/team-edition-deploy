@@ -260,39 +260,6 @@ docker volume rm cbte_nginx_conf_data
 - run `dbeaver-te start` if you use script manager
 - or navigate to the directory `team-edition-deploy/compose/cbte` and run `docker-compose up -d`
 
----
-
-If you experience errors when updating your cluster, like that:
-```  
-validating /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml: volumes.api_tokens.driver_opts.device must be a string or number  
-```
-
-Follow the next steps:  
-
-
-1. Open the file: `team-edition-deploy/compose/cbte/docker-compose.yml`   
-2. Find the volume configuration for `api_tokens` and update it by replacing `null` with the correct host path `/var/dbeaver/api_tokens`  
-Before:
-```
-  api_tokens:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: null
-```
-After:
-```
-  api_tokens:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /var/dbeaver/api_tokens
-```
-3. Start your cluster:  
-- run `dbeaver-te start` if you use script manager  
-- or navigate to the directory `team-edition-deploy/compose/cbte` and run `docker-compose up -d`  
 
 ## Custom image source
 
