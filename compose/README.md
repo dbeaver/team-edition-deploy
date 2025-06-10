@@ -44,9 +44,9 @@ Previously, the volumes were owned by the ‘root’ user, but now they are owne
 
 Starting from v25.1, DBeaver Team Edition supports two types of proxy servers: Nginx and HAProxy. You can choose your preferred proxy type by setting the following variable in the .env file:
 
-`PROXY_TYPE=haproxy` # Available options: nginx, haproxy
+`PROXY_TYPE=nginx` # Available options: nginx, haproxy
 
-The default value is `haproxy`. Switching between proxy types is seamless: configuration files and SSL certificates are retained due to shared Docker volumes.  
+The default value is `nginx`. Switching between proxy types is seamless: configuration files and SSL certificates are retained due to shared Docker volumes.  
 However, note that the container name has changed from `nginx` to `web-proxy`.
 
 ### Proxy listen ports
@@ -290,7 +290,8 @@ After:
       o: bind
       device: /var/dbeaver/api_tokens
 ```
-3. Start your cluster:  
+3. Create `/var/dbeaver/api_tokens` folder on your server
+4. Start your cluster:  
 - run `dbeaver-te start` if you use script manager  
 - or navigate to the directory `team-edition-deploy/compose/cbte` and run `docker-compose up -d`  
 
