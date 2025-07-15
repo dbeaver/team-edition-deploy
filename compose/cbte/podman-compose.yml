@@ -13,6 +13,8 @@ volumes:
   nginx_conf_data: {}
   trusted_cacerts: {}
   api_tokens: {}
+  cert_private: {}
+  cert_public: {}
 networks:
   cloudbeaver-te-private-net: null
 services:
@@ -92,8 +94,9 @@ services:
       - CLOUDBEAVER_TM_BACKEND_DB_DRIVER=${CLOUDBEAVER_DB_DRIVER}
     volumes:
       - dc_data:/opt/domain-controller/workspace:z
-      - ./cert/private/:/opt/domain-controller/conf/certificates/:z
-      - ./cert/public/:/opt/domain-controller/conf/certificates/public/:z
+      - cert_private:/opt/domain-controller/conf/certificates/:z
+      - cert_public:/opt/domain-controller/conf/certificates/public/:z
+      - ./cert/:/opt/domain-controller/legacy-certs/:ro,z
       - trusted_cacerts:/opt/domain-controller/conf/certificates/custom/:z      
       - api_tokens:/opt/domain-controller/conf/keys/:z
     expose:
@@ -107,7 +110,7 @@ services:
     deploy:
       replicas: ${REPLICA_COUNT_TE:-1}
     volumes:
-      - ./cert/public/:/opt/cloudbeaver/conf/certificates/:z
+      - cert_public:/opt/cloudbeaver/conf/certificates/:z
       - trusted_cacerts:/opt/cloudbeaver/conf/certificates/custom/:z
     environment:
       - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
@@ -129,7 +132,7 @@ services:
       - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
     volumes:
       - rm_data:/opt/resource-manager/workspace:z
-      - ./cert/public/:/opt/resource-manager/conf/certificates/:z
+      - cert_public:/opt/resource-manager/conf/certificates/:z
       - trusted_cacerts:/opt/resource-manager/conf/certificates/custom/:z      
     depends_on:
       - cloudbeaver-dc
@@ -146,7 +149,7 @@ services:
     environment:
       - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
     volumes:
-      - ./cert/public/:/opt/query-manager/conf/certificates/:z
+      - cert_public:/opt/query-manager/conf/certificates/:z
       - trusted_cacerts:/opt/query-manager/conf/certificates/custom/:z
     depends_on:
       - cloudbeaver-dc
@@ -164,7 +167,7 @@ services:
       - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
     volumes:
       - tm_data:/opt/task-manager/workspace:z
-      - ./cert/public/:/opt/task-manager/conf/certificates/:z
+      - cert_public:/opt/task-manager/conf/certificates/:z
       - trusted_cacerts:/opt/task-manager/conf/certificates/custom/:z
     depends_on:
       - cloudbeaver-dc
