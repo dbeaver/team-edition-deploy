@@ -17,7 +17,7 @@
 
 4. Clone the Git repository to your local machine by running the following command in your terminal:
 ```
-git clone https://github.com/dbeaver/cloudbeaver-deploy.git
+git clone https://github.com/dbeaver/team-edition-deploy.git
 ```
 5. Choose configuration for your cluster database:
    - If you plan to use the PostgreSQL internal container:
