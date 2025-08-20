@@ -124,7 +124,7 @@ The following steps outline how to perform a backup and restore procedure.
     do
         BACKUP_DEST_DIR=$(echo "$svc" | cut -d'-' -f2)
         mkdir -p $BACKUP_DIR/$BACKUP_DEST_DIR
-        kubectl cp -n "$NAMESPACE" "$svc:workspace" "$BACKUP_DIR/$BACKUP_DEST_DIR" && break
+        kubectl cp -n "$NAMESPACE" "$svc:workspace" "$BACKUP_DIR/$BACKUP_DEST_DIR"
     done
     ```
 
