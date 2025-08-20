@@ -107,7 +107,7 @@ The following steps outline how to perform a backup and restore procedure.
     ```bash
     NAMESPACE="default" # Change this to your namespace if different
     BACKUP_DB_TARGETS=$(kubectl get pods -n $NAMESPACE --no-headers | awk '{print $1}' | grep 'postgre')
-    BACKUP_DIR=$(pwd) # Change this to your desired backup directory
+    BACKUP_DIR="backups" # Change this to your desired backup directory
     kubectl exec -n $NAMESPACE $BACKUP_DB_TARGETS -- pg_dump -U postgres --format=plain -C cloudbeaver > $BACKUP_DIR/dump.sql
     ```
 
@@ -142,8 +142,7 @@ The following steps outline how to perform a backup and restore procedure.
 
     ```bash
     ARCHIVE="" # Path to the backup archive
-    BACKUP_DIR="backups" # Change this to your backup directory
-    tar xzf "$ARCHIVE" -C "$BACKUP_DIR"
+    tar xzf "$ARCHIVE"
     ```
 
 2. **Restore Persistent Volume Data**:
