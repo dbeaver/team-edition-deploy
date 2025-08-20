@@ -119,7 +119,7 @@ The following steps outline how to perform a backup and restore procedure.
     Back up workspace data from each service's persistent volume.
 
     ```bash
-    BACKUP_CB_TARGETS=$(kubectl get pods -n $NAMESPACE --no-headers | awk '{print $1}' | grep -vE 'zoo|kafka|postgre|clean-up')
+    BACKUP_CB_TARGETS=$(kubectl get pods -n $NAMESPACE --no-headers | awk '{print $1}' | grep -vE 'kafka|postgre')
     for svc in $BACKUP_CB_TARGETS
     do
         BACKUP_DEST_DIR=$(echo "$svc" | cut -d'-' -f2)
@@ -151,7 +151,7 @@ The following steps outline how to perform a backup and restore procedure.
 
     ```bash
     NAMESPACE="default" # Change this to your namespace if different
-    BACKUP_CB_TARGETS=$(kubectl -n "$NAMESPACE" get pods --no-headers | awk '{print $1}' | grep -vE 'zoo|kafka|postgre|clean-up')
+    BACKUP_CB_TARGETS=$(kubectl -n "$NAMESPACE" get pods --no-headers | awk '{print $1}' | grep -vE 'kafka|postgre')
     for svc in $BACKUP_CB_TARGETS; do
         DIR=$(echo "$svc" | cut -d '-' -f2)
         if ! kubectl cp "$BACKUP_DIR/$DIR/." "$NAMESPACE/$svc:workspace"; then
