@@ -1,6 +1,6 @@
 ## DBeaver Team Edition
 
-#### Version 25.1
+#### Version 25.2
 
 DBeaver Team Edition is a client-server application.  
 It requires server deployment. You can deploy it on a single host (e.g. your local computer)
@@ -54,6 +54,7 @@ To change an internal PostgreSQL password use [this instruction](CHANGEPWD.md#ho
 - [Early access](https://github.com/dbeaver/team-edition-deploy/tree/devel)
 
 ### Older versions:
+- [25.1.0](https://github.com/dbeaver/team-edition-deploy/tree/25.1.0)
 - [25.0.0](https://github.com/dbeaver/team-edition-deploy/tree/25.0.0)
 - [24.3.0](https://github.com/dbeaver/team-edition-deploy/tree/24.3.0)
 - [24.2.0](https://github.com/dbeaver/team-edition-deploy/tree/24.2.0)
