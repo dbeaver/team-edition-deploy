@@ -221,10 +221,10 @@ REPLICA_COUNT_RM=1
 IMAGE_SOURCE=dbeaver
 ```
 
-and change version tag to
+and change version tag to 24.1.0 or to higher versions
 
 ```
-CLOUDBEAVER_VERSION_TAG=24.2.0
+CLOUDBEAVER_VERSION_TAG=24.1.0
 ```
 
 #### Step 3. Restart cluster
