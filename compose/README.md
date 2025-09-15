@@ -193,7 +193,7 @@ For detailed instructions on how to use the script manager, refer to [manager do
 2. Stop the cluster: `docker-compose down` or `docker compose down`
 3. Update your deployment files:
    - Fetch latest changes: `git fetch`
-   - Switch to new release version: `git checkout <version-tag>` (e.g., `git checkout 25.1.0`)
+   - Switch to new release version: `git checkout <version-tag>` (e.g., `git checkout 25.2.0`)
    - Change value of `CLOUDBEAVER_VERSION_TAG` in `.env` with a preferred version (skip if tag `latest` is set)
 4. Pull new docker images: `docker-compose pull` or `docker compose pull`
 5. Start the cluster: `docker-compose up -d` or `docker compose up -d`
@@ -212,8 +212,6 @@ If you are not updating across major version boundaries and don't need configura
 ### Version update to 25.1.0 or later
 
 Starting from version 25.1.0, the proxy container name has changed from `nginx` to `web-proxy`. When updating to version 25.1.0 or later, you **must** use the [standard update procedure](#standard-update-procedure-recommended) with `docker-compose down` to ensure the old container is properly removed.
-
-**Important:** If you use `docker-compose up -d` without first running `docker-compose down`, the old `nginx` container will continue running and hold ports 80/443, preventing the new `web-proxy` container from starting properly.
 
 ### Version update from 24.0.0 or earlier
 
