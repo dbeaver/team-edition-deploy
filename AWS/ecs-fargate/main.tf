@@ -406,10 +406,42 @@ resource "aws_ecs_task_definition" "dbeaver_dc" {
       transit_encryption = "ENABLED"
     }
   }
-  container_definitions = jsonencode([{
+  container_definitions = jsonencode([
+      {
+      name      = "${var.deployment_id}-init-dc-permissions"
+      image     = "busybox:latest"
+      essential = false
+      command   = ["sh", "-c", "mkdir -p /workspace/.metadata /conf/keys && chown -R 8978:8978 /workspace /certificates /conf/keys && chmod -R 755 /workspace /certificates /conf/keys"]
+      mountPoints = [{
+        containerPath = "/workspace"
+        sourceVolume  = "${var.deployment_id}-cloudbeaver_dc_data"
+      },
+      {
+        containerPath = "/certificates"
+        sourceVolume  = "${var.deployment_id}-cloudbeaver_certificates"
+      },
+      {
+        containerPath = "/conf/keys"
+        sourceVolume  = "${var.deployment_id}-api_tokens"
+      }]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group         = "DBeaverTeamEdition-${var.deployment_id}"
+          awslogs-region        = "${var.aws_region}"
+          awslogs-create-group  = "true"
+          awslogs-stream-prefix = "init-dc"
+        }
+      }
+    },
+    {
     name        = "${var.deployment_id}-cloudbeaver-dc"
     image       = "dbeaver/cloudbeaver-dc:${var.dbeaver_te_version}"
     essential   = true
+    dependsOn   = [{
+      containerName = "${var.deployment_id}-init-dc-permissions"
+      condition     = "SUCCESS"
+    }]
     environment = local.updated_cloudbeaver_dc_env
     mountPoints = [{
       containerPath = "/opt/domain-controller/workspace"
@@ -523,10 +555,34 @@ resource "aws_ecs_task_definition" "dbeaver_rm" {
     }
   }
   
-  container_definitions = jsonencode([{
+  container_definitions = jsonencode([
+  {
+    name      = "${var.deployment_id}-init-rm-permissions"
+    image     = "dbeaver/busybox"
+    essential = false
+    command   = ["sh", "-c", "mkdir -p /workspace/.metadata && chown -R 8978:8978 /workspace && chmod -R 755 /workspace"]
+    mountPoints = [{
+      containerPath = "/workspace"
+      sourceVolume  = "${var.deployment_id}-cloudbeaver_rm_data"
+    }]
+    logConfiguration = {
+      logDriver = "awslogs"
+      options = {
+        awslogs-group         = "DBeaverTeamEdition-${var.deployment_id}"
+        awslogs-region        = "${var.aws_region}"
+        awslogs-create-group  = "true"
+        awslogs-stream-prefix = "init-rm"
+      }
+    }
+  },
+  {
     name        = "${var.deployment_id}-cloudbeaver-rm"
     image       = "dbeaver/cloudbeaver-rm:${var.dbeaver_te_version}"
     essential   = true
+    dependsOn   = [{
+      containerName = "${var.deployment_id}-init-rm-permissions"
+      condition     = "SUCCESS"
+    }]
     environment = local.cloudbeaver_shared_env_modified
     mountPoints = [{
       containerPath = "/opt/resource-manager/workspace"
@@ -736,10 +792,34 @@ resource "aws_ecs_task_definition" "dbeaver_tm" {
       }
     }
   }
-  container_definitions = jsonencode([{
+  container_definitions = jsonencode([
+  {
+    name      = "${var.deployment_id}-init-tm-permissions"
+    image     = "dbeaver/busybox"
+    essential = false
+    command   = ["sh", "-c", "mkdir -p /workspace/.metadata && chown -R 8978:8978 /workspace && chmod -R 755 /workspace"]
+    mountPoints = [{
+      containerPath = "/workspace"
+      sourceVolume  = "${var.deployment_id}-cloudbeaver_tm_data"
+    }]
+    logConfiguration = {
+      logDriver = "awslogs"
+      options = {
+        awslogs-group         = "DBeaverTeamEdition-${var.deployment_id}"
+        awslogs-region        = "${var.aws_region}"
+        awslogs-create-group  = "true"
+        awslogs-stream-prefix = "init-tm"
+      }
+    }
+  },
+  {
     name        = "${var.deployment_id}-cloudbeaver-tm"
     image       = "dbeaver/cloudbeaver-tm:${var.dbeaver_te_version}"
     essential   = true
+    dependsOn   = [{
+      containerName = "${var.deployment_id}-init-tm-permissions"
+      condition     = "SUCCESS"
+    }]
     environment = local.cloudbeaver_shared_env_modified
     mountPoints = [{
       containerPath = "/opt/task-manager/workspace"
