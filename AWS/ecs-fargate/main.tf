@@ -558,7 +558,7 @@ resource "aws_ecs_task_definition" "dbeaver_rm" {
   container_definitions = jsonencode([
   {
     name      = "${var.deployment_id}-init-rm-permissions"
-    image     = "dbeaver/busybox"
+    image     = "busybox:latest"
     essential = false
     command   = ["sh", "-c", "mkdir -p /workspace/.metadata && chown -R 8978:8978 /workspace && chmod -R 755 /workspace"]
     mountPoints = [{
@@ -795,7 +795,7 @@ resource "aws_ecs_task_definition" "dbeaver_tm" {
   container_definitions = jsonencode([
   {
     name      = "${var.deployment_id}-init-tm-permissions"
-    image     = "dbeaver/busybox"
+    image     = "busybox:latest"
     essential = false
     command   = ["sh", "-c", "mkdir -p /workspace/.metadata && chown -R 8978:8978 /workspace && chmod -R 755 /workspace"]
     mountPoints = [{
