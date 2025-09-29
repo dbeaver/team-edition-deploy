@@ -12,6 +12,7 @@
     - [AWS](../AWS/aws-eks/README.md#aws-volumes-configuration-for-kubernetes-deployment)
     - [Google Cloud](../GCP/gke/README.md)
     - [Azure](../Azure/aks/README.md)
+- [Backup and Restore](#backup-and-restore)
 
 
 ### Minimum requirements
@@ -104,3 +105,7 @@ If you want to use AWS Application Load Balancer as ingress controller, [follow 
 - [AWS](../AWS/aws-eks/README.md#aws-volumes-configuration-for-kubernetes-deployment)
 - [Google Cloud](../GCP/gke/README.md)
 - [Azure](../Azure/aks/README.md)
+
+### Backup and Restore
+
+Backup and restore procedures are outlined in [a separate document](Backup-and-Restore.md).

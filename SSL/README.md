@@ -20,4 +20,4 @@ The cluster supports HTTP and HTTPS. By default, it contains a pre-configured SS
 4. The system will guide you in setting up certificates.
 5. Ensure your domain is pointing to the server's IP address.
 
-Learn more in [Domain manager documentation](https://dbeaver.com/docs/cloudbeaver/Domain-Manager/)
+Learn more in [Domain manager documentation](https://dbeaver.com/docs/team-edition/web/Domain-Manager/)
