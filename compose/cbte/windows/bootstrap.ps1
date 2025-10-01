@@ -17,5 +17,5 @@ if (-not (Get-Command git -ErrorAction Ignore)) {
 }
 
 $repoName = "team-edition-deploy"
-$installPath = Join-Path $env:AppData "DBeaverData" | Join-Path -ChildPath "github" | Join-Path -ChildPath $repoName
+$installPath = Join-Path $env:AppData "DBeaverData" | Join-Path -ChildPath "github" | Join-Path -ChildPath "dbeaver" | Join-Path -ChildPath $repoName
 git clone https://github.com/dbeaver/$repoName.git --depth 1 $installPath
