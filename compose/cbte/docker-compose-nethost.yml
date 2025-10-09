@@ -60,6 +60,7 @@ services:
   cloudbeaver-dc:
     restart: unless-stopped
     image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-dc:${CLOUDBEAVER_VERSION_TAG}
+    user: "8978"
     environment:
       - CLOUDBEAVER_KAFKA_BROKERS=127.0.0.1:9092
       - CLOUDBEAVER_DMSVC_URL=http://127.0.0.1:11000
@@ -91,6 +92,7 @@ services:
   cloudbeaver-te:
     restart: unless-stopped
     image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-te:${CLOUDBEAVER_VERSION_TAG}
+    user: "8978"
     deploy:
       replicas: ${REPLICA_COUNT_TE:-1}
     volumes:
@@ -109,6 +111,7 @@ services:
   cloudbeaver-rm:
     restart: unless-stopped
     image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-rm:${CLOUDBEAVER_VERSION_TAG}
+    user: "8978"
     deploy:
       replicas: ${REPLICA_COUNT_RM:-1}
     environment:
@@ -124,6 +127,7 @@ services:
   cloudbeaver-qm:
     restart: unless-stopped
     image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-qm:${CLOUDBEAVER_VERSION_TAG}
+    user: "8978"
     deploy:
       replicas: ${REPLICA_COUNT_QM:-1}
     environment:
@@ -138,6 +142,7 @@ services:
   cloudbeaver-tm:
     restart: unless-stopped
     image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-tm:${CLOUDBEAVER_VERSION_TAG}
+    user: "8978"
     deploy:
       replicas: ${REPLICA_COUNT_TM:-1}
     environment:

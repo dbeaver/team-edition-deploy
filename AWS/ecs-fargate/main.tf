@@ -438,6 +438,7 @@ resource "aws_ecs_task_definition" "dbeaver_dc" {
     name        = "${var.deployment_id}-cloudbeaver-dc"
     image       = "dbeaver/cloudbeaver-dc:${var.dbeaver_te_version}"
     essential   = true
+    user        = "8978:8978"
     dependsOn   = [{
       containerName = "${var.deployment_id}-init-dc-permissions"
       condition     = "SUCCESS"
@@ -579,6 +580,7 @@ resource "aws_ecs_task_definition" "dbeaver_rm" {
     name        = "${var.deployment_id}-cloudbeaver-rm"
     image       = "dbeaver/cloudbeaver-rm:${var.dbeaver_te_version}"
     essential   = true
+    user        = "8978:8978"
     dependsOn   = [{
       containerName = "${var.deployment_id}-init-rm-permissions"
       condition     = "SUCCESS"
@@ -686,6 +688,7 @@ resource "aws_ecs_task_definition" "dbeaver_qm" {
     name        = "${var.deployment_id}-cloudbeaver-qm"
     image       = "dbeaver/cloudbeaver-qm:${var.dbeaver_te_version}"
     essential   = true
+    user        = "8978:8978"
     environment = local.cloudbeaver_shared_env_modified
     mountPoints = [
     {
@@ -816,6 +819,7 @@ resource "aws_ecs_task_definition" "dbeaver_tm" {
     name        = "${var.deployment_id}-cloudbeaver-tm"
     image       = "dbeaver/cloudbeaver-tm:${var.dbeaver_te_version}"
     essential   = true
+    user        = "8978:8978"
     dependsOn   = [{
       containerName = "${var.deployment_id}-init-tm-permissions"
       condition     = "SUCCESS"
@@ -926,6 +930,7 @@ resource "aws_ecs_task_definition" "dbeaver_te" {
     name        = "${var.deployment_id}-cloudbeaver-te"
     image       = "dbeaver/cloudbeaver-te:${var.dbeaver_te_version}"
     essential   = true
+    user        = "8978:8978"
     environment = local.cloudbeaver_shared_env_modified
     mountPoints = [{
       containerPath = "/opt/cloudbeaver/conf/certificates"         
