@@ -6,6 +6,7 @@
 cloudbeaver:
   imageTag: "25.2.0"
   pullPolicy: Always
+  # serviceAccountName - required for OpenShift deployments to run as UID=8978
   # pullCredsName - name of a secret config map that contains docker repo auths
   # pullCredsName: regcred
 

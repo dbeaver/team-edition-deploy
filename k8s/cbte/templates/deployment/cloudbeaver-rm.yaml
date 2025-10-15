@@ -18,6 +18,9 @@ spec:
         {{ .Release.Name }}-net: "true"
         app: cloudbeaver-rm
     spec:
+      {{- if .Values.cloudbeaver.serviceAccountName }}
+      serviceAccountName: {{ .Values.cloudbeaver.serviceAccountName }}
+      {{- end }}
       securityContext:
           runAsUser: 8978
           runAsGroup: 8978
