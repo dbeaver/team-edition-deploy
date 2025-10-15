@@ -318,7 +318,7 @@ resource "aws_ecs_task_definition" "kafka" {
       }
     }
     portMappings = [{
-      name          = "${var.deployment_id}-kafka"
+      name          = "kafka"
       protocol      = "tcp"
       containerPort = 9092
       hostPort      = 9092
@@ -348,9 +348,9 @@ resource "aws_ecs_service" "kafka" {
     enabled   = true
     namespace = aws_service_discovery_private_dns_namespace.dbeaver.arn
     service {
-      port_name  = "${var.deployment_id}-kafka"
+      port_name  = "kafka"
       client_alias {
-        dns_name = "${var.deployment_id}-kafka"
+        dns_name = "kafka"
         port     = 9092
       }
 
