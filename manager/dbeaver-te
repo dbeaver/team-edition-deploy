@@ -2,8 +2,12 @@
 
 set -e
 
+ARG="$1"
 TEAM_EDITION_BASE_DIR="/opt/dbeaver-team-server/team-edition-deploy"
 TEAM_EDITION_COMPOSE_DIR="$TEAM_EDITION_BASE_DIR/compose/cbte"
+TEAM_EDITION_IMAGE="cloudbeaver-dc"
+TEAM_EDITION_TAG="$CLOUDBEAVER_VERSION_TAG"
+TEAM_EDITION_UPDATE_AVAILABLE=false
 
 while read -r line
 do
@@ -12,11 +16,6 @@ do
 	export "$line"
 done < "$TEAM_EDITION_COMPOSE_DIR/.env"
 
-ARG="$1"
-
-TEAM_EDITION_IMAGE="cloudbeaver-dc"
-TEAM_EDITION_TAG="$CLOUDBEAVER_VERSION_TAG"
-TEAM_EDITION_UPDATE_AVAILABLE=false
 case $(uname -m) in
 
   "x86_64")
@@ -28,7 +27,6 @@ case $(uname -m) in
     ;;
 
 esac
-
 
 printHelp() {
 	cat << EOF
