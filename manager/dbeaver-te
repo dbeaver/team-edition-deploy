@@ -83,12 +83,6 @@ getAvailableVersions() {
 
 configureenvfile()
 {
-	if [ ! -f "$TEAM_EDITION_COMPOSE_DIR/.env" ]; then
-		if [ -f "$TEAM_EDITION_COMPOSE_DIR/.env.example" ]; then
-			cp "$TEAM_EDITION_COMPOSE_DIR/.env.example" "$TEAM_EDITION_COMPOSE_DIR/.env"
-			echo ".env file created successfully!"
-		fi
-	fi
 	nano "$TEAM_EDITION_COMPOSE_DIR/.env"
 }
 
