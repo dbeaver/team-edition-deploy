@@ -6,8 +6,29 @@ ARG="$1"
 TEAM_EDITION_BASE_DIR="/opt/dbeaver-team-server/team-edition-deploy"
 TEAM_EDITION_COMPOSE_DIR="$TEAM_EDITION_BASE_DIR/compose/cbte"
 TEAM_EDITION_IMAGE="cloudbeaver-dc"
-TEAM_EDITION_TAG="$CLOUDBEAVER_VERSION_TAG"
 TEAM_EDITION_UPDATE_AVAILABLE=false
+
+if [ ! -f "$TEAM_EDITION_COMPOSE_DIR/.env" ]; then
+	echo "Warning: .env file not found at $TEAM_EDITION_COMPOSE_DIR/.env"
+	if [ -f "$TEAM_EDITION_COMPOSE_DIR/.env.example" ]; then
+		read -r -p "Do you want to create .env file from .env.example? [y/N] " response
+		case "$response" in
+			[yY][eE][sS]|[yY])
+				cp "$TEAM_EDITION_COMPOSE_DIR/.env.example" "$TEAM_EDITION_COMPOSE_DIR/.env"
+				echo ".env file created successfully!"
+				echo "Please review and configure .env file: $TEAM_EDITION_COMPOSE_DIR/.env"
+				;;
+			*)
+				echo "Cannot proceed without .env file. Exiting."
+				exit 1
+				;;
+		esac
+	else
+		echo "Error: .env.example not found at $TEAM_EDITION_COMPOSE_DIR/.env.example"
+		echo "Cannot create .env file. Exiting."
+		exit 1
+	fi
+fi
 
 while read -r line
 do
@@ -15,6 +36,8 @@ do
 	[[ -z $line ]] && continue
 	export "$line"
 done < "$TEAM_EDITION_COMPOSE_DIR/.env"
+
+TEAM_EDITION_TAG="$CLOUDBEAVER_VERSION_TAG"
 
 case $(uname -m) in
 
