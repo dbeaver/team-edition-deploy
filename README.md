@@ -38,7 +38,7 @@ DBeaver Team Edition works in conjunction with a desktop client application. Aft
 - **Web interface** – accessible directly through your browser
 - **Desktop client** – provides enhanced features and better performance
 
-Download the desktop client for your platform: [**DBeaver Team Edition Desktop**](https://dbeaver.com/downloads-team/)
+Download the desktop client for your platform: [**DBeaver Team Edition Desktop**](https://dbeaver.com/downloads-team/25.2.0/)
 
 ### Server version update  
 Version update is handled differently for different deployment methods. To update the Team Edition version, follow these instructions:  
