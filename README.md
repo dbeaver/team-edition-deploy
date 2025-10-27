@@ -1,6 +1,8 @@
 ## DBeaver Team Edition
 
-#### Version 25.2
+#### Version 25.3 Early Access
+
+**Warning:** This is an Early Access version. It may contain bugs and is not recommended for production use. Use at your own risk.
 
 DBeaver Team Edition is a client-server application.  
 It requires server deployment. You can deploy it on a single host (e.g. your local computer)
