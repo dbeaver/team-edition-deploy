@@ -16,7 +16,7 @@ resource "aws_db_subnet_group" "rds_dbeaver_db_subnet" {
   ]
   count      = var.rds_db ? 1 : 0
   name       = "dbeaverte-${var.deployment_id}-rds_db_subnet"
-  subnet_ids = [aws_subnet.private_subnets[0].id, aws_subnet.private_subnets[1].id] 
+  subnet_ids = [aws_subnet.private_subnets[0].id, aws_subnet.private_subnets[1].id]
 
   tags = {
     Env  = var.deployment_id
@@ -25,7 +25,7 @@ resource "aws_db_subnet_group" "rds_dbeaver_db_subnet" {
 }
 
 # For oracle db class db.m5.large && POSTGRES_DB < 8 charters
-resource "aws_db_instance" "rds_dbeaver_db" { 
+resource "aws_db_instance" "rds_dbeaver_db" {
 
   depends_on = [
     aws_vpc.dbeaver_net,

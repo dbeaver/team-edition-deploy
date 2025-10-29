@@ -411,7 +411,15 @@ resource "aws_ecs_task_definition" "dbeaver_dc" {
       name      = "${var.deployment_id}-init-dc-permissions"
       image     = "busybox:latest"
       essential = false
-      command   = ["sh", "-c", "mkdir -p /workspace/.metadata /conf/keys && chown -R 8978:8978 /workspace /certificates /conf/keys && chmod -R 755 /workspace /certificates /conf/keys"]
+      command = [
+        "sh",
+        "-c",
+        join(" && ", [
+          "mkdir -p /workspace/.metadata /conf/keys",
+          "chown -R 8978:8978 /workspace /certificates /conf/keys || echo 'failed: cant chown'",
+          "chmod -R 755 /workspace /certificates /conf/keys || echo 'failed: cant chmod'"
+        ])
+      ]
       mountPoints = [{
         containerPath = "/workspace"
         sourceVolume  = "${var.deployment_id}-cloudbeaver_dc_data"
@@ -561,7 +569,15 @@ resource "aws_ecs_task_definition" "dbeaver_rm" {
     name      = "${var.deployment_id}-init-rm-permissions"
     image     = "busybox:latest"
     essential = false
-    command   = ["sh", "-c", "mkdir -p /workspace/.metadata && chown -R 8978:8978 /workspace && chmod -R 755 /workspace"]
+    command = [
+      "sh",
+      "-c",
+      join(" && ", [
+        "mkdir -p /workspace/.metadata",
+        "chown -R 8978:8978 /workspace || echo 'failed: cant chown'",
+        "chmod -R 755 /workspace || echo 'failed: cant chmod'"
+      ])
+    ]
     mountPoints = [{
       containerPath = "/workspace"
       sourceVolume  = "${var.deployment_id}-cloudbeaver_rm_data"
@@ -800,7 +816,15 @@ resource "aws_ecs_task_definition" "dbeaver_tm" {
     name      = "${var.deployment_id}-init-tm-permissions"
     image     = "busybox:latest"
     essential = false
-    command   = ["sh", "-c", "mkdir -p /workspace/.metadata && chown -R 8978:8978 /workspace && chmod -R 755 /workspace"]
+    command = [
+      "sh",
+      "-c",
+      join(" && ", [
+        "mkdir -p /workspace/.metadata",
+        "chown -R 8978:8978 /workspace || echo 'ERROR: fialed to  chown'",
+        "chmod -R 755 /workspace || echo 'ERROR: cant chmod'"
+      ])
+    ]
     mountPoints = [{
       containerPath = "/workspace"
       sourceVolume  = "${var.deployment_id}-cloudbeaver_tm_data"

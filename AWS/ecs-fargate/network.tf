@@ -1,6 +1,6 @@
 resource "aws_vpc" "dbeaver_net" {
-  cidr_block       = var.vpc_cidr
-  instance_tenancy = "default"
+  cidr_block           = var.vpc_cidr
+  instance_tenancy     = "default"
   enable_dns_hostnames = true
 
   tags = {
@@ -14,10 +14,10 @@ data "aws_availability_zones" "available" {
 }
 
 resource "aws_subnet" "public_subnets" {
-  count      = length(var.public_subnet_cidrs)
-  vpc_id     = aws_vpc.dbeaver_net.id
-  cidr_block = element(var.public_subnet_cidrs, count.index)
-  availability_zone = data.aws_availability_zones.available.names[count.index]
+  count                   = length(var.public_subnet_cidrs)
+  vpc_id                  = aws_vpc.dbeaver_net.id
+  cidr_block              = element(var.public_subnet_cidrs, count.index)
+  availability_zone       = data.aws_availability_zones.available.names[count.index]
   map_public_ip_on_launch = true
 
   tags = {
@@ -29,9 +29,9 @@ resource "aws_subnet" "public_subnets" {
 }
 
 resource "aws_subnet" "private_subnets" {
-  count      = length(var.private_subnet_cidrs)
-  vpc_id     = aws_vpc.dbeaver_net.id
-  cidr_block = element(var.private_subnet_cidrs, count.index)
+  count             = length(var.private_subnet_cidrs)
+  vpc_id            = aws_vpc.dbeaver_net.id
+  cidr_block        = element(var.private_subnet_cidrs, count.index)
   availability_zone = data.aws_availability_zones.available.names[count.index]
 
   tags = {
@@ -56,7 +56,7 @@ resource "aws_route" "dbeaver_vpc_main_gw" {
   route_table_id = aws_vpc.dbeaver_net.main_route_table_id
 
   destination_cidr_block = "0.0.0.0/0"
-  gateway_id = aws_internet_gateway.dbeaver_gw.id
+  gateway_id             = aws_internet_gateway.dbeaver_gw.id
   depends_on = [
     aws_vpc.dbeaver_net,
     aws_internet_gateway.dbeaver_gw
@@ -65,7 +65,7 @@ resource "aws_route" "dbeaver_vpc_main_gw" {
 
 
 resource "aws_eip" "dbeaver_nat_gateway" {
-  domain           = "vpc"
+  domain = "vpc"
   tags = {
     Env  = var.deployment_id
     Name = "DBeaverTE EIP for Private VPC "
@@ -74,7 +74,7 @@ resource "aws_eip" "dbeaver_nat_gateway" {
 
 resource "aws_nat_gateway" "nat_gateway" {
   allocation_id = aws_eip.dbeaver_nat_gateway.id
-  subnet_id = aws_subnet.public_subnets[0].id
+  subnet_id     = aws_subnet.public_subnets[0].id
   tags = {
     Env  = var.deployment_id
     Name = "DBeaverTE Private Subnets Nat Gateway"
