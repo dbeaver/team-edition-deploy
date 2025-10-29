@@ -416,8 +416,8 @@ resource "aws_ecs_task_definition" "dbeaver_dc" {
         "-c",
         join(" && ", [
           "mkdir -p /workspace/.metadata /conf/keys",
-          "chown -R 8978:8978 /workspace /certificates /conf/keys || echo 'failed: cant chown'",
-          "chmod -R 755 /workspace /certificates /conf/keys || echo 'failed: cant chmod'"
+          "chown -R 8978:8978 /workspace /certificates /conf/keys || echo 'ERROR: failed to chown'",
+          "chmod -R 755 /workspace /certificates /conf/keys || echo 'ERROR: failed to chmod'"
         ])
       ]
       mountPoints = [{
@@ -574,8 +574,8 @@ resource "aws_ecs_task_definition" "dbeaver_rm" {
       "-c",
       join(" && ", [
         "mkdir -p /workspace/.metadata",
-        "chown -R 8978:8978 /workspace || echo 'failed: cant chown'",
-        "chmod -R 755 /workspace || echo 'failed: cant chmod'"
+        "chown -R 8978:8978 /workspace || echo 'ERROR: failed to chown'",
+        "chmod -R 755 /workspace || echo 'ERROR: failed to chmod'"
       ])
     ]
     mountPoints = [{
@@ -821,8 +821,8 @@ resource "aws_ecs_task_definition" "dbeaver_tm" {
       "-c",
       join(" && ", [
         "mkdir -p /workspace/.metadata",
-        "chown -R 8978:8978 /workspace || echo 'ERROR: fialed to  chown'",
-        "chmod -R 755 /workspace || echo 'ERROR: cant chmod'"
+        "chown -R 8978:8978 /workspace || echo 'ERROR: failed to chown'",
+        "chmod -R 755 /workspace || echo 'ERROR: failed to chmod'"
       ])
     ]
     mountPoints = [{
