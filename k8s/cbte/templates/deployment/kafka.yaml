@@ -17,9 +17,6 @@ spec:
         {{ .Release.Name }}-net: "true"
         app: kafka
     spec:
-      securityContext:
-        runAsUser: 1001
-        fsGroup: 1001
       containers:
         - image: dbeaver/cloudbeaver-kafka:3.9
           imagePullPolicy: "IfNotPresent"
