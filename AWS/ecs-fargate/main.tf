@@ -21,6 +21,7 @@ locals {
         item.name == "CLOUDBEAVER_QM_SERVER_URL" ? format("http://%s-cloudbeaver-qm:8972/qm", var.deployment_id) :
         item.name == "CLOUDBEAVER_RM_SERVER_URL" ? format("http://%s-cloudbeaver-rm:8971/rm", var.deployment_id) :
         item.name == "CLOUDBEAVER_TM_SERVER_URL" ? format("http://%s-cloudbeaver-tm:8973/tm", var.deployment_id) :
+        item.name == "CLOUDBEAVER_KAFKA_BROKERS" ? format("http://%s-kafka:9092", var.deployment_id) :
         item.value
       )
     }
