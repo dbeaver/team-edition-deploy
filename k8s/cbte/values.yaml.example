@@ -44,6 +44,10 @@ cloudbeaverQM:
 cloudbeaverTM:
   replicaCount: 1
   image: dbeaver/cloudbeaver-tm  
+kafka:
+  image: "dbeaver/cloudbeaver-kafka:3.9"
+postgres:
+  image: "dbeaver/cloudbeaver-postgres:13"
 
 # Cloud storage configuration 
 # By default is None, it means not cloud deployment
