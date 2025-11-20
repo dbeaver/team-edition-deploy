@@ -18,7 +18,7 @@ spec:
         app: kafka
     spec:
       containers:
-        - image: dbeaver/cloudbeaver-kafka:3.9
+        - image:  "{{ .Values.kafka.image | default "dbeaver/cloudbeaver-kafka:3.9" }}"
           imagePullPolicy: "IfNotPresent"
           name: kafka
           ports:
