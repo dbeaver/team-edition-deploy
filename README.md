@@ -1,6 +1,6 @@
 ## DBeaver Team Edition
 
-#### Version 25.3.0
+#### Version 25.3
 
 DBeaver Team Edition is a client-server application.  
 It requires server deployment. You can deploy it on a single host (e.g. your local computer)
