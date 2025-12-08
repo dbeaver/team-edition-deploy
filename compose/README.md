@@ -187,11 +187,31 @@ For detailed instructions on how to use the script manager, refer to [manager do
 
 ## Version update procedure
 
+### Standard update procedure (recommended)
+
+1. Navigate to `team-edition-deploy/compose/cbte`
+2. Stop the cluster: `docker-compose down` or `docker compose down`
+3. Update your deployment files:
+   - Fetch latest changes: `git fetch`
+   - Switch to new release version: `git checkout <version-tag>` (e.g., `git checkout 25.2.0`)
+   - Change value of `CLOUDBEAVER_VERSION_TAG` in `.env` with a preferred version (skip if tag `latest` is set)
+4. Pull new docker images: `docker-compose pull` or `docker compose pull`
+5. Start the cluster: `docker-compose up -d` or `docker compose up -d`
+
+### Alternative update procedure (for simple updates)
+
+If you are not updating across major version boundaries and don't need configuration changes:
+
 1. Navigate to `team-edition-deploy/compose/cbte`
 2. Change value of `CLOUDBEAVER_VERSION_TAG` in `.env` with a preferred version. Go to next step if tag `latest` is set.
 3. Pull new docker images: `docker-compose pull` or `docker compose pull`  
 4. Restart cluster: `docker-compose up -d` or `docker compose up -d`
 
+**Note:** The standard procedure using `docker-compose down` is recommended because it ensures clean container replacement, especially when service names or configurations change between versions.
+
+### Version update to 25.1.0 or later
+
+Starting from version 25.1.0, the proxy container name has changed from `nginx` to `web-proxy`. When updating to version 25.1.0 or later, you **must** use the [standard update procedure](#standard-update-procedure-recommended) with `docker-compose down` to ensure the old container is properly removed.
 
 ### Version update from 24.0.0 or earlier
 

@@ -2,18 +2,43 @@
 
 set -e
 
+ARG="$1"
+TEAM_EDITION_BASE_DIR="/opt/dbeaver-team-server/team-edition-deploy"
+TEAM_EDITION_COMPOSE_DIR="$TEAM_EDITION_BASE_DIR/compose/cbte"
+TEAM_EDITION_IMAGE="cloudbeaver-dc"
+TEAM_EDITION_UPDATE_AVAILABLE=false
+
+if [ ! -f "$TEAM_EDITION_COMPOSE_DIR/.env" ]; then
+	echo "Warning: .env file not found at $TEAM_EDITION_COMPOSE_DIR/.env"
+	if [ -f "$TEAM_EDITION_COMPOSE_DIR/.env.example" ]; then
+		read -r -p "Do you want to create .env file from .env.example? [y/N] " response
+		case "$response" in
+			[yY][eE][sS]|[yY])
+				cp "$TEAM_EDITION_COMPOSE_DIR/.env.example" "$TEAM_EDITION_COMPOSE_DIR/.env"
+				echo ".env file created successfully!"
+				echo "Please review and configure .env file: $TEAM_EDITION_COMPOSE_DIR/.env"
+				;;
+			*)
+				echo "Cannot proceed without .env file. Exiting."
+				exit 1
+				;;
+		esac
+	else
+		echo "Error: .env.example not found at $TEAM_EDITION_COMPOSE_DIR/.env.example"
+		echo "Cannot create .env file. Exiting."
+		exit 1
+	fi
+fi
+
 while read -r line
 do
 	[[ $line =~ ^#.* ]] && continue
 	[[ -z $line ]] && continue
 	export "$line"
-done < /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env
+done < "$TEAM_EDITION_COMPOSE_DIR/.env"
 
-ARG="$1"
-
-TEAM_EDITION_IMAGE="cloudbeaver-dc"
 TEAM_EDITION_TAG="$CLOUDBEAVER_VERSION_TAG"
-TEAM_EDITION_UPDATE_AVAILABLE=false
+
 case $(uname -m) in
 
   "x86_64")
@@ -25,7 +50,6 @@ case $(uname -m) in
     ;;
 
 esac
-
 
 printHelp() {
 	cat << EOF
@@ -51,7 +75,7 @@ Usage: dbeaver-te [command]
                    restor your backup in current cluster
 
 DBeaver TE server home directory: 
-    /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/
+    $TEAM_EDITION_COMPOSE_DIR/
 EOF
 }
 
@@ -82,7 +106,7 @@ getAvailableVersions() {
 
 configureenvfile()
 {
-	nano /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env
+	nano "$TEAM_EDITION_COMPOSE_DIR/.env"
 }
 
 checkCloudBeaverUpdateVersion() {
@@ -197,9 +221,9 @@ startCloudbeaver() {
 	if [ "$TEAM_EDITION_STATUS" == false ]
 	then
 		docker compose \
-			-f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml \
-			--env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env \
-			--project-directory /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ \
+			-f "$TEAM_EDITION_COMPOSE_DIR/docker-compose.yml" \
+			--env-file "$TEAM_EDITION_COMPOSE_DIR/.env" \
+			--project-directory "$TEAM_EDITION_COMPOSE_DIR/" \
 			up -d \
 			--remove-orphans \
 			--pull always
@@ -225,7 +249,7 @@ startCloudbeaver() {
 
 stopCloudbeaver() {
 	checkCloudBeaverStatus
-	docker compose -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml down 
+	docker compose -f "$TEAM_EDITION_COMPOSE_DIR/docker-compose.yml" down 
 	echo "DBeaver Team Edition Server stopped."
 }
 
@@ -234,23 +258,23 @@ rollbackCloudBeaver() {
 	BACKUP_VERSION="$2"
 
 	docker compose \
-        -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml \
-        --env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env \
-        --project-directory /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ \
+        -f "$TEAM_EDITION_COMPOSE_DIR/docker-compose.yml" \
+        --env-file "$TEAM_EDITION_COMPOSE_DIR/.env" \
+        --project-directory "$TEAM_EDITION_COMPOSE_DIR/" \
         down \
         --remove-orphans
 
-	rsync -av --exclude='cert' --exclude='nginx' "$BACKUP_DIR/" /opt/dbeaver-team-server/team-edition-deploy/
+	rsync -av --exclude='cert' --exclude='nginx' "$BACKUP_DIR/" "$TEAM_EDITION_BASE_DIR/"
 
     sed -i \
         "s/CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_NEW_TAG/CLOUDBEAVER_VERSION_TAG=$BACKUP_VERSION/g" \
-        /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env 
+        "$TEAM_EDITION_COMPOSE_DIR/.env" 
 	export CLOUDBEAVER_VERSION_TAG=$BACKUP_VERSION
 
 	docker compose \
-        -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml \
-        --env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env \
-        --project-directory /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ \
+        -f "$TEAM_EDITION_COMPOSE_DIR/docker-compose.yml" \
+        --env-file "$TEAM_EDITION_COMPOSE_DIR/.env" \
+        --project-directory "$TEAM_EDITION_COMPOSE_DIR/" \
         up -d \
         --remove-orphans
 
@@ -275,14 +299,14 @@ updateCloudbeaver() {
     
     if [ "$TEAM_EDITION_UPDATE_AVAILABLE" == true ]; then
         TIMESTAMP=$(date +%m-%d-%Y_%H-%M)
-        BACKUP_DIR="/opt/dbeaver-team-server/team-edition-deploy-${TEAM_EDITION_TAG}-${TIMESTAMP}"
+        BACKUP_DIR="${TEAM_EDITION_BASE_DIR}-${TEAM_EDITION_TAG}-${TIMESTAMP}"
         
-        # Check if user has write permission for /opt/dbeaver-team-server/team-edition-deploy/
-        if [ ! -w "/opt/dbeaver-team-server/team-edition-deploy/" ]; then
-        	OWNER=$(ls -ld /opt/dbeaver-team-server/team-edition-deploy/ | awk '{print $3}')
-        	GROUP=$(ls -ld /opt/dbeaver-team-server/team-edition-deploy/ | awk '{print $4}')
+        # Check if user has write permission for $TEAM_EDITION_BASE_DIR/
+        if [ ! -w "$TEAM_EDITION_BASE_DIR/" ]; then
+        	OWNER=$(ls -ld "$TEAM_EDITION_BASE_DIR/" | awk '{print $3}')
+        	GROUP=$(ls -ld "$TEAM_EDITION_BASE_DIR/" | awk '{print $4}')
         
-        	echo "Error: No write permission for /opt/dbeaver-team-server/team-edition-deploy/."
+        	echo "Error: No write permission for $TEAM_EDITION_BASE_DIR/."
         	echo "Directory is owned by: $OWNER (group: $GROUP)."
         	
         	if [ "$(whoami)" != "$OWNER" ]; then
@@ -294,8 +318,8 @@ updateCloudbeaver() {
         fi
         
         # Check .git directory and fetch latest changes
-        cd /opt/dbeaver-team-server/team-edition-deploy/
-        if [ ! -d "/opt/dbeaver-team-server/team-edition-deploy/.git" ]; then
+        cd "$TEAM_EDITION_BASE_DIR/"
+        if [ ! -d "$TEAM_EDITION_BASE_DIR/.git" ]; then
         	echo "==============================================================================="
         	echo "Error: .git directory not found. The repository may be missing or corrupted."
         	echo "Please clone the repository again."
@@ -313,15 +337,15 @@ updateCloudbeaver() {
         
         # Stop team-edition-deploy
         docker compose \
-            -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml \
-            --env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env \
-            --project-directory /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ \
+            -f "$TEAM_EDITION_COMPOSE_DIR/docker-compose.yml" \
+            --env-file "$TEAM_EDITION_COMPOSE_DIR/.env" \
+            --project-directory "$TEAM_EDITION_COMPOSE_DIR/" \
             down \
             --remove-orphans
         
         # Backup current configuration
-        mkdir -p $BACKUP_DIR
-        rsync -av --exclude='cert' --exclude='nginx' /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ "$BACKUP_DIR"
+        mkdir -p "$BACKUP_DIR"
+        rsync -av --exclude='cert' --exclude='nginx' "$TEAM_EDITION_COMPOSE_DIR/" "$BACKUP_DIR"
         echo "Preveous team-edition-deploy configuration copied to $BACKUP_DIR"
         
         # Checkout new version
@@ -334,7 +358,7 @@ updateCloudbeaver() {
         }
         sed -i \
             "s/CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_TAG/CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_NEW_TAG/g" \
-            /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env
+            "$TEAM_EDITION_COMPOSE_DIR/.env"
         
         export CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_NEW_TAG
         
@@ -342,8 +366,8 @@ updateCloudbeaver() {
 
         if [ "$DBEAVER_TEAM_EDITION_AMI"  ]; then
             "$HOME/.local/bin/dbeaver-compose-config-editor.py" \
-                -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml \
-                -e /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env || {
+                -f "$TEAM_EDITION_COMPOSE_DIR/docker-compose.yml" \
+                -e "$TEAM_EDITION_COMPOSE_DIR/.env" || {
                     echo "==============================================================================="
                     echo "Error: Failed to patch docker-compose.yml using dbeaver-compose-config-editor.py."
                     echo "==============================================================================="
@@ -355,9 +379,9 @@ updateCloudbeaver() {
         
         # Start team-edition-deploy with new version and check status
         docker compose \
-        	-f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml \
-        	--env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env \
-        	--project-directory /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ \
+        	-f "$TEAM_EDITION_COMPOSE_DIR/docker-compose.yml" \
+        	--env-file "$TEAM_EDITION_COMPOSE_DIR/.env" \
+        	--project-directory "$TEAM_EDITION_COMPOSE_DIR/" \
         	up -d \
         	--remove-orphans \
         	--pull always
@@ -475,11 +499,11 @@ restoreBackup(){
     fi
 	
     rm -rf $TEMP_DIR
-    docker compose -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml down 
+    docker compose -f "$TEAM_EDITION_COMPOSE_DIR/docker-compose.yml" down 
     docker compose \
-        -f /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/docker-compose.yml \
-        --env-file /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/.env \
-        --project-directory /opt/dbeaver-team-server/team-edition-deploy/compose/cbte/ \
+        -f "$TEAM_EDITION_COMPOSE_DIR/docker-compose.yml" \
+        --env-file "$TEAM_EDITION_COMPOSE_DIR/.env" \
+        --project-directory "$TEAM_EDITION_COMPOSE_DIR/" \
         up -d
 }
 

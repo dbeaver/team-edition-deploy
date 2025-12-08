@@ -13,7 +13,7 @@ variable "aws_region" {
 variable "dbeaver_te_version" {
   description = "The version of the cluster you want to deploy"
   type = string
-  default = "25.2.0"
+  default = "25.3.0"
 }
 
 variable "alb_certificate_Identifier" {
@@ -97,30 +97,7 @@ variable "private_subnet_cidrs" {
 
 variable "cloudbeaver-kafka-env" {
   # type = map(string)
-  default = [
-    { "name" : "KAFKA_CFG_NODE_ID",
-    "value" : "0" },
-    { "name" : "KAFKA_BROKER_ID",
-    "value" : "0" },
-    { "name" : "KAFKA_ENABLE_KRAFT",
-    "value" : "yes" },
-    { "name" : "ALLOW_PLAINTEXT_LISTENER",
-    "value" : "yes" },
-    { "name" : "KAFKA_CFG_PROCESS_ROLES",
-    "value" : "controller,broker" },
-    { "name" : "KAFKA_CFG_CONTROLLER_QUORUM_VOTERS",
-    "value" : "0@127.0.0.1:9093" },
-    { "name" : "KAFKA_CFG_LISTENERS",
-    "value" : "PLAINTEXT://:9092,CONTROLLER://:9093" },
-    { "name" : "KAFKA_CFG_ADVERTISED_LISTENERS",
-    "value" : "PLAINTEXT://:9092" },
-    { "name" : "KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP",
-    "value" : "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT" },
-    { "name" : "KAFKA_CFG_CONTROLLER_LISTENER_NAMES",
-    "value" : "CONTROLLER" },
-    { "name" : "KAFKA_CFG_INTER_BROKER_LISTENER_NAME",
-    "value" : "PLAINTEXT" }
-    ]
+  default = []
 }
 
 
@@ -193,6 +170,10 @@ variable "cloudbeaver-dc-env" {
   {
       "name": "CLOUDBEAVER_PUBLIC_URL",
       "value": "https://cloudbeaver.io"
+  },
+  {
+      "name": "CLOUDBEAVER_KAFKA_BROKERS",
+      "value": "kafka:9092"
   }]
 }
 
