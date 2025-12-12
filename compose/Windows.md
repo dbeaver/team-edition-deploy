@@ -66,6 +66,8 @@ The installer checks your system and helps you install required components.
    The tool creates the configuration directory and the `.env` file.
    Edit the `.env` file to set your domain, SSL options, and other properties. [Learn more](https://dbeaver.com/docs/team-edition/Team-Edition-deployment-with-Docker-Compose/#environment-file-configuration)
 
+   > You can start Team Edition without changing the `.env` file. The default values are enough for a basic setup.
+
 2. Start the server:
 
    ```
