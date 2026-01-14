@@ -157,6 +157,22 @@ You might need to add additional parameters to the `CLOUDBEAVER_DB_URL`:
 
 `CLOUDBEAVER_DB_URL=jdbc:mariadb://127.0.0.1:3306/cloudbeaver?autoReconnect=true&allowPublicKeyRetrieval=true`
 
+#### Configure SQL Server database
+
+To use SQL Server as an internal database, set the driver to `microsoft` and configure the connection URL.
+
+Connect to your SQL Server database and run:
+```
+   CREATE SCHEMA dc;
+   CREATE SCHEMA qm;
+   CREATE SCHEMA tm;
+```
+
+##### Example:
+
+`CLOUDBEAVER_DB_DRIVER=microsoft`  
+`CLOUDBEAVER_DB_URL=jdbc:sqlserver://127.0.0.1:1433;databaseName=cloudbeaver`
+
 #### PostgreSQL update procedure
 
 If you want to update the internal PostgreSQL to version 17, follow these steps:
