@@ -162,7 +162,8 @@ You might need to add additional parameters to the `CLOUDBEAVER_DB_URL`:
 To use SQL Server as an internal database, set the driver to `microsoft` and configure the connection URL.
 
 Connect to your SQL Server database and run:
-```
+```sql
+   CREATE DATABASE cloudbeaver;
    CREATE SCHEMA dc;
    CREATE SCHEMA qm;
    CREATE SCHEMA tm;
