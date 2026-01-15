@@ -81,6 +81,7 @@ services:
       - CLOUDBEAVER_QM_BACKEND_DB_DRIVER=${CLOUDBEAVER_DB_DRIVER}
       - CLOUDBEAVER_DC_BACKEND_DB_DRIVER=${CLOUDBEAVER_DB_DRIVER}
       - CLOUDBEAVER_TM_BACKEND_DB_DRIVER=${CLOUDBEAVER_DB_DRIVER}
+      - JAVA_TOOL_OPTIONS=${JAVA_TOOL_OPTIONS:-}
     volumes:
       - dc_data:/opt/domain-controller/workspace:z
       - ./cert/private/:/opt/domain-controller/conf/certificates/:z
@@ -102,6 +103,7 @@ services:
       - trusted_cacerts:/opt/cloudbeaver/conf/certificates/custom/:z
     environment:
       - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
+      - JAVA_TOOL_OPTIONS=${JAVA_TOOL_OPTIONS:-}
     expose:
       - ${CLOUDBEAVER_WEB_SERVER_PORT:-8978}
     depends_on:
@@ -118,6 +120,7 @@ services:
       replicas: ${REPLICA_COUNT_RM:-1}
     environment:
       - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
+      - JAVA_TOOL_OPTIONS=${JAVA_TOOL_OPTIONS:-}
     volumes:
       - rm_data:/opt/resource-manager/workspace:z
       - ./cert/public/:/opt/resource-manager/conf/certificates/:z
@@ -136,6 +139,7 @@ services:
       replicas: ${REPLICA_COUNT_QM:-1}
     environment:
       - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
+      - JAVA_TOOL_OPTIONS=${JAVA_TOOL_OPTIONS:-}
     volumes:
       - ./cert/public/:/opt/query-manager/conf/certificates/:z
       - trusted_cacerts:/opt/query-manager/conf/certificates/custom/:z
@@ -153,6 +157,7 @@ services:
       replicas: ${REPLICA_COUNT_TM:-1}
     environment:
       - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
+      - JAVA_TOOL_OPTIONS=${JAVA_TOOL_OPTIONS:-}
     volumes:
       - tm_data:/opt/task-manager/workspace:z
       - ./cert/public/:/opt/task-manager/conf/certificates/:z

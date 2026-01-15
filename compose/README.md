@@ -67,6 +67,10 @@ environment:
 ```
 This step is only required for Nginx, as HAProxy resolves service names via Docker DNS automatically.
 
+### Java tool options
+
+You can use the `JAVA_TOOL_OPTIONS` variable in your `.env` file to pass Java parameters to all Team Edition services when needed.
+
 ## Configuring and starting Team Edition cluster
 
 1. Clone Git repository to your local machine by running the following command in your terminal:
