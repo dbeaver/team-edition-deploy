@@ -319,7 +319,7 @@ resource "aws_ecs_task_definition" "kafka" {
       }
     }
     portMappings = [{
-      name          = "${var.deployment_id}-kafka"
+      name          = "kafka"
       protocol      = "tcp"
       containerPort = 9092
       hostPort      = 9092
@@ -349,9 +349,9 @@ resource "aws_ecs_service" "kafka" {
     enabled   = true
     namespace = aws_service_discovery_private_dns_namespace.dbeaver.arn
     service {
-      port_name  = "${var.deployment_id}-kafka"
+      port_name  = "kafka"
       client_alias {
-        dns_name = "${var.deployment_id}-kafka"
+        dns_name = "kafka"
         port     = 9092
       }
 
@@ -407,10 +407,51 @@ resource "aws_ecs_task_definition" "dbeaver_dc" {
       transit_encryption = "ENABLED"
     }
   }
-  container_definitions = jsonencode([{
+  container_definitions = jsonencode([
+      {
+      name      = "${var.deployment_id}-init-dc-permissions"
+      image     = "busybox:latest"
+      essential = false
+      command = [
+        "sh",
+        "-c",
+        join(" && ", [
+          "mkdir -p /workspace/.metadata /conf/keys",
+          "chown -R 8978:8978 /workspace /certificates /conf/keys || echo 'ERROR: failed to chown'",
+          "chmod -R 755 /workspace /certificates /conf/keys || echo 'ERROR: failed to chmod'"
+        ])
+      ]
+      mountPoints = [{
+        containerPath = "/workspace"
+        sourceVolume  = "${var.deployment_id}-cloudbeaver_dc_data"
+      },
+      {
+        containerPath = "/certificates"
+        sourceVolume  = "${var.deployment_id}-cloudbeaver_certificates"
+      },
+      {
+        containerPath = "/conf/keys"
+        sourceVolume  = "${var.deployment_id}-api_tokens"
+      }]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group         = "DBeaverTeamEdition-${var.deployment_id}"
+          awslogs-region        = "${var.aws_region}"
+          awslogs-create-group  = "true"
+          awslogs-stream-prefix = "init-dc"
+        }
+      }
+    },
+    {
     name        = "${var.deployment_id}-cloudbeaver-dc"
     image       = "dbeaver/cloudbeaver-dc:${var.dbeaver_te_version}"
     essential   = true
+    user        = "8978:8978"
+    dependsOn   = [{
+      containerName = "${var.deployment_id}-init-dc-permissions"
+      condition     = "SUCCESS"
+    }]
     environment = local.updated_cloudbeaver_dc_env
     mountPoints = [{
       containerPath = "/opt/domain-controller/workspace"
@@ -524,10 +565,43 @@ resource "aws_ecs_task_definition" "dbeaver_rm" {
     }
   }
   
-  container_definitions = jsonencode([{
+  container_definitions = jsonencode([
+  {
+    name      = "${var.deployment_id}-init-rm-permissions"
+    image     = "busybox:latest"
+    essential = false
+    command = [
+      "sh",
+      "-c",
+      join(" && ", [
+        "mkdir -p /workspace/.metadata",
+        "chown -R 8978:8978 /workspace || echo 'ERROR: failed to chown'",
+        "chmod -R 755 /workspace || echo 'ERROR: failed to chmod'"
+      ])
+    ]
+    mountPoints = [{
+      containerPath = "/workspace"
+      sourceVolume  = "${var.deployment_id}-cloudbeaver_rm_data"
+    }]
+    logConfiguration = {
+      logDriver = "awslogs"
+      options = {
+        awslogs-group         = "DBeaverTeamEdition-${var.deployment_id}"
+        awslogs-region        = "${var.aws_region}"
+        awslogs-create-group  = "true"
+        awslogs-stream-prefix = "init-rm"
+      }
+    }
+  },
+  {
     name        = "${var.deployment_id}-cloudbeaver-rm"
     image       = "dbeaver/cloudbeaver-rm:${var.dbeaver_te_version}"
     essential   = true
+    user        = "8978:8978"
+    dependsOn   = [{
+      containerName = "${var.deployment_id}-init-rm-permissions"
+      condition     = "SUCCESS"
+    }]
     environment = local.cloudbeaver_shared_env_modified
     mountPoints = [{
       containerPath = "/opt/resource-manager/workspace"
@@ -631,6 +705,7 @@ resource "aws_ecs_task_definition" "dbeaver_qm" {
     name        = "${var.deployment_id}-cloudbeaver-qm"
     image       = "dbeaver/cloudbeaver-qm:${var.dbeaver_te_version}"
     essential   = true
+    user        = "8978:8978"
     environment = local.cloudbeaver_shared_env_modified
     mountPoints = [
     {
@@ -737,10 +812,43 @@ resource "aws_ecs_task_definition" "dbeaver_tm" {
       }
     }
   }
-  container_definitions = jsonencode([{
+  container_definitions = jsonencode([
+  {
+    name      = "${var.deployment_id}-init-tm-permissions"
+    image     = "busybox:latest"
+    essential = false
+    command = [
+      "sh",
+      "-c",
+      join(" && ", [
+        "mkdir -p /workspace/.metadata",
+        "chown -R 8978:8978 /workspace || echo 'ERROR: failed to chown'",
+        "chmod -R 755 /workspace || echo 'ERROR: failed to chmod'"
+      ])
+    ]
+    mountPoints = [{
+      containerPath = "/workspace"
+      sourceVolume  = "${var.deployment_id}-cloudbeaver_tm_data"
+    }]
+    logConfiguration = {
+      logDriver = "awslogs"
+      options = {
+        awslogs-group         = "DBeaverTeamEdition-${var.deployment_id}"
+        awslogs-region        = "${var.aws_region}"
+        awslogs-create-group  = "true"
+        awslogs-stream-prefix = "init-tm"
+      }
+    }
+  },
+  {
     name        = "${var.deployment_id}-cloudbeaver-tm"
     image       = "dbeaver/cloudbeaver-tm:${var.dbeaver_te_version}"
     essential   = true
+    user        = "8978:8978"
+    dependsOn   = [{
+      containerName = "${var.deployment_id}-init-tm-permissions"
+      condition     = "SUCCESS"
+    }]
     environment = local.cloudbeaver_shared_env_modified
     mountPoints = [{
       containerPath = "/opt/task-manager/workspace"
@@ -847,6 +955,7 @@ resource "aws_ecs_task_definition" "dbeaver_te" {
     name        = "${var.deployment_id}-cloudbeaver-te"
     image       = "dbeaver/cloudbeaver-te:${var.dbeaver_te_version}"
     essential   = true
+    user        = "8978:8978"
     environment = local.cloudbeaver_shared_env_modified
     mountPoints = [{
       containerPath = "/opt/cloudbeaver/conf/certificates"         

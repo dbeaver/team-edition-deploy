@@ -121,10 +121,10 @@ resource "aws_lb_target_group" "dbeaver_dc" {
   vpc_id      = aws_vpc.dbeaver_net.id
 
   health_check {
-    matcher = "200,302"
+    matcher             = "200,302"
     unhealthy_threshold = 7
-    enabled = true
-    path    = "/dc/health"
+    enabled             = true
+    path                = "/dc/health"
   }
 }
 
@@ -136,14 +136,14 @@ resource "aws_lb_target_group" "dbeaver_te" {
   vpc_id      = aws_vpc.dbeaver_net.id
 
   health_check {
-    matcher = "200,302"
+    matcher             = "200,302"
     unhealthy_threshold = 10
-    enabled = true
-    path    = "/"
+    enabled             = true
+    path                = "/"
   }
   stickiness {
-    enabled = true
-    type    = "lb_cookie" 
+    enabled         = true
+    type            = "lb_cookie"
     cookie_duration = 86400
   }
 }
@@ -156,10 +156,10 @@ resource "aws_lb_target_group" "dbeaver_qm" {
   vpc_id      = aws_vpc.dbeaver_net.id
 
   health_check {
-    matcher = "200,302"
+    matcher             = "200,302"
     unhealthy_threshold = 7
-    enabled = true
-    path    = "/qm/health"
+    enabled             = true
+    path                = "/qm/health"
   }
 }
 
@@ -171,10 +171,10 @@ resource "aws_lb_target_group" "dbeaver_rm" {
   vpc_id      = aws_vpc.dbeaver_net.id
 
   health_check {
-    matcher = "200,302"
+    matcher             = "200,302"
     unhealthy_threshold = 7
-    enabled = true
-    path    = "/rm/health"
+    enabled             = true
+    path                = "/rm/health"
   }
 }
 
@@ -186,9 +186,9 @@ resource "aws_lb_target_group" "dbeaver_tm" {
   vpc_id      = aws_vpc.dbeaver_net.id
 
   health_check {
-    matcher = "200,302"
+    matcher             = "200,302"
     unhealthy_threshold = 7
-    enabled = true
-    path    = "/tm/health"
+    enabled             = true
+    path                = "/tm/health"
   }
 }

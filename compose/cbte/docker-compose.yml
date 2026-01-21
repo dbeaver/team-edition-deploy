@@ -8,6 +8,8 @@ volumes:
   nginx_conf_data: {}
   trusted_cacerts: {}
   api_tokens: {}
+  cert_private: {}
+  cert_public: {}
 networks:
   cloudbeaver-te-private-net: null
 services:
@@ -58,6 +60,7 @@ services:
     restart: unless-stopped
     image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-dc:${CLOUDBEAVER_VERSION_TAG}
     hostname: cloudbeaver-dc
+    user: "8978"
     environment:
       - CLOUDBEAVER_PUBLIC_URL=${CLOUDBEAVER_PUBLIC_URL}
       - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
@@ -79,8 +82,9 @@ services:
       - JAVA_TOOL_OPTIONS=${JAVA_TOOL_OPTIONS:-}
     volumes:
       - dc_data:/opt/domain-controller/workspace
-      - ./cert/private/:/opt/domain-controller/conf/certificates/
-      - ./cert/public/:/opt/domain-controller/conf/certificates/public/
+      - cert_private:/opt/domain-controller/conf/certificates/
+      - cert_public:/opt/domain-controller/conf/certificates/public/
+      - ./cert/:/opt/domain-controller/legacy-certs/:ro
       - trusted_cacerts:/opt/domain-controller/conf/certificates/custom/
       - api_tokens:/opt/domain-controller/conf/keys/
     expose:
@@ -91,10 +95,11 @@ services:
     restart: unless-stopped
     hostname: cloudbeaver-te
     image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-te:${CLOUDBEAVER_VERSION_TAG}
+    user: "8978"
     deploy:
       replicas: ${REPLICA_COUNT_TE:-1}
     volumes:
-      - ./cert/public/:/opt/cloudbeaver/conf/certificates/
+      - cert_public:/opt/cloudbeaver/conf/certificates/
       - trusted_cacerts:/opt/cloudbeaver/conf/certificates/custom/
     environment:
       - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
@@ -111,6 +116,7 @@ services:
     restart: unless-stopped
     image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-rm:${CLOUDBEAVER_VERSION_TAG}
     hostname: cloudbeaver-rm
+    user: "8978"
     deploy:
       replicas: ${REPLICA_COUNT_RM:-1}
     environment:
@@ -118,7 +124,7 @@ services:
       - JAVA_TOOL_OPTIONS=${JAVA_TOOL_OPTIONS:-}
     volumes:
       - rm_data:/opt/resource-manager/workspace
-      - ./cert/public/:/opt/resource-manager/conf/certificates/
+      - cert_public:/opt/resource-manager/conf/certificates/
       - trusted_cacerts:/opt/resource-manager/conf/certificates/custom/
     depends_on:
       - cloudbeaver-dc
@@ -130,13 +136,14 @@ services:
     restart: unless-stopped
     image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-qm:${CLOUDBEAVER_VERSION_TAG}
     hostname: cloudbeaver-qm
+    user: "8978"
     deploy:
       replicas: ${REPLICA_COUNT_QM:-1}
     environment:
       - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
       - JAVA_TOOL_OPTIONS=${JAVA_TOOL_OPTIONS:-}
     volumes:
-      - ./cert/public/:/opt/query-manager/conf/certificates/
+      - cert_public:/opt/query-manager/conf/certificates/
       - trusted_cacerts:/opt/query-manager/conf/certificates/custom/
     depends_on:
       - cloudbeaver-dc
@@ -148,6 +155,7 @@ services:
     restart: unless-stopped
     image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-tm:${CLOUDBEAVER_VERSION_TAG}
     hostname: cloudbeaver-tm
+    user: "8978"
     deploy:
       replicas: ${REPLICA_COUNT_TM:-1}
     environment:
@@ -155,7 +163,7 @@ services:
       - JAVA_TOOL_OPTIONS=${JAVA_TOOL_OPTIONS:-}
     volumes:
       - tm_data:/opt/task-manager/workspace
-      - ./cert/public/:/opt/task-manager/conf/certificates/
+      - cert_public:/opt/task-manager/conf/certificates/
       - trusted_cacerts:/opt/task-manager/conf/certificates/custom/
     depends_on:
       - cloudbeaver-dc
