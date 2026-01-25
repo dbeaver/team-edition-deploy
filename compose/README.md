@@ -5,6 +5,7 @@ This guide provides prerequisites and step-by-step instructions for configuring 
 orchestrators.
 
 - [System requirements](#system-requirements)
+- [Configuring public URL and domain](#configuring-public-url-and-domain)
 - [Configuring and starting Team Edition cluster](#configuring-and-starting-team-edition-cluster)
 - [Using external DB](#using-external-db)
 - [Team Edition manager](#team-edition-manager)
@@ -76,6 +77,22 @@ Example for proxy configuration:
 JAVA_TOOL_OPTIONS="-Dhttp.proxy.host=<proxyname> -Dhttps.proxy.host=<proxyname> -Dhttp.proxy.port=<port> -Dhttps.proxy.port=<port>"
 ```
 
+## Configuring public URL and domain
+
+`CLOUDBEAVER_PUBLIC_URL` specifies the base URL of the CloudBeaver web UI. It is used to configure external routing, construct absolute URLs for redirects and links, and enable the desktop client to connect to the server.
+
+Set this variable to the exact address users will type in the browser to open CloudBeaver. Open the `.env` file in `team-edition-deploy/compose/cbte/` and set:
+
+```
+CLOUDBEAVER_PUBLIC_URL=https://your-domain.com
+```
+
+Examples: `https://domain.yourcompany.com`, `http://192.168.1.100:8080`, `http://localhost`
+
+**Important**: Always include the protocol `http://` or `https://`, include the port if non-standard, and do not add a trailing slash. The domain in `CLOUDBEAVER_PUBLIC_URL` must match the domain name in TLS certificates.
+
+If `CLOUDBEAVER_PUBLIC_URL` is not configured or set incorrectly, you may experience issues such as: desktop client unable to connect, incorrect redirects, authentication failures with OAuth/SSO, or broken links.
+
 ## Configuring and starting Team Edition cluster
 
 1. Clone Git repository to your local machine by running the following command in your terminal:
@@ -95,7 +112,7 @@ JAVA_TOOL_OPTIONS="-Dhttp.proxy.host=<proxyname> -Dhttps.proxy.host=<proxyname> 
 Web interface: open your browser and navigate to `https://<your-domain>` or `http://<server-ip>:<port>`.
 The first time you open it, you’ll be taken straight to the Admin Panel.
 
-[Desktop client](https://dbeaver.com/download/team-edition/): when you launch the DBeaver Team Edition desktop app, use the same URL (`https://<your-domain>` or `http://<server-ip>:<port>`) to connect to the server.
+[Desktop client](https://dbeaver.com/download/team-edition/): when you launch the DBeaver Team Edition desktop app, use the same URL (`https://<your-domain>` or `http://<server-ip>:<port>`) to connect to the server. This URL must match the `CLOUDBEAVER_PUBLIC_URL` value. See [Configuring public URL and domain](#configuring-public-url-and-domain) for details.
 
 ### Stopping the cluster
 `docker-compose down`
