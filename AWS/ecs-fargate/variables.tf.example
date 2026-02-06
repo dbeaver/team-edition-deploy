@@ -64,7 +64,7 @@ variable "cloudbeaver-db-env" {
   # type = map(string)
   default = [
     { "name": "POSTGRES_PASSWORD",
-     "value": "postgres"},
+     "value": ""},
     { "name": "POSTGRES_USER",
      "value": "postgres"},
     { "name": "POSTGRES_DB",
