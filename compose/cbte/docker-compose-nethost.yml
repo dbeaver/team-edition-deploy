@@ -73,7 +73,7 @@ services:
       - CLOUDBEAVER_DC_BACKEND_DB_DRIVER=${CLOUDBEAVER_DB_DRIVER}
       - CLOUDBEAVER_TM_BACKEND_DB_DRIVER=${CLOUDBEAVER_DB_DRIVER}
       - NETWORK_MODE=host
-      - JAVA_TOOL_OPTIONS=${JAVA_TOOL_OPTIONS:-}
+      - JAVA_TOOL_OPTIONS=${JAVA_TOOL_OPTIONS:-} -Dserver.address=127.0.0.1
     volumes:
       - dc_data:/opt/domain-controller/workspace
       - ./cert/private/:/opt/domain-controller/conf/certificates/
@@ -110,7 +110,7 @@ services:
     environment:
       - CLOUDBEAVER_DC_SERVER_URL=http://127.0.0.1:8970/dc
       - NETWORK_MODE=host
-      - JAVA_TOOL_OPTIONS=${JAVA_TOOL_OPTIONS:-}
+      - JAVA_TOOL_OPTIONS=${JAVA_TOOL_OPTIONS:-} -Dserver.address=127.0.0.1
     volumes:
       - rm_data:/opt/resource-manager/workspace
       - ./cert/public/:/opt/resource-manager/conf/certificates/
@@ -127,7 +127,7 @@ services:
     environment:
       - CLOUDBEAVER_DC_SERVER_URL=http://127.0.0.1:8970/dc
       - NETWORK_MODE=host
-      - JAVA_TOOL_OPTIONS=${JAVA_TOOL_OPTIONS:-}
+      - JAVA_TOOL_OPTIONS=${JAVA_TOOL_OPTIONS:-} -Dserver.address=127.0.0.1
     volumes:
       - ./cert/public/:/opt/query-manager/conf/certificates/
       - trusted_cacerts:/opt/query-manager/conf/certificates/custom/
@@ -143,7 +143,7 @@ services:
     environment:
       - CLOUDBEAVER_DC_SERVER_URL=http://127.0.0.1:8970/dc
       - NETWORK_MODE=host
-      - JAVA_TOOL_OPTIONS=${JAVA_TOOL_OPTIONS:-}
+      - JAVA_TOOL_OPTIONS=${JAVA_TOOL_OPTIONS:-} -Dserver.address=127.0.0.1
     volumes:
       - tm_data:/opt/task-manager/workspace
       - ./cert/public/:/opt/task-manager/conf/certificates/
