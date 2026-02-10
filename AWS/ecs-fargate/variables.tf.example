@@ -157,15 +157,15 @@ variable "cloudbeaver-dc-env" {
   },
   {
       "name": "CLOUDBEAVER_DC_BACKEND_DB_PASSWORD",
-      "value": "DCpassword"
+      "value": ""
   },
   {
       "name": "CLOUDBEAVER_TM_BACKEND_DB_PASSWORD",
-      "value": "TMpassword"
+      "value": ""
   },
   {
       "name": "CLOUDBEAVER_QM_BACKEND_DB_PASSWORD",
-      "value": "QMpassword"
+      "value": ""
   },
   {
       "name": "CLOUDBEAVER_PUBLIC_URL",

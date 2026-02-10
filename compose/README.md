@@ -86,6 +86,7 @@ JAVA_TOOL_OPTIONS="-Dhttp.proxy.host=<proxyname> -Dhttps.proxy.host=<proxyname> 
     - Navigate to `team-edition-deploy/compose/cbte`
     - Copy `.env.example` to `.env`
     - Edit `.env` file to set configuration properties
+    - You must set the `CLOUDBEAVER_DB_PASSWORD` variable before starting the cluster. The database password is empty by default and the service will not start without it.
 3. [Configure SSL and domain](../SSL/README.md#ssl-certificate-configuration)
 4. Start the cluster:
    - `docker-compose up -d` or `docker compose up -d`  

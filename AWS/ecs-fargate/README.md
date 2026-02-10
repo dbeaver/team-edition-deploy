@@ -24,7 +24,7 @@ git clone https://github.com/dbeaver/team-edition-deploy.git
      - Navigate to `team-edition-deploy/AWS/ecs-fargate`  
      - Copy `variables.tf.example` to `variables.tf`
      - Open `variables.tf`.
-     - Update `variables.tf` file. Modify `POSTGRES_PASSWORD` field in `cloudbeaver-db-env` vatiables.
+     - Update `variables.tf` file. You must set `POSTGRES_PASSWORD` fields in `cloudbeaver-db-env` variables. The passwords are empty by default and the service will not start without them.
 
    - If you plan to use an RDS-based database:
  **Note:** only [Amazon RDS for PostgreSQL](https://aws.amazon.com/rds/postgresql/) is supported.
