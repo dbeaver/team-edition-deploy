@@ -10,6 +10,7 @@ volumes:
   api_tokens: {}
 networks:
   cloudbeaver-te-private-net: null
+  cloudbeaver-te-common-net: null
 services:
   web-proxy:
     restart: unless-stopped
@@ -22,7 +23,7 @@ services:
       - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-dbeaver}
       - CLOUDBEAVER_WEB_SERVER_PORT=${CLOUDBEAVER_WEB_SERVER_PORT:-8978}
     networks:
-      - cloudbeaver-te-private-net
+      - cloudbeaver-te-common-net
     volumes:
       - nginx_conf_data:/etc/${PROXY_TYPE:-nginx}/product-conf/
       - nginx_ssl_data:/etc/${PROXY_TYPE:-nginx}/ssl/
@@ -39,7 +40,7 @@ services:
     expose:
       - 9092
     networks:
-      - cloudbeaver-te-private-net
+      - cloudbeaver-te-common-net
   postgres:
     restart: unless-stopped
     hostname: postgres
@@ -87,6 +88,7 @@ services:
       - 8970
     networks:
       - cloudbeaver-te-private-net
+      - cloudbeaver-te-common-net
   cloudbeaver-te:
     restart: unless-stopped
     hostname: cloudbeaver-te
@@ -106,7 +108,7 @@ services:
       - cloudbeaver-rm
       - cloudbeaver-qm
     networks:
-      - cloudbeaver-te-private-net
+      - cloudbeaver-te-common-net
   cloudbeaver-rm:
     restart: unless-stopped
     image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-rm:${CLOUDBEAVER_VERSION_TAG}
@@ -125,7 +127,7 @@ services:
     expose:
       - 8971
     networks:
-      - cloudbeaver-te-private-net
+      - cloudbeaver-te-common-net
   cloudbeaver-qm:
     restart: unless-stopped
     image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-qm:${CLOUDBEAVER_VERSION_TAG}
@@ -144,6 +146,7 @@ services:
       - 8972
     networks:
       - cloudbeaver-te-private-net
+      - cloudbeaver-te-common-net
   cloudbeaver-tm:
     restart: unless-stopped
     image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-tm:${CLOUDBEAVER_VERSION_TAG}
@@ -163,3 +166,4 @@ services:
       - 8973
     networks:
       - cloudbeaver-te-private-net
+      - cloudbeaver-te-common-net
