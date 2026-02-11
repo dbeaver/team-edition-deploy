@@ -168,10 +168,6 @@ variable "cloudbeaver-dc-env" {
       "value": "QMpassword"
   },
   {
-      "name": "CLOUDBEAVER_PUBLIC_URL",
-      "value": "https://cloudbeaver.io"
-  },
-  {
       "name": "CLOUDBEAVER_KAFKA_BROKERS",
       "value": "kafka:9092"
   }]
