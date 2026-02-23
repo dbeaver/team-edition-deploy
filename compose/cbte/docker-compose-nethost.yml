@@ -48,6 +48,7 @@ services:
       - POSTGRES_DB=cloudbeaver
       - POSTGRES_USER=${CLOUDBEAVER_DB_USER}
       - POSTGRES_PASSWORD=${CLOUDBEAVER_DB_PASSWORD}
+      - NETWORK_MODE=host
     network_mode: host
 
   cloudbeaver-dc:
