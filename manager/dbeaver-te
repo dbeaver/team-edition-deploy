@@ -508,9 +508,9 @@ restoreBackup(){
     fi
 	
     rm -rf $TEMP_DIR
-    docker compose -f "$TEAM_EDITION_COMPOSE_DIR/docker-compose.yml" down 
+    docker compose -f "$TEAM_EDITION_COMPOSE_DIR/$COMPOSE_FILE" down 
     docker compose \
-        -f "$TEAM_EDITION_COMPOSE_DIR/docker-compose.yml" \
+        -f "$TEAM_EDITION_COMPOSE_DIR/$COMPOSE_FILE" \
         --env-file "$TEAM_EDITION_COMPOSE_DIR/.env" \
         --project-directory "$TEAM_EDITION_COMPOSE_DIR/" \
         up -d
