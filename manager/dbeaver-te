@@ -432,7 +432,7 @@ createBackup(){
     if [ "$USE_EXTERNAL_DB" = false ]; then
         PG_SERVICE="postgres"
         DB_NAME="cloudbeaver"
-        docker exec $PROJECT_NAME-"$PG_SERVICE"-1 pg_dump $DB_NAME --username $CLOUDBEAVER_DB_USER --format c > $BACKUP_PATH/"$PG_SERVICE".backup
+        docker exec -e PGPASSWORD="$CLOUDBEAVER_DB_PASSWORD" $PROJECT_NAME-"$PG_SERVICE"-1 pg_dump $DB_NAME --username $CLOUDBEAVER_DB_USER --format c > $BACKUP_PATH/"$PG_SERVICE".backup
     fi
     
     CERT_VOLUME_PATH="/opt/domain-controller/conf/certificates"
@@ -480,7 +480,7 @@ restoreBackup(){
     DB_BACKUP="$BACKUP_DIR/postgres.backup"
     if [ -f "$DB_BACKUP" ]; then
         echo "Restoring PostgreSQL database..."
-        docker exec -i $PROJECT_NAME-"postgres"-1 pg_restore --dbname cloudbeaver --username $CLOUDBEAVER_DB_USER --clean --if-exists < "$DB_BACKUP"
+        docker exec -i -e PGPASSWORD="$CLOUDBEAVER_DB_PASSWORD" $PROJECT_NAME-"postgres"-1 pg_restore --dbname cloudbeaver --username $CLOUDBEAVER_DB_USER --clean --if-exists < "$DB_BACKUP"
     else
         echo "PostgreSQL backup file not found."
 		printSupportMessage
