@@ -15,6 +15,7 @@ volumes:
   api_tokens: {}
 networks:
   cloudbeaver-te-private-net: null
+  cloudbeaver-te-common-net: null
 services:
   web-proxy:
     restart: unless-stopped
@@ -44,7 +45,7 @@ services:
     expose:
       - 9092
     networks:
-      - cloudbeaver-te-private-net
+      - cloudbeaver-te-common-net
   postgres:
     restart: unless-stopped
     hostname: postgres
@@ -64,7 +65,6 @@ services:
     image: ${PODMAN_IMAGE_SOURCE:-docker.io/dbeaver}/cloudbeaver-dc:${CLOUDBEAVER_VERSION_TAG}
     hostname: cloudbeaver-dc
     environment:
-      - CLOUDBEAVER_PUBLIC_URL=${CLOUDBEAVER_PUBLIC_URL}      
       - CLOUDBEAVER_DC_SERVER_URL=http://cloudbeaver-dc:8970/dc
       - CLOUDBEAVER_RM_SERVER_URL=http://cloudbeaver-rm:8971/rm
       - CLOUDBEAVER_QM_SERVER_URL=http://cloudbeaver-qm:8972/qm
@@ -92,6 +92,7 @@ services:
       - 8970
     networks:
       - cloudbeaver-te-private-net
+      - cloudbeaver-te-common-net
   cloudbeaver-te:
     restart: unless-stopped
     hostname: cloudbeaver-te
@@ -111,7 +112,7 @@ services:
       - cloudbeaver-rm
       - cloudbeaver-qm
     networks:
-      - cloudbeaver-te-private-net
+      - cloudbeaver-te-common-net
   cloudbeaver-rm:
     restart: unless-stopped
     image: ${PODMAN_IMAGE_SOURCE:-docker.io/dbeaver}/cloudbeaver-rm:${CLOUDBEAVER_VERSION_TAG}
@@ -130,7 +131,7 @@ services:
     expose:
       - 8971
     networks:
-      - cloudbeaver-te-private-net
+      - cloudbeaver-te-common-net
   cloudbeaver-qm:
     restart: unless-stopped
     image: ${PODMAN_IMAGE_SOURCE:-docker.io/dbeaver}/cloudbeaver-qm:${CLOUDBEAVER_VERSION_TAG}
@@ -149,6 +150,7 @@ services:
       - 8972
     networks:
       - cloudbeaver-te-private-net
+      - cloudbeaver-te-common-net
   cloudbeaver-tm:
     restart: unless-stopped
     image: ${PODMAN_IMAGE_SOURCE:-docker.io/dbeaver}/cloudbeaver-tm:${CLOUDBEAVER_VERSION_TAG}
@@ -168,3 +170,4 @@ services:
       - 8973
     networks:
       - cloudbeaver-te-private-net
+      - cloudbeaver-te-common-net
