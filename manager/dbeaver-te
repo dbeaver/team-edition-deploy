@@ -39,6 +39,8 @@ done < "$TEAM_EDITION_COMPOSE_DIR/.env"
 
 TEAM_EDITION_TAG="$CLOUDBEAVER_VERSION_TAG"
 
+COMPOSE_FILE="${COMPOSE_FILE:-docker-compose.yml}"
+
 case $(uname -m) in
 
   "x86_64")
@@ -221,7 +223,7 @@ startCloudbeaver() {
 	if [ "$TEAM_EDITION_STATUS" == false ]
 	then
 		docker compose \
-			-f "$TEAM_EDITION_COMPOSE_DIR/docker-compose.yml" \
+			-f "$TEAM_EDITION_COMPOSE_DIR/$COMPOSE_FILE" \
 			--env-file "$TEAM_EDITION_COMPOSE_DIR/.env" \
 			--project-directory "$TEAM_EDITION_COMPOSE_DIR/" \
 			up -d \
@@ -249,7 +251,7 @@ startCloudbeaver() {
 
 stopCloudbeaver() {
 	checkCloudBeaverStatus
-	docker compose -f "$TEAM_EDITION_COMPOSE_DIR/docker-compose.yml" down 
+	docker compose -f "$TEAM_EDITION_COMPOSE_DIR/$COMPOSE_FILE" down 
 	echo "DBeaver Team Edition Server stopped."
 }
 
@@ -258,13 +260,16 @@ rollbackCloudBeaver() {
 	BACKUP_VERSION="$2"
 
 	docker compose \
-        -f "$TEAM_EDITION_COMPOSE_DIR/docker-compose.yml" \
+        -f "$TEAM_EDITION_COMPOSE_DIR/$COMPOSE_FILE" \
         --env-file "$TEAM_EDITION_COMPOSE_DIR/.env" \
         --project-directory "$TEAM_EDITION_COMPOSE_DIR/" \
         down \
         --remove-orphans
 
-	rsync -av --exclude='cert' --exclude='nginx' "$BACKUP_DIR/" "$TEAM_EDITION_BASE_DIR/"
+	cd "$TEAM_EDITION_BASE_DIR/"
+	git checkout --force "$BACKUP_VERSION" || true
+
+	rsync -av --exclude='cert' --exclude='nginx' "$BACKUP_DIR/" "$TEAM_EDITION_COMPOSE_DIR/"
 
     sed -i \
         "s/CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_NEW_TAG/CLOUDBEAVER_VERSION_TAG=$BACKUP_VERSION/g" \
@@ -272,7 +277,7 @@ rollbackCloudBeaver() {
 	export CLOUDBEAVER_VERSION_TAG=$BACKUP_VERSION
 
 	docker compose \
-        -f "$TEAM_EDITION_COMPOSE_DIR/docker-compose.yml" \
+        -f "$TEAM_EDITION_COMPOSE_DIR/$COMPOSE_FILE" \
         --env-file "$TEAM_EDITION_COMPOSE_DIR/.env" \
         --project-directory "$TEAM_EDITION_COMPOSE_DIR/" \
         up -d \
@@ -290,6 +295,9 @@ rollbackCloudBeaver() {
 		sleep 1
 	done
 
+	echo -e "ERROR: Failed to start after rollback."
+	printSupportMessage
+	exit 1
 }
 
 updateCloudbeaver() {
@@ -337,7 +345,7 @@ updateCloudbeaver() {
         
         # Stop team-edition-deploy
         docker compose \
-            -f "$TEAM_EDITION_COMPOSE_DIR/docker-compose.yml" \
+            -f "$TEAM_EDITION_COMPOSE_DIR/$COMPOSE_FILE" \
             --env-file "$TEAM_EDITION_COMPOSE_DIR/.env" \
             --project-directory "$TEAM_EDITION_COMPOSE_DIR/" \
             down \
@@ -345,8 +353,8 @@ updateCloudbeaver() {
         
         # Backup current configuration
         mkdir -p "$BACKUP_DIR"
-        rsync -av --exclude='cert' --exclude='nginx' "$TEAM_EDITION_COMPOSE_DIR/" "$BACKUP_DIR"
-        echo "Preveous team-edition-deploy configuration copied to $BACKUP_DIR"
+        rsync -av --exclude='cert' --exclude='nginx' "$TEAM_EDITION_COMPOSE_DIR/" "$BACKUP_DIR/"
+        echo "Previous team-edition-deploy configuration copied to $BACKUP_DIR"
         
         # Checkout new version
         git checkout --force $TEAM_EDITION_NEW_TAG || { 
@@ -355,22 +363,18 @@ updateCloudbeaver() {
         	echo "==============================================================================="
         	rollbackCloudBeaver "$BACKUP_DIR" "$TEAM_EDITION_TAG"
         	printSupportMessage
+        	exit 1
         }
         sed -i \
             "s/CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_TAG/CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_NEW_TAG/g" \
             "$TEAM_EDITION_COMPOSE_DIR/.env"
         
         export CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_NEW_TAG
-        
-        if [ "$DBEAVER_TEAM_EDITION_AMI" ] && [ -f "$TEAM_EDITION_COMPOSE_DIR/docker-compose-nethost.yml" ]; then
-            mv "$TEAM_EDITION_COMPOSE_DIR/docker-compose-nethost.yml" "$TEAM_EDITION_COMPOSE_DIR/docker-compose.yml"
-        fi
 
-        # Update docker-compose volumes
-
-        if [ "$DBEAVER_TEAM_EDITION_AMI"  ]; then
+        # Update docker-compose volumes for AMI
+        if [ "$DBEAVER_TEAM_EDITION_AMI" ]; then
             "$HOME/.local/bin/dbeaver-compose-config-editor.py" \
-                -f "$TEAM_EDITION_COMPOSE_DIR/docker-compose.yml" \
+                -f "$TEAM_EDITION_COMPOSE_DIR/$COMPOSE_FILE" \
                 -e "$TEAM_EDITION_COMPOSE_DIR/.env" || {
                     echo "==============================================================================="
                     echo "Error: Failed to patch docker-compose.yml using dbeaver-compose-config-editor.py."
@@ -383,7 +387,7 @@ updateCloudbeaver() {
         
         # Start team-edition-deploy with new version and check status
         docker compose \
-        	-f "$TEAM_EDITION_COMPOSE_DIR/docker-compose.yml" \
+        	-f "$TEAM_EDITION_COMPOSE_DIR/$COMPOSE_FILE" \
         	--env-file "$TEAM_EDITION_COMPOSE_DIR/.env" \
         	--project-directory "$TEAM_EDITION_COMPOSE_DIR/" \
         	up -d \
@@ -406,6 +410,7 @@ updateCloudbeaver() {
         echo -e "\nERROR: CloudBeaver failed to start. Rolling back to previous version..."
         rollbackCloudBeaver "$BACKUP_DIR" "$TEAM_EDITION_TAG"
         printSupportMessage
+        exit 1
 
     fi
 }
