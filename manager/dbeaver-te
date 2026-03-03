@@ -267,7 +267,13 @@ rollbackCloudBeaver() {
         --remove-orphans
 
 	cd "$TEAM_EDITION_BASE_DIR/"
-	git checkout --force "$BACKUP_VERSION" || true
+	git checkout --force "$BACKUP_VERSION" || { 
+		echo "==============================================================================="
+		echo "Error: Failed to checkout version $BACKUP_VERSION."
+		echo "==============================================================================="
+		printSupportMessage
+		exit 1
+	}
 
 	rsync -av --exclude='cert' --exclude='nginx' "$BACKUP_DIR/" "$TEAM_EDITION_COMPOSE_DIR/"
 
@@ -356,6 +362,14 @@ updateCloudbeaver() {
         rsync -av --exclude='cert' --exclude='nginx' "$TEAM_EDITION_COMPOSE_DIR/" "$BACKUP_DIR/"
         echo "Previous team-edition-deploy configuration copied to $BACKUP_DIR"
         
+        USER_BACKUP_BRANCH="user-backup/${TEAM_EDITION_TAG}_${TIMESTAMP}"
+        if [ -n "$(git status --porcelain)" ]; then
+            git checkout -b "$USER_BACKUP_BRANCH"
+            git add -A
+            git commit -m "Auto-backup before update from $TEAM_EDITION_TAG to $TEAM_EDITION_NEW_TAG"
+            echo "Your local changes have been saved in branch: $USER_BACKUP_BRANCH"
+        fi
+
         # Checkout new version
         git checkout --force $TEAM_EDITION_NEW_TAG || { 
         	echo "==============================================================================="
