@@ -362,6 +362,9 @@ updateCloudbeaver() {
         rsync -av --exclude='cert' --exclude='nginx' "$TEAM_EDITION_COMPOSE_DIR/" "$BACKUP_DIR/"
         echo "Previous team-edition-deploy configuration copied to $BACKUP_DIR"
         
+        git config user.name "DBeaver Support"
+        git config user.email "support@dbeaver.com"
+
         USER_BACKUP_BRANCH="user-backup/${TEAM_EDITION_TAG}_${TIMESTAMP}"
         if [ -n "$(git status --porcelain)" ]; then
             git checkout -b "$USER_BACKUP_BRANCH"
