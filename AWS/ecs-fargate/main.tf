@@ -308,7 +308,16 @@ resource "aws_ecs_task_definition" "kafka" {
     name        = "${var.deployment_id}-kafka"
     image       = "dbeaver/cloudbeaver-kafka:3.9"
     essential   = true
-    environment = var.cloudbeaver-kafka-env
+    environment = concat(var.cloudbeaver-kafka-env, [
+      {
+        name  = "KAFKA_CFG_CONTROLLER_QUORUM_VOTERS"
+        value = "0@localhost:9093"
+      },
+      {
+        name  = "KAFKA_CFG_ADVERTISED_LISTENERS"
+        value = "PLAINTEXT://${var.deployment_id}-kafka:9092"
+      }
+    ])
     logConfiguration = {
       logDriver = "awslogs"
       options = {
