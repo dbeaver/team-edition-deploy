@@ -16,6 +16,12 @@ variable "dbeaver_te_version" {
   default = "ea"
 }
 
+variable "image_source" {
+  description = "Docker image source"
+  type    = string
+  default = "dbeaver"
+}
+
 variable "alb_certificate_Identifier" {
   description = "Your certificate ID from AWS Certificate Manager"
   type        = string

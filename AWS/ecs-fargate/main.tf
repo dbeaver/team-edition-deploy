@@ -225,7 +225,7 @@ resource "aws_ecs_task_definition" "dbeaver_db" {
   }
   container_definitions = jsonencode([{
     name        = "${var.deployment_id}-postgres"
-    image       = "dbeaver/cloudbeaver-postgres:16"
+    image       = "${var.image_source}/cloudbeaver-postgres:16"
     essential   = true
     environment = var.cloudbeaver-db-env
     mountPoints = [{
@@ -306,7 +306,7 @@ resource "aws_ecs_task_definition" "kafka" {
 
   container_definitions = jsonencode([{
     name        = "${var.deployment_id}-kafka"
-    image       = "dbeaver/cloudbeaver-kafka:3.9"
+    image       = "${var.image_source}/cloudbeaver-kafka:3.9"
     essential   = true
     environment = concat(var.cloudbeaver-kafka-env, [
       {
@@ -418,7 +418,7 @@ resource "aws_ecs_task_definition" "dbeaver_dc" {
   }
   container_definitions = jsonencode([{
     name        = "${var.deployment_id}-cloudbeaver-dc"
-    image       = "dbeaver/cloudbeaver-dc:${var.dbeaver_te_version}"
+    image       = "${var.image_source}/cloudbeaver-dc:${var.dbeaver_te_version}"
     essential   = true
     environment = local.updated_cloudbeaver_dc_env
     mountPoints = [{
@@ -535,7 +535,7 @@ resource "aws_ecs_task_definition" "dbeaver_rm" {
   
   container_definitions = jsonencode([{
     name        = "${var.deployment_id}-cloudbeaver-rm"
-    image       = "dbeaver/cloudbeaver-rm:${var.dbeaver_te_version}"
+    image       = "${var.image_source}/cloudbeaver-rm:${var.dbeaver_te_version}"
     essential   = true
     environment = local.cloudbeaver_shared_env_modified
     mountPoints = [{
@@ -638,7 +638,7 @@ resource "aws_ecs_task_definition" "dbeaver_qm" {
   }
   container_definitions = jsonencode([{
     name        = "${var.deployment_id}-cloudbeaver-qm"
-    image       = "dbeaver/cloudbeaver-qm:${var.dbeaver_te_version}"
+    image       = "${var.image_source}/cloudbeaver-qm:${var.dbeaver_te_version}"
     essential   = true
     environment = local.cloudbeaver_shared_env_modified
     mountPoints = [
@@ -748,7 +748,7 @@ resource "aws_ecs_task_definition" "dbeaver_tm" {
   }
   container_definitions = jsonencode([{
     name        = "${var.deployment_id}-cloudbeaver-tm"
-    image       = "dbeaver/cloudbeaver-tm:${var.dbeaver_te_version}"
+    image       = "${var.image_source}/cloudbeaver-tm:${var.dbeaver_te_version}"
     essential   = true
     environment = local.cloudbeaver_shared_env_modified
     mountPoints = [{
@@ -854,7 +854,7 @@ resource "aws_ecs_task_definition" "dbeaver_te" {
   }
   container_definitions = jsonencode([{
     name        = "${var.deployment_id}-cloudbeaver-te"
-    image       = "dbeaver/cloudbeaver-te:${var.dbeaver_te_version}"
+    image       = "${var.image_source}/cloudbeaver-te:${var.dbeaver_te_version}"
     essential   = true
     environment = local.cloudbeaver_shared_env_modified
     mountPoints = [{
