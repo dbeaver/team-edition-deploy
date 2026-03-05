@@ -129,6 +129,15 @@ environment:
 ```
 This step is only required for Nginx, as HAProxy resolves service names via Docker DNS automatically.
 
+### Java tool options
+
+Java does not read system environment variables. To pass Java parameters to the Java process, use the `JAVA_TOOL_OPTIONS` variable in your `.env` file.
+
+Example for proxy configuration:
+```
+JAVA_TOOL_OPTIONS="-Dhttp.proxy.host=<proxyname> -Dhttps.proxy.host=<proxyname> -Dhttp.proxy.port=<port> -Dhttps.proxy.port=<port>"
+```
+
 ## Configuring and starting Team Edition cluster
 
 1. Clone Git repository to your local machine by running the following command in your terminal:
@@ -139,6 +148,7 @@ This step is only required for Nginx, as HAProxy resolves service names via Dock
     - Navigate to `team-edition-deploy/compose/cbte`
     - Copy `.env.example` to `.env`
     - Edit `.env` file to set configuration properties
+    - You must set the `CLOUDBEAVER_DB_PASSWORD` variable before starting the cluster. The database password is empty by default and the service will not start without it.
 3. [Configure SSL and domain](../SSL/README.md#ssl-certificate-configuration)
 4. Start the cluster:
    - `docker-compose up -d` or `docker compose up -d`  
@@ -218,6 +228,23 @@ You might need to add additional parameters to the `CLOUDBEAVER_DB_URL`:
 ##### Example:
 
 `CLOUDBEAVER_DB_URL=jdbc:mariadb://127.0.0.1:3306/cloudbeaver?autoReconnect=true&allowPublicKeyRetrieval=true`
+
+#### Configure SQL Server database
+
+To use SQL Server as an internal database, set the driver to `microsoft` and configure the connection URL.
+
+Connect to your SQL Server database and run:
+```sql
+   CREATE DATABASE cloudbeaver;
+   CREATE SCHEMA dc;
+   CREATE SCHEMA qm;
+   CREATE SCHEMA tm;
+```
+
+##### Example:
+
+`CLOUDBEAVER_DB_DRIVER=microsoft`  
+`CLOUDBEAVER_DB_URL=jdbc:sqlserver://127.0.0.1:1433;databaseName=cloudbeaver`
 
 #### PostgreSQL update procedure
 
