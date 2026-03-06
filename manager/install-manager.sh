@@ -18,6 +18,7 @@ sed -i "s|^TEAM_EDITION_COMPOSE_DIR=.*|TEAM_EDITION_COMPOSE_DIR=\"$CBTE_DIR\"|g"
 
 if [[ ":$PATH:" != *":$INSTALL_DIR:"* ]]; then
     echo "export PATH=\"$INSTALL_DIR:\$PATH\"" >> ~/.bashrc
+    source ~/.bashrc
 fi
 
 echo "DBeaver Team Edition manager installed successfully!"
