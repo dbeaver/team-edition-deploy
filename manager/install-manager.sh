@@ -2,19 +2,17 @@
 
 set -e
 
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 INSTALL_DIR="$HOME/bin"
-CURRENT_DIR=$(pwd)
+
+BASE_DIR=$(realpath "$SCRIPT_DIR/..")
+CBTE_DIR=$(realpath "$SCRIPT_DIR/../compose/cbte")
+
 mkdir -p "$INSTALL_DIR"
 
-# Determine the actual base directory and compose directory
-BASE_DIR=$(realpath "$CURRENT_DIR/..")
-CBTE_DIR=$(realpath "$CURRENT_DIR/../compose/cbte")
-
-# Copy the script to install directory
-cp "$CURRENT_DIR/dbeaver-te" "$INSTALL_DIR/dbeaver-te"
+cp "$SCRIPT_DIR/dbeaver-te" "$INSTALL_DIR/dbeaver-te"
 chmod +x "$INSTALL_DIR/dbeaver-te"
 
-# Replace the hardcoded paths with actual paths
 sed -i "s|^TEAM_EDITION_BASE_DIR=.*|TEAM_EDITION_BASE_DIR=\"$BASE_DIR\"|g" "$INSTALL_DIR/dbeaver-te"
 sed -i "s|^TEAM_EDITION_COMPOSE_DIR=.*|TEAM_EDITION_COMPOSE_DIR=\"$CBTE_DIR\"|g" "$INSTALL_DIR/dbeaver-te"
 

@@ -41,6 +41,7 @@ Previously, the volumes were owned by the ‘root’ user, but now they are owne
 2. `cd team-edition-deploy/k8s/cbte`
 3. `cp ./values.yaml.example ./values.yaml`
 4. Edit chart values in `values.yaml` (use any text editor).
+   - You must set the `cloudbeaver_db_password` variable before deploying the cluster. The database password is empty by default and the deployment will fail without it.
 5. Configure domain and SSL certificate:
   - Add an A record in your DNS hosting for a value of `cloudbeaverBaseDomain` variable with load balancer IP address.
   - Generate internal services certificates:  

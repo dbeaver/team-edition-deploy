@@ -13,7 +13,13 @@ variable "aws_region" {
 variable "dbeaver_te_version" {
   description = "The version of the cluster you want to deploy"
   type = string
-  default = "25.3.0"
+  default = "26.0.0"
+}
+
+variable "image_source" {
+  description = "Docker image source"
+  type    = string
+  default = "dbeaver"
 }
 
 variable "alb_certificate_Identifier" {
@@ -64,7 +70,7 @@ variable "cloudbeaver-db-env" {
   # type = map(string)
   default = [
     { "name": "POSTGRES_PASSWORD",
-     "value": "postgres"},
+     "value": ""},
     { "name": "POSTGRES_USER",
      "value": "postgres"},
     { "name": "POSTGRES_DB",
@@ -157,19 +163,15 @@ variable "cloudbeaver-dc-env" {
   },
   {
       "name": "CLOUDBEAVER_DC_BACKEND_DB_PASSWORD",
-      "value": "DCpassword"
+      "value": ""
   },
   {
       "name": "CLOUDBEAVER_TM_BACKEND_DB_PASSWORD",
-      "value": "TMpassword"
+      "value": ""
   },
   {
       "name": "CLOUDBEAVER_QM_BACKEND_DB_PASSWORD",
-      "value": "QMpassword"
-  },
-  {
-      "name": "CLOUDBEAVER_PUBLIC_URL",
-      "value": "https://cloudbeaver.io"
+      "value": ""
   },
   {
       "name": "CLOUDBEAVER_KAFKA_BROKERS",
