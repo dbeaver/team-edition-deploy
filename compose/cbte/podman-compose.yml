@@ -28,7 +28,7 @@ services:
       - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-dbeaver}
       - CLOUDBEAVER_WEB_SERVER_PORT=${CLOUDBEAVER_WEB_SERVER_PORT:-8978}
     networks:
-      - cloudbeaver-te-private-net
+      - cloudbeaver-te-common-net
     volumes:
       - nginx_conf_data:/etc/${PROXY_TYPE:-nginx}/product-conf/:z
       - nginx_ssl_data:/etc/${PROXY_TYPE:-nginx}/ssl/:z
