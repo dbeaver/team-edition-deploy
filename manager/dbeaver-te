@@ -39,6 +39,11 @@ done < "$TEAM_EDITION_COMPOSE_DIR/.env"
 
 TEAM_EDITION_TAG="$CLOUDBEAVER_VERSION_TAG"
 
+if [ "$DBEAVER_TEAM_EDITION_AMI" ] && [ -z "$COMPOSE_FILE" ] && grep -q '127\.0\.0\.1' "$TEAM_EDITION_COMPOSE_DIR/.env"; then
+	echo "COMPOSE_FILE=docker-compose-nethost.yml" >> "$TEAM_EDITION_COMPOSE_DIR/.env"
+	export COMPOSE_FILE="docker-compose-nethost.yml"
+fi
+
 COMPOSE_FILE="${COMPOSE_FILE:-docker-compose.yml}"
 
 case $(uname -m) in
