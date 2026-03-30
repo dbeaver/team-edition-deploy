@@ -7,16 +7,18 @@ resource "aws_lb" "dbeaver_te_lb" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.dbeaver_alb.id]
-  subnets            = aws_subnet.public_subnets[*].id
+  subnets            = module.vpc.public_subnets
+
   tags = {
     env = var.deployment_id
   }
 }
 
+################################################################################
+# Listeners
+################################################################################
 
-# This resources must be edited if HTTPS not used
 resource "aws_lb_listener" "dbeaver-te-listener" {
-
   load_balancer_arn = aws_lb.dbeaver_te_lb.arn
   port              = "80"
   protocol          = "HTTP"
@@ -32,9 +34,7 @@ resource "aws_lb_listener" "dbeaver-te-listener" {
   }
 }
 
-# This resources must be edited if HTTPS not used
 resource "aws_lb_listener" "dbeaver-te-listener-https" {
-
   load_balancer_arn = aws_lb.dbeaver_te_lb.arn
   port              = "443"
   protocol          = "HTTPS"
@@ -46,6 +46,10 @@ resource "aws_lb_listener" "dbeaver-te-listener-https" {
     target_group_arn = aws_lb_target_group.dbeaver_te.arn
   }
 }
+
+################################################################################
+# Listener Rules
+################################################################################
 
 resource "aws_lb_listener_rule" "forward_to_service_uri_dc" {
   listener_arn = aws_lb_listener.dbeaver-te-listener-https.arn
@@ -95,7 +99,6 @@ resource "aws_lb_listener_rule" "forward_to_service_uri_rm" {
   }
 }
 
-
 resource "aws_lb_listener_rule" "forward_to_service_uri_tm" {
   listener_arn = aws_lb_listener.dbeaver-te-listener-https.arn
   priority     = 94
@@ -112,19 +115,22 @@ resource "aws_lb_listener_rule" "forward_to_service_uri_tm" {
   }
 }
 
+################################################################################
+# Target Groups
+################################################################################
 
 resource "aws_lb_target_group" "dbeaver_dc" {
   name        = "DBeaverTE-${var.deployment_id}-dc"
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
-  vpc_id      = aws_vpc.dbeaver_net.id
+  vpc_id      = module.vpc.vpc_id
 
   health_check {
-    matcher = "200,302"
+    matcher             = "200,302"
     unhealthy_threshold = 7
-    enabled = true
-    path    = "/dc/health"
+    enabled             = true
+    path                = "/dc/health"
   }
 }
 
@@ -133,17 +139,17 @@ resource "aws_lb_target_group" "dbeaver_te" {
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
-  vpc_id      = aws_vpc.dbeaver_net.id
+  vpc_id      = module.vpc.vpc_id
 
   health_check {
-    matcher = "200,302"
+    matcher             = "200,302"
     unhealthy_threshold = 10
-    enabled = true
-    path    = "/"
+    enabled             = true
+    path                = "/"
   }
   stickiness {
-    enabled = true
-    type    = "lb_cookie" 
+    enabled         = true
+    type            = "lb_cookie"
     cookie_duration = 86400
   }
 }
@@ -153,13 +159,13 @@ resource "aws_lb_target_group" "dbeaver_qm" {
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
-  vpc_id      = aws_vpc.dbeaver_net.id
+  vpc_id      = module.vpc.vpc_id
 
   health_check {
-    matcher = "200,302"
+    matcher             = "200,302"
     unhealthy_threshold = 7
-    enabled = true
-    path    = "/qm/health"
+    enabled             = true
+    path                = "/qm/health"
   }
 }
 
@@ -168,13 +174,13 @@ resource "aws_lb_target_group" "dbeaver_rm" {
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
-  vpc_id      = aws_vpc.dbeaver_net.id
+  vpc_id      = module.vpc.vpc_id
 
   health_check {
-    matcher = "200,302"
+    matcher             = "200,302"
     unhealthy_threshold = 7
-    enabled = true
-    path    = "/rm/health"
+    enabled             = true
+    path                = "/rm/health"
   }
 }
 
@@ -183,12 +189,12 @@ resource "aws_lb_target_group" "dbeaver_tm" {
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
-  vpc_id      = aws_vpc.dbeaver_net.id
+  vpc_id      = module.vpc.vpc_id
 
   health_check {
-    matcher = "200,302"
+    matcher             = "200,302"
     unhealthy_threshold = 7
-    enabled = true
-    path    = "/tm/health"
+    enabled             = true
+    path                = "/tm/health"
   }
 }

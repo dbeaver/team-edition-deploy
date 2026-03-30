@@ -1,6 +1,6 @@
 data "aws_iam_policy_document" "assume_role_policy" {
   statement {
-    effect = "Allow"
+    effect  = "Allow"
     actions = ["sts:AssumeRole"]
 
     principals {
@@ -10,15 +10,29 @@ data "aws_iam_policy_document" "assume_role_policy" {
   }
 }
 
+################################################################################
+# ECS Task Execution Role
+################################################################################
+
+resource "aws_iam_role" "ecsTaskExecutionRole" {
+  name               = "DBeaverTE-${var.deployment_id}-ecsTaskExecutionRole"
+  assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
+}
+
+resource "aws_iam_role_policy_attachment" "ecsTaskExecutionRole_policy" {
+  role       = aws_iam_role.ecsTaskExecutionRole.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
 resource "aws_iam_policy" "CloudbeaverTeamEditionEFSAccessPolicy" {
   name        = "DBeaverTE-${var.deployment_id}-CloudbeaverTeamEditionEFSAccessPolicy"
   description = "Policy to allow access only to specific EFS resources for ${var.deployment_id} environment"
-  policy      = jsonencode({
+  policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
-        Effect   = "Allow"
-        Action   = [
+        Effect = "Allow"
+        Action = [
           "elasticfilesystem:DescribeFileSystems",
           "elasticfilesystem:DescribeMountTargets",
           "elasticfilesystem:DescribeMountTargetSecurityGroups",
@@ -38,8 +52,8 @@ resource "aws_iam_policy" "CloudbeaverTeamEditionEFSAccessPolicy" {
         ]
       },
       {
-        Effect   = "Allow"
-        Action   = [
+        Effect = "Allow"
+        Action = [
           "elasticfilesystem:CreateTags",
           "elasticfilesystem:DeleteTags",
           "elasticfilesystem:DescribeFileSystemPolicy",
@@ -54,21 +68,21 @@ resource "aws_iam_policy" "CloudbeaverTeamEditionEFSAccessPolicy" {
         ]
       },
       {
-        "Effect": "Allow",
-        "Action": [
+        Effect = "Allow"
+        Action = [
           "elasticfilesystem:ClientMount",
           "elasticfilesystem:ClientWrite",
           "elasticfilesystem:ClientRootAccess"
-        ],
-        "Resource": [
-          "${aws_efs_file_system.cloudbeaver_certificates.arn}",
-          "${aws_efs_access_point.certs_public.arn}"
+        ]
+        Resource = [
+          aws_efs_file_system.cloudbeaver_certificates.arn,
+          aws_efs_access_point.certs_public.arn
         ]
       },
       {
-        "Effect": "Allow",
-        "Action": "elasticfilesystem:DescribeAccessPoints",
-        "Resource": "*"
+        Effect   = "Allow"
+        Action   = "elasticfilesystem:DescribeAccessPoints"
+        Resource = "*"
       }
     ]
   })
@@ -81,26 +95,19 @@ resource "aws_iam_policy" "CloudbeaverTeamEditionEFSAccessPolicy" {
   ]
 }
 
-resource "aws_iam_role" "ecsTaskExecutionRole" {
-  name               = "DBeaverTE-${var.deployment_id}-ecsTaskExecutionRole"
-  assume_role_policy = "${data.aws_iam_policy_document.assume_role_policy.json}"
-}
-
-
-
-resource "aws_iam_role_policy_attachment" "ecsTaskExecutionRole_policy" {
-  role       = "${aws_iam_role.ecsTaskExecutionRole.name}"
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-}
-
 resource "aws_iam_role_policy_attachment" "TeamEditionEFSAccessPolicy_attachment" {
-  role       = "${aws_iam_role.ecsTaskExecutionRole.name}"
-  policy_arn = "${aws_iam_policy.CloudbeaverTeamEditionEFSAccessPolicy.arn}"
+  role       = aws_iam_role.ecsTaskExecutionRole.name
+  policy_arn = aws_iam_policy.CloudbeaverTeamEditionEFSAccessPolicy.arn
 }
+
 resource "aws_iam_role_policy_attachment" "logs_policy_attachment" {
-  role       = "${aws_iam_role.ecsTaskExecutionRole.name}"
+  role       = aws_iam_role.ecsTaskExecutionRole.name
   policy_arn = "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
 }
+
+################################################################################
+# ECS Task Role 
+################################################################################
 
 resource "aws_iam_role" "ecs_task_role_exec" {
   name               = "DBeaverTE-${var.deployment_id}-ecsTaskRoleExec"
