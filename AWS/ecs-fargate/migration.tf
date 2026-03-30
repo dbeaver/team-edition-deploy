@@ -51,11 +51,14 @@ removed {
   }
 }
 
-removed {
-  from = aws_route_table_association.private_subnets_rt
-  lifecycle {
-    destroy = false
-  }
+moved {
+  from = aws_route_table_association.private_subnets_rt[0]
+  to   = module.vpc[0].aws_route_table_association.private[0]
+}
+
+moved {
+  from = aws_route_table_association.private_subnets_rt[1]
+  to   = module.vpc[0].aws_route_table_association.private[1]
 }
 
 moved {
