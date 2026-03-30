@@ -1,4 +1,5 @@
 data "aws_availability_zones" "available" {
+  count = var.create_vpc ? 1 : 0
   state = "available"
 }
 
@@ -6,10 +7,12 @@ module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "~> 5.0"
 
+  count = var.create_vpc ? 1 : 0
+
   name = "${var.deployment_id}-dbeaver-te"
   cidr = var.vpc_cidr
 
-  azs             = slice(data.aws_availability_zones.available.names, 0, 2)
+  azs             = slice(data.aws_availability_zones.available[0].names, 0, 2)
   public_subnets  = var.public_subnet_cidrs
   private_subnets = var.private_subnet_cidrs
 

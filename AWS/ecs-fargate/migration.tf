@@ -4,57 +4,57 @@
 
 moved {
   from = aws_vpc.dbeaver_net
-  to   = module.vpc.aws_vpc.this[0]
+  to   = module.vpc[0].aws_vpc.this[0]
 }
 
 moved {
   from = aws_subnet.public_subnets[0]
-  to   = module.vpc.aws_subnet.public[0]
+  to   = module.vpc[0].aws_subnet.public[0]
 }
 
 moved {
   from = aws_subnet.public_subnets[1]
-  to   = module.vpc.aws_subnet.public[1]
+  to   = module.vpc[0].aws_subnet.public[1]
 }
 
 moved {
   from = aws_subnet.private_subnets[0]
-  to   = module.vpc.aws_subnet.private[0]
+  to   = module.vpc[0].aws_subnet.private[0]
 }
 
 moved {
   from = aws_subnet.private_subnets[1]
-  to   = module.vpc.aws_subnet.private[1]
+  to   = module.vpc[0].aws_subnet.private[1]
 }
 
 moved {
   from = aws_internet_gateway.dbeaver_gw
-  to   = module.vpc.aws_internet_gateway.this[0]
+  to   = module.vpc[0].aws_internet_gateway.this[0]
 }
 
 moved {
   from = aws_eip.dbeaver_nat_gateway
-  to   = module.vpc.aws_eip.nat[0]
+  to   = module.vpc[0].aws_eip.nat[0]
 }
 
 moved {
   from = aws_nat_gateway.nat_gateway
-  to   = module.vpc.aws_nat_gateway.this[0]
+  to   = module.vpc[0].aws_nat_gateway.this[0]
 }
 
 moved {
   from = aws_route_table.dbeaver_private_rt_nat
-  to   = module.vpc.aws_route_table.private[0]
+  to   = module.vpc[0].aws_route_table.private[0]
 }
 
 moved {
   from = aws_route_table_association.private_subnets_rt[0]
-  to   = module.vpc.aws_route_table_association.private[0]
+  to   = module.vpc[0].aws_route_table_association.private[0]
 }
 
 moved {
   from = aws_route_table_association.private_subnets_rt[1]
-  to   = module.vpc.aws_route_table_association.private[1]
+  to   = module.vpc[0].aws_route_table_association.private[1]
 }
 
 moved {

@@ -25,7 +25,7 @@ module "rds" {
 
   create_db_subnet_group = true
   db_subnet_group_name   = "dbeaverte-${var.deployment_id}-rds_db_subnet"
-  subnet_ids             = module.vpc.private_subnets
+  subnet_ids             = local.private_subnets
 
   vpc_security_group_ids = [aws_security_group.dbeaver_te_private.id]
 

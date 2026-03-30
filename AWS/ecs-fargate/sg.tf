@@ -1,6 +1,6 @@
 resource "aws_security_group" "dbeaver_alb" {
   name        = "DBeaverTE-${var.deployment_id}-sg-alb"
-  vpc_id      = module.vpc.vpc_id
+  vpc_id      = local.vpc_id
   description = "DBeaverTE ${var.deployment_id} ALB SG"
 
   ingress {
@@ -30,7 +30,7 @@ resource "aws_security_group" "dbeaver_alb" {
 
 resource "aws_security_group" "dbeaver_efs" {
   name        = "DBeaverTE-${var.deployment_id}-ecs-efs-sg"
-  vpc_id      = module.vpc.vpc_id
+  vpc_id      = local.vpc_id
   description = "DBeaverTE ${var.deployment_id} EFS SG"
 
   ingress {
@@ -51,7 +51,7 @@ resource "aws_security_group" "dbeaver_efs" {
 
 resource "aws_security_group" "dbeaver_te_private" {
   name        = "DBeaverTE-${var.deployment_id}-ecs-service-postgres"
-  vpc_id      = module.vpc.vpc_id
+  vpc_id      = local.vpc_id
   description = "DBeaverTE ${var.deployment_id} ECS Postgres SG"
 
   ingress {
@@ -79,7 +79,7 @@ resource "aws_security_group" "dbeaver_te_private" {
 
 resource "aws_security_group" "dbeaver_te" {
   name        = "DBeaverTE-${var.deployment_id}-ecs-service-dbeaver-te"
-  vpc_id      = module.vpc.vpc_id
+  vpc_id      = local.vpc_id
   description = "DBeaverTE ${var.deployment_id} ECS DBeaverTE SG"
 
   ingress {

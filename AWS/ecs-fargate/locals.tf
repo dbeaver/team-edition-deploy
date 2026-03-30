@@ -1,4 +1,8 @@
 locals {
+  vpc_id          = var.create_vpc ? module.vpc[0].vpc_id : var.vpc_id
+  public_subnets  = var.create_vpc ? module.vpc[0].public_subnets : var.public_subnet_ids
+  private_subnets = var.create_vpc ? module.vpc[0].private_subnets : var.private_subnet_ids
+
   rds_db_url = var.rds_db ? "jdbc:postgresql://${module.rds[0].db_instance_address}:5432/cloudbeaver" : ""
 
   cloudbeaver_dc_env_modified = [

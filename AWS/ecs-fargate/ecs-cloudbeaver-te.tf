@@ -61,7 +61,7 @@ resource "aws_ecs_service" "te" {
 
   network_configuration {
     security_groups  = [aws_security_group.dbeaver_te.id]
-    subnets          = module.vpc.private_subnets
+    subnets          = local.private_subnets
     assign_public_ip = false
   }
 

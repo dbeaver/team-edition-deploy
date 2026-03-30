@@ -14,9 +14,9 @@ resource "aws_efs_file_system" "cloudbeaver_db_data" {
 }
 
 resource "aws_efs_mount_target" "cloudbeaver_db_data_mt" {
-  count           = length(module.vpc.private_subnets)
+  count           = length(local.private_subnets)
   file_system_id  = aws_efs_file_system.cloudbeaver_db_data.id
-  subnet_id       = module.vpc.private_subnets[count.index]
+  subnet_id       = local.private_subnets[count.index]
   security_groups = [aws_security_group.dbeaver_efs.id]
 }
 
@@ -36,9 +36,9 @@ resource "aws_efs_file_system" "cloudbeaver_rm_data" {
 }
 
 resource "aws_efs_mount_target" "cloudbeaver_rm_data_mt" {
-  count           = length(module.vpc.private_subnets)
+  count           = length(local.private_subnets)
   file_system_id  = aws_efs_file_system.cloudbeaver_rm_data.id
-  subnet_id       = module.vpc.private_subnets[count.index]
+  subnet_id       = local.private_subnets[count.index]
   security_groups = [aws_security_group.dbeaver_efs.id]
 }
 
@@ -58,9 +58,9 @@ resource "aws_efs_file_system" "cloudbeaver_tm_data" {
 }
 
 resource "aws_efs_mount_target" "cloudbeaver_tm_data_mt" {
-  count           = length(module.vpc.private_subnets)
+  count           = length(local.private_subnets)
   file_system_id  = aws_efs_file_system.cloudbeaver_tm_data.id
-  subnet_id       = module.vpc.private_subnets[count.index]
+  subnet_id       = local.private_subnets[count.index]
   security_groups = [aws_security_group.dbeaver_efs.id]
 }
 
@@ -80,9 +80,9 @@ resource "aws_efs_file_system" "cloudbeaver_dc_data" {
 }
 
 resource "aws_efs_mount_target" "cloudbeaver_dc_data_mt" {
-  count           = length(module.vpc.private_subnets)
+  count           = length(local.private_subnets)
   file_system_id  = aws_efs_file_system.cloudbeaver_dc_data.id
-  subnet_id       = module.vpc.private_subnets[count.index]
+  subnet_id       = local.private_subnets[count.index]
   security_groups = [aws_security_group.dbeaver_efs.id]
 }
 
@@ -125,9 +125,9 @@ resource "aws_efs_access_point" "certs_public" {
 }
 
 resource "aws_efs_mount_target" "cloudbeaver_certificates_mt" {
-  count           = length(module.vpc.private_subnets)
+  count           = length(local.private_subnets)
   file_system_id  = aws_efs_file_system.cloudbeaver_certificates.id
-  subnet_id       = module.vpc.private_subnets[count.index]
+  subnet_id       = local.private_subnets[count.index]
   security_groups = [aws_security_group.dbeaver_efs.id]
 }
 
@@ -147,8 +147,8 @@ resource "aws_efs_file_system" "api_tokens" {
 }
 
 resource "aws_efs_mount_target" "api_tokens_mt" {
-  count           = length(module.vpc.private_subnets)
+  count           = length(local.private_subnets)
   file_system_id  = aws_efs_file_system.api_tokens.id
-  subnet_id       = module.vpc.private_subnets[count.index]
+  subnet_id       = local.private_subnets[count.index]
   security_groups = [aws_security_group.dbeaver_efs.id]
 }

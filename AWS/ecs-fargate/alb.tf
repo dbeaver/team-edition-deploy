@@ -1,5 +1,5 @@
 ################################################################################
-# ALB
+# AWS ALB
 ################################################################################
 
 resource "aws_lb" "dbeaver_te_lb" {
@@ -7,7 +7,7 @@ resource "aws_lb" "dbeaver_te_lb" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.dbeaver_alb.id]
-  subnets            = module.vpc.public_subnets
+  subnets            = local.public_subnets
 
   tags = {
     env = var.deployment_id
@@ -124,7 +124,7 @@ resource "aws_lb_target_group" "dbeaver_dc" {
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
-  vpc_id      = module.vpc.vpc_id
+  vpc_id      = local.vpc_id
 
   health_check {
     matcher             = "200,302"
@@ -139,7 +139,7 @@ resource "aws_lb_target_group" "dbeaver_te" {
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
-  vpc_id      = module.vpc.vpc_id
+  vpc_id      = local.vpc_id
 
   health_check {
     matcher             = "200,302"
@@ -159,7 +159,7 @@ resource "aws_lb_target_group" "dbeaver_qm" {
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
-  vpc_id      = module.vpc.vpc_id
+  vpc_id      = local.vpc_id
 
   health_check {
     matcher             = "200,302"
@@ -174,7 +174,7 @@ resource "aws_lb_target_group" "dbeaver_rm" {
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
-  vpc_id      = module.vpc.vpc_id
+  vpc_id      = local.vpc_id
 
   health_check {
     matcher             = "200,302"
@@ -189,7 +189,7 @@ resource "aws_lb_target_group" "dbeaver_tm" {
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
-  vpc_id      = module.vpc.vpc_id
+  vpc_id      = local.vpc_id
 
   health_check {
     matcher             = "200,302"

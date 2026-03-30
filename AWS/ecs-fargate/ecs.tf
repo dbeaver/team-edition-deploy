@@ -27,5 +27,5 @@ module "ecs_cluster" {
 resource "aws_service_discovery_private_dns_namespace" "dbeaver" {
   name        = "${var.deployment_id}-${var.dbeaver_te_default_ns}"
   description = "DBeaver SD Namespace"
-  vpc         = module.vpc.vpc_id
+  vpc         = local.vpc_id
 }
