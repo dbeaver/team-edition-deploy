@@ -2,6 +2,19 @@
 # RDS PostgreSQL (optional, enabled via var.rds_db)
 ################################################################################
 
+variable "db_instance_class" {
+  description = "The instance type of the RDS instance"
+  type        = string
+  default     = "db.t3.micro"
+}
+
+variable "db_allocated_storage" {
+  description = "The allocated storage in gigabytes"
+  type        = number
+  default     = 20
+}
+
+
 module "rds" {
   source  = "terraform-aws-modules/rds/aws"
   version = "~> 6.0"

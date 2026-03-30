@@ -1,7 +1,7 @@
 resource "aws_security_group" "dbeaver_alb" {
   name        = "DBeaverTE-${var.deployment_id}-sg-alb"
   vpc_id      = local.vpc_id
-  description = "DBeaverTE ${var.deployment_id} ALB SG"
+  description = "DBeaverTE ${var.deployment_id} EKS Default SG"
 
   ingress {
     protocol         = "tcp"
@@ -31,7 +31,7 @@ resource "aws_security_group" "dbeaver_alb" {
 resource "aws_security_group" "dbeaver_efs" {
   name        = "DBeaverTE-${var.deployment_id}-ecs-efs-sg"
   vpc_id      = local.vpc_id
-  description = "DBeaverTE ${var.deployment_id} EFS SG"
+  description = "DBeaverTE ${var.deployment_id} efs SG"
 
   ingress {
     protocol    = "tcp"

@@ -25,6 +25,10 @@ module "vpc" {
 
   map_public_ip_on_launch = true
 
+  manage_default_network_acl    = false
+  manage_default_route_table    = false
+  manage_default_security_group = false
+
   public_subnet_tags = {
     Env = var.deployment_id
   }

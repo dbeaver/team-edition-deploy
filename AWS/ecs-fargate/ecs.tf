@@ -10,6 +10,11 @@ module "ecs_cluster" {
 
   create_cloudwatch_log_group = false
 
+  cluster_settings = {
+    "name"  = "containerInsights"
+    "value" = "disabled"
+  }
+
   fargate_capacity_providers = {
     FARGATE = {
       default_capacity_provider_strategy = {
