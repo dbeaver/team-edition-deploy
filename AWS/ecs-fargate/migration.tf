@@ -42,19 +42,20 @@ moved {
   to   = module.vpc[0].aws_nat_gateway.this[0]
 }
 
-moved {
+
+
+removed {
   from = aws_route_table.dbeaver_private_rt_nat
-  to   = module.vpc[0].aws_route_table.private[0]
+  lifecycle {
+    destroy = false
+  }
 }
 
-moved {
-  from = aws_route_table_association.private_subnets_rt[0]
-  to   = module.vpc[0].aws_route_table_association.private[0]
-}
-
-moved {
-  from = aws_route_table_association.private_subnets_rt[1]
-  to   = module.vpc[0].aws_route_table_association.private[1]
+removed {
+  from = aws_route_table_association.private_subnets_rt
+  lifecycle {
+    destroy = false
+  }
 }
 
 moved {
