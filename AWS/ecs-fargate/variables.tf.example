@@ -64,7 +64,6 @@ variable "rds_db_version" {
   default     = "16.1"
 }
 
-
 variable "cloudbeaver-db-env" {
   description = "Parameters for your internal database"
   # type = map(string)
