@@ -47,7 +47,7 @@ moved {
 removed {
   from = aws_route_table.dbeaver_private_rt_nat
   lifecycle {
-    destroy = false
+    destroy = true
   }
 }
 
