@@ -64,19 +64,6 @@ variable "rds_db_version" {
   default     = "16.1"
 }
 
-
-variable "db_instance_class" {
-  description = "The instance type of the RDS instance"
-  type        = string
-  default     = "db.t3.micro"
-}
-
-variable "db_allocated_storage" {
-  description = "The allocated storage in gigabytes"
-  type        = number
-  default     = 20
-}
-
 variable "cloudbeaver-db-env" {
   description = "Parameters for your internal database"
   # type = map(string)
