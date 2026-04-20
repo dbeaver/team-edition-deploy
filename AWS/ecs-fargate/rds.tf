@@ -2,26 +2,14 @@
 # RDS PostgreSQL (optional, enabled via var.rds_db)
 ################################################################################
 
-variable "db_instance_class" {
-  description = "The instance type of the RDS instance"
-  type        = string
-  default     = "db.t3.micro"
-}
-
-variable "db_allocated_storage" {
-  description = "The allocated storage in gigabytes"
-  type        = number
-  default     = 20
-}
-
-
 module "rds" {
-  source  = "terraform-aws-modules/rds/aws"
-  version = "~> 6.0"
+  source = "./modules/rds"
 
   count = var.rds_db ? 1 : 0
 
-  identifier = "dbeaverte-${var.deployment_id}"
+  identifier        = lower("${local.name_prefix}-${var.deployment_id}")
+  subnet_group_name = lower("${local.name_prefix}-${var.deployment_id}-rds_db_subnet")
+  subnet_ids        = local.private_subnets
 
   engine         = var.rds_db_type
   engine_version = var.rds_db_version
@@ -32,21 +20,11 @@ module "rds" {
 
   db_name  = var.cloudbeaver-db-env[2].value
   username = var.cloudbeaver-db-env[1].value
-
-  manage_master_user_password = false
-  password                    = var.cloudbeaver-db-env[0].value
-
-  create_db_subnet_group = true
-  db_subnet_group_name   = "dbeaverte-${var.deployment_id}-rds_db_subnet"
-  subnet_ids             = local.private_subnets
+  password = var.cloudbeaver-db-env[0].value
 
   vpc_security_group_ids = [aws_security_group.dbeaver_te_private.id]
 
   skip_final_snapshot = true
-
-  create_monitoring_role    = false
-  create_db_option_group    = false
-  create_db_parameter_group = false
 
   tags = {
     Env  = var.deployment_id

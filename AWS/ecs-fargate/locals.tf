@@ -1,9 +1,31 @@
 locals {
+  name_prefix      = "DBeaverTE"
+  name_prefix_full = "DBeaverTeamEdition"
+
   vpc_id          = var.create_vpc ? module.vpc[0].vpc_id : var.vpc_id
   public_subnets  = var.create_vpc ? module.vpc[0].public_subnets : var.public_subnet_ids
   private_subnets = var.create_vpc ? module.vpc[0].private_subnets : var.private_subnet_ids
 
+  log_group_name = "${local.name_prefix_full}-${var.deployment_id}"
+
   rds_db_url = var.rds_db ? "jdbc:postgresql://${module.rds[0].db_instance_address}:5432/cloudbeaver" : ""
+
+  efs_volumes = {
+    db_data = { name = "cloudbeaver_db_data" }
+    rm_data = { name = "cloudbeaver_rm_data" }
+    tm_data = { name = "cloudbeaver_tm_data" }
+    dc_data = { name = "cloudbeaver_dc_data" }
+    certificates = {
+      name = "cloudbeaver_certificates"
+      access_point = {
+        path        = "/public"
+        owner_uid   = 8978
+        owner_gid   = 8978
+        permissions = "0755"
+      }
+    }
+    api_tokens = { name = "api_tokens" }
+  }
 
   cloudbeaver_dc_env_modified = [
     for item in var.cloudbeaver-dc-env : {

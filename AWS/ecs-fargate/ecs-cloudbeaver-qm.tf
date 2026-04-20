@@ -2,91 +2,59 @@
 # DBeaver TE QM
 ################################################################################
 
-resource "aws_ecs_task_definition" "dbeaver_qm" {
-  family                   = "DBeaverTeamEdition-${var.deployment_id}-qm"
-  network_mode             = "awsvpc"
-  requires_compatibilities = ["FARGATE"]
-  cpu                      = 1024
-  memory                   = 2048
-  execution_role_arn       = aws_iam_role.ecsTaskExecutionRole.arn
-  task_role_arn            = aws_iam_role.ecs_task_role_exec.arn
+module "cloudbeaver_qm_route" {
+  source = "./modules/alb-route"
 
-  volume {
-    name = "${var.deployment_id}-cloudbeaver_certificates_public"
-    efs_volume_configuration {
-      file_system_id     = aws_efs_file_system.cloudbeaver_certificates.id
-      transit_encryption = "ENABLED"
+  name              = "${local.name_prefix}-${var.deployment_id}-qm"
+  vpc_id            = local.vpc_id
+  listener_arn      = module.alb.https_listener_arn
+  path_pattern      = "/qm*"
+  priority          = 98
+  health_check_path = "/qm/health"
 
-      authorization_config {
-        access_point_id = aws_efs_access_point.certs_public.id
-        iam             = "DISABLED"
-      }
-    }
-  }
-
-  container_definitions = jsonencode([{
-    name        = "${var.deployment_id}-cloudbeaver-qm"
-    image       = "${var.image_source}/cloudbeaver-qm:${var.dbeaver_te_version}"
-    essential   = true
-    environment = local.cloudbeaver_shared_env_modified
-    mountPoints = [
-      {
-        containerPath = "/opt/query-manager/conf/certificates"
-        sourceVolume  = "${var.deployment_id}-cloudbeaver_certificates_public"
-      }
-    ]
-    logConfiguration = {
-      logDriver = "awslogs"
-      options = {
-        awslogs-group         = "DBeaverTeamEdition-${var.deployment_id}"
-        awslogs-region        = var.aws_region
-        awslogs-create-group  = "true"
-        awslogs-stream-prefix = "qm"
-      }
-    }
-    portMappings = [{
-      name          = "${var.deployment_id}-cloudbeaver-qm"
-      protocol      = "tcp"
-      containerPort = 8972
-      hostPort      = 8972
-    }]
-  }])
+  tags = { Env = var.deployment_id }
 }
 
-resource "aws_ecs_service" "qm" {
-  name                   = "${var.deployment_id}-cloudbeaver-qm"
-  cluster                = module.ecs_cluster.id
-  task_definition        = aws_ecs_task_definition.dbeaver_qm.arn
-  launch_type            = "FARGATE"
-  desired_count          = var.desired_count["qm"]
-  enable_execute_command = true
+module "cloudbeaver_qm" {
+  source = "./modules/ecs-service"
 
-  network_configuration {
-    security_groups  = [aws_security_group.dbeaver_te.id]
-    subnets          = local.private_subnets
-    assign_public_ip = false
-  }
+  name             = "cloudbeaver-qm"
+  name_prefix      = local.name_prefix
+  name_prefix_full = local.name_prefix_full
+  family_suffix    = "qm"
+  deployment_id    = var.deployment_id
+  image            = "${var.image_source}/cloudbeaver-qm:${var.dbeaver_te_version}"
+  cpu              = 1024
+  memory           = 2048
+  container_port   = 8972
 
-  service_connect_configuration {
-    enabled   = true
-    namespace = aws_service_discovery_private_dns_namespace.dbeaver.arn
-    service {
-      port_name = "${var.deployment_id}-cloudbeaver-qm"
-      client_alias {
-        dns_name = "${var.deployment_id}-cloudbeaver-qm"
-        port     = 8972
-      }
+  execution_role_arn = module.iam.execution_role_arn
+  task_role_arn      = module.iam.task_role_arn
+  environment        = local.cloudbeaver_shared_env_modified
+
+  efs_volumes = [
+    {
+      name               = "cloudbeaver_certificates_public"
+      file_system_id     = module.efs["certificates"].file_system_id
+      access_point_id    = module.efs["certificates"].access_point_id
+      mount_path         = "/opt/query-manager/conf/certificates"
+      transit_encryption = true
     }
-  }
+  ]
 
-  load_balancer {
-    target_group_arn = aws_lb_target_group.dbeaver_qm.arn
-    container_name   = "${var.deployment_id}-cloudbeaver-qm"
-    container_port   = 8972
-  }
+  cluster_id                    = module.ecs_cluster.id
+  security_group_ids            = [aws_security_group.dbeaver_te.id]
+  subnet_ids                    = local.private_subnets
+  service_connect_namespace_arn = aws_service_discovery_private_dns_namespace.dbeaver.arn
+  desired_count                 = var.desired_count["qm"]
+  enable_execute_command        = true
 
-  tags = {
-    Env  = var.deployment_id
-    Name = "DBeaverTeamEdition-qm"
-  }
+  target_group_arn = module.cloudbeaver_qm_route.target_group_arn
+
+  aws_region     = var.aws_region
+  log_group_name = local.log_group_name
+
+  tags = { Env = var.deployment_id }
+
+  depends_on = [module.cloudbeaver_dc]
 }

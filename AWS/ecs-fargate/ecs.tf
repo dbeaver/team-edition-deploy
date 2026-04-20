@@ -3,26 +3,14 @@
 ################################################################################
 
 module "ecs_cluster" {
-  source  = "terraform-aws-modules/ecs/aws//modules/cluster"
-  version = "~> 5.0"
+  source = "./modules/ecs-cluster"
 
-  cluster_name = "DBeaverTeamEdition-${var.deployment_id}"
+  name = "${local.name_prefix_full}-${var.deployment_id}"
 
-  create_cloudwatch_log_group = false
-
-  cluster_settings = {
-    "name"  = "containerInsights"
-    "value" = "disabled"
-  }
-
-  fargate_capacity_providers = {
-    FARGATE = {
-      default_capacity_provider_strategy = {
-        weight = 1
-        base   = 1
-      }
-    }
-  }
+  capacity_providers               = ["FARGATE"]
+  default_capacity_provider        = "FARGATE"
+  default_capacity_provider_base   = 1
+  default_capacity_provider_weight = 1
 
   tags = {
     Env = var.deployment_id

@@ -2,89 +2,61 @@
 # DBeaver TE CloudBeaver
 ################################################################################
 
-resource "aws_ecs_task_definition" "dbeaver_te" {
-  family                   = "DBeaverTeamEdition-${var.deployment_id}-te"
-  network_mode             = "awsvpc"
-  requires_compatibilities = ["FARGATE"]
-  cpu                      = 4096
-  memory                   = 8192
-  execution_role_arn       = aws_iam_role.ecsTaskExecutionRole.arn
-  task_role_arn            = aws_iam_role.ecs_task_role_exec.arn
+module "cloudbeaver_te_route" {
+  source = "./modules/alb-route"
 
-  volume {
-    name = "${var.deployment_id}-cloudbeaver_certificates_public"
-    efs_volume_configuration {
-      file_system_id     = aws_efs_file_system.cloudbeaver_certificates.id
-      transit_encryption = "ENABLED"
+  name                             = "${local.name_prefix}-${var.deployment_id}"
+  vpc_id                           = local.vpc_id
+  listener_arn                     = module.alb.https_listener_arn
+  path_pattern                     = "/*"
+  priority                         = 200
+  health_check_path                = "/"
+  health_check_unhealthy_threshold = 10
+  stickiness_enabled               = true
 
-      authorization_config {
-        access_point_id = aws_efs_access_point.certs_public.id
-        iam             = "DISABLED"
-      }
-    }
-  }
-
-  container_definitions = jsonencode([{
-    name        = "${var.deployment_id}-cloudbeaver-te"
-    image       = "${var.image_source}/cloudbeaver-te:${var.dbeaver_te_version}"
-    essential   = true
-    environment = local.cloudbeaver_shared_env_modified
-    mountPoints = [{
-      containerPath = "/opt/cloudbeaver/conf/certificates"
-      sourceVolume  = "${var.deployment_id}-cloudbeaver_certificates_public"
-    }]
-    logConfiguration = {
-      logDriver = "awslogs"
-      options = {
-        awslogs-group         = "DBeaverTeamEdition-${var.deployment_id}"
-        awslogs-region        = var.aws_region
-        awslogs-create-group  = "true"
-        awslogs-stream-prefix = "te"
-      }
-    }
-    portMappings = [{
-      name          = "${var.deployment_id}-cloudbeaver-te"
-      protocol      = "tcp"
-      containerPort = 8978
-      hostPort      = 8978
-    }]
-  }])
+  tags = { Env = var.deployment_id }
 }
 
-resource "aws_ecs_service" "te" {
-  name                   = "${var.deployment_id}-cloudbeaver-te"
-  cluster                = module.ecs_cluster.id
-  task_definition        = aws_ecs_task_definition.dbeaver_te.arn
-  launch_type            = "FARGATE"
-  desired_count          = var.desired_count["te"]
-  enable_execute_command = true
+module "cloudbeaver_te" {
+  source = "./modules/ecs-service"
 
-  network_configuration {
-    security_groups  = [aws_security_group.dbeaver_te.id]
-    subnets          = local.private_subnets
-    assign_public_ip = false
-  }
+  name             = "cloudbeaver-te"
+  name_prefix      = local.name_prefix
+  name_prefix_full = local.name_prefix_full
+  family_suffix    = "te"
+  deployment_id    = var.deployment_id
+  image            = "${var.image_source}/cloudbeaver-te:${var.dbeaver_te_version}"
+  cpu              = 4096
+  memory           = 8192
+  container_port   = 8978
 
-  service_connect_configuration {
-    enabled   = true
-    namespace = aws_service_discovery_private_dns_namespace.dbeaver.arn
-    service {
-      port_name = "${var.deployment_id}-cloudbeaver-te"
-      client_alias {
-        dns_name = "${var.deployment_id}-cloudbeaver-te"
-        port     = 8978
-      }
+  execution_role_arn = module.iam.execution_role_arn
+  task_role_arn      = module.iam.task_role_arn
+  environment        = local.cloudbeaver_shared_env_modified
+
+  efs_volumes = [
+    {
+      name               = "cloudbeaver_certificates_public"
+      file_system_id     = module.efs["certificates"].file_system_id
+      access_point_id    = module.efs["certificates"].access_point_id
+      mount_path         = "/opt/cloudbeaver/conf/certificates"
+      transit_encryption = true
     }
-  }
+  ]
 
-  load_balancer {
-    target_group_arn = aws_lb_target_group.dbeaver_te.arn
-    container_name   = "${var.deployment_id}-cloudbeaver-te"
-    container_port   = 8978
-  }
+  cluster_id                    = module.ecs_cluster.id
+  security_group_ids            = [aws_security_group.dbeaver_te.id]
+  subnet_ids                    = local.private_subnets
+  service_connect_namespace_arn = aws_service_discovery_private_dns_namespace.dbeaver.arn
+  desired_count                 = var.desired_count["te"]
+  enable_execute_command        = true
 
-  tags = {
-    Env  = var.deployment_id
-    Name = "DBeaverTeamEdition-${var.deployment_id}-te"
-  }
+  target_group_arn = module.cloudbeaver_te_route.target_group_arn
+
+  aws_region     = var.aws_region
+  log_group_name = local.log_group_name
+
+  tags = { Env = var.deployment_id }
+
+  depends_on = [module.cloudbeaver_dc, module.cloudbeaver_qm, module.cloudbeaver_rm]
 }

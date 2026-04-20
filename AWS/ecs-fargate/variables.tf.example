@@ -61,7 +61,7 @@ variable "rds_db_type" {
 variable "rds_db_version" {
   description = "Version of type RDS DB instance"
   type        = string
-  default     = "16.1"
+  default     = "16.6"
 }
 
 variable "cloudbeaver-db-env" {
@@ -78,9 +78,45 @@ variable "cloudbeaver-db-env" {
 }
 
 
+variable "db_instance_class" {
+  description = "The instance type of the RDS instance"
+  type        = string
+  default     = "db.t3.micro"
+}
+
+variable "db_allocated_storage" {
+  description = "The allocated storage in gigabytes"
+  type        = number
+  default     = 20
+}
+
 variable "dbeaver_te_default_ns" {
   type    = string
   default = "dbeaver-te.local"
+}
+
+variable "create_vpc" {
+  description = "Whether to create a new VPC or use an existing one"
+  type        = bool
+  default     = true
+}
+
+variable "vpc_id" {
+  description = "Existing VPC ID (used when create_vpc = false)"
+  type        = string
+  default     = ""
+}
+
+variable "public_subnet_ids" {
+  description = "Existing public subnet IDs (used when create_vpc = false)"
+  type        = list(string)
+  default     = []
+}
+
+variable "private_subnet_ids" {
+  description = "Existing private subnet IDs (used when create_vpc = false)"
+  type        = list(string)
+  default     = []
 }
 
 variable "vpc_cidr" {

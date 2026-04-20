@@ -1,5 +1,9 @@
+################################################################################
+# Security Groups
+################################################################################
+
 resource "aws_security_group" "dbeaver_alb" {
-  name        = "DBeaverTE-${var.deployment_id}-sg-alb"
+  name        = "${local.name_prefix}-${var.deployment_id}-sg-alb"
   vpc_id      = local.vpc_id
   description = "DBeaverTE ${var.deployment_id} EKS Default SG"
 
@@ -9,6 +13,7 @@ resource "aws_security_group" "dbeaver_alb" {
     to_port          = 80
     cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
+    description      = "HTTP"
   }
 
   ingress {
@@ -17,6 +22,7 @@ resource "aws_security_group" "dbeaver_alb" {
     to_port          = 443
     cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
+    description      = "HTTPS"
   }
 
   egress {
@@ -26,10 +32,14 @@ resource "aws_security_group" "dbeaver_alb" {
     cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
   }
+
+  tags = {
+    Env = var.deployment_id
+  }
 }
 
 resource "aws_security_group" "dbeaver_efs" {
-  name        = "DBeaverTE-${var.deployment_id}-ecs-efs-sg"
+  name        = "${local.name_prefix}-${var.deployment_id}-ecs-efs-sg"
   vpc_id      = local.vpc_id
   description = "DBeaverTE ${var.deployment_id} efs SG"
 
@@ -47,10 +57,14 @@ resource "aws_security_group" "dbeaver_efs" {
     to_port     = 0
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  tags = {
+    Env = var.deployment_id
+  }
 }
 
 resource "aws_security_group" "dbeaver_te_private" {
-  name        = "DBeaverTE-${var.deployment_id}-ecs-service-postgres"
+  name        = "${local.name_prefix}-${var.deployment_id}-ecs-service-postgres"
   vpc_id      = local.vpc_id
   description = "DBeaverTE ${var.deployment_id} ECS Postgres SG"
 
@@ -59,6 +73,7 @@ resource "aws_security_group" "dbeaver_te_private" {
     from_port   = 5432
     to_port     = 5432
     cidr_blocks = var.private_subnet_cidrs
+    description = "PostgreSQL"
   }
 
   ingress {
@@ -66,6 +81,7 @@ resource "aws_security_group" "dbeaver_te_private" {
     from_port   = 9092
     to_port     = 9093
     cidr_blocks = var.private_subnet_cidrs
+    description = "Kafka"
   }
 
   egress {
@@ -75,10 +91,14 @@ resource "aws_security_group" "dbeaver_te_private" {
     cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
   }
+
+  tags = {
+    Env = var.deployment_id
+  }
 }
 
 resource "aws_security_group" "dbeaver_te" {
-  name        = "DBeaverTE-${var.deployment_id}-ecs-service-dbeaver-te"
+  name        = "${local.name_prefix}-${var.deployment_id}-ecs-service-dbeaver-te"
   vpc_id      = local.vpc_id
   description = "DBeaverTE ${var.deployment_id} ECS DBeaverTE SG"
 
@@ -95,5 +115,9 @@ resource "aws_security_group" "dbeaver_te" {
     to_port          = 0
     cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
+  }
+
+  tags = {
+    Env = var.deployment_id
   }
 }
