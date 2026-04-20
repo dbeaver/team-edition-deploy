@@ -26,7 +26,7 @@ variable "security_group_ids" {
 variable "encrypted" {
   description = "Whether to enable encryption at rest"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "performance_mode" {

@@ -11,7 +11,7 @@ module "efs" {
   name_prefix        = local.name_prefix
   subnet_ids         = local.private_subnets
   security_group_ids = [aws_security_group.dbeaver_efs.id]
-  encrypted          = true
+  encrypted          = var.efs_encrypted
 
   access_point = lookup(each.value, "access_point", null)
 

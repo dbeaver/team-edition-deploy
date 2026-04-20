@@ -90,6 +90,13 @@ variable "db_allocated_storage" {
   default     = 20
 }
 
+# WARNING: changing this on an existing deployment forces recreation and destroys all EFS data
+variable "efs_encrypted" {
+  description = "Enable encryption for EFS file systems"
+  type        = bool
+  default     = true
+}
+
 variable "dbeaver_te_default_ns" {
   type    = string
   default = "dbeaver-te.local"
