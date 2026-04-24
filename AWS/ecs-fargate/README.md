@@ -75,3 +75,19 @@ git clone https://github.com/dbeaver/team-edition-deploy.git
 2. Specify the desired version in  `variables.tf` in the `dbeaver_te_version` variable.
 
 3. Run `terraform apply` to upgrade the ECS cluster and complete the deployment.
+
+
+## Modules description
+
+This deployment is built on self-contained parameterized Terraform modules. All modules are located in the local [`./modules/`](./modules/) folder, so every piece of infrastructure can be reviewed, customized and maintained. Root `*.tf` files only wire modules together and pass variables, resource definitions are kept inside the modules.
+
+- **alb** — Application Load Balancer with HTTP to HTTPS redirect and HTTPS listener.
+- **alb-route** — Target group and listener rule for a single backend service.
+- **ecs-cluster** — ECS cluster with Fargate capacity providers.
+- **ecs-service** — Fargate task definition and ECS service, with optional EFS volumes and ALB target group.
+- **efs-volume** — EFS file system, mount targets and optional access point.
+- **iam** — ECS task and execution IAM roles with CloudWatch Logs and EFS access policies.
+- **rds** — RDS instance and DB subnet group.
+- **vpc** — VPC with public/private subnets, Internet Gateway, NAT Gateway and route tables.
+
+For customers who used the previous flat Terraform deployment, the [`migration.tf`](./migration.tf) file remaps the existing Terraform state to the new module layout, so `terraform apply` preserves the environment without losing data.
