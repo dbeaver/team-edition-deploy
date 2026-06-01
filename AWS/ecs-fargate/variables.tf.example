@@ -64,6 +64,12 @@ variable "rds_db_version" {
   default     = "16.6"
 }
 
+variable "db_image" {
+  description = "Image for the internal database container"
+  type        = string
+  default     = "dbeaver/cloudbeaver-postgres:16"
+}
+
 variable "cloudbeaver-db-env" {
   description = "Parameters for your internal database"
   # type = map(string)

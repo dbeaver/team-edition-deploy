@@ -13,7 +13,7 @@ module "postgres" {
   log_prefix              = "db"
   deployment_id           = var.deployment_id
   container_name_override = "${var.deployment_id}-postgres"
-  image                   = "${var.image_source}/cloudbeaver-postgres:16"
+  image                   = var.db_image
   cpu                     = 256
   memory                  = 512
   container_port          = 5432
