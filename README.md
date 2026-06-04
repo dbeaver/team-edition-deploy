@@ -1,8 +1,6 @@
 ## DBeaver Team Edition
 
-#### Version 26.1 Early Access
-
-**Warning:** Please keep in mind that Early Access versions are not as stable as regular releases, and their use in a production environment is not recommended.
+#### Version 26.1
 
 DBeaver Team Edition is a client-server application.  
 It requires server deployment. You can deploy it on a single host (e.g. your local computer)
@@ -40,7 +38,7 @@ DBeaver Team Edition works in conjunction with a desktop client application. Aft
 - **Web interface** – accessible directly through your browser
 - **Desktop client** – provides enhanced features and better performance
 
-Download the desktop client for your platform: [**DBeaver Team Edition Desktop**](https://dbeaver.com/files/ea/team/)
+Download the desktop client for your platform: [**DBeaver Team Edition Desktop**](https://dbeaver.com/downloads-team/26.1.0/)
 
 ### Server version update  
 Version update is handled differently for different deployment methods. To update the Team Edition version, follow these instructions:  
