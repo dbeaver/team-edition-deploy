@@ -23,7 +23,13 @@ spec:
           name: kafka
           ports:
             - containerPort: 9092
-          resources: {}
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "500m"
+            limits:
+              memory: "2Gi"
+              cpu: "2000m"
       hostname: kafka
       restartPolicy: Always
 status: {}
