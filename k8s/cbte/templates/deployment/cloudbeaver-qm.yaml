@@ -19,6 +19,9 @@ spec:
         {{ .Release.Name }}-private-net: "true"
         app: cloudbeaver-qm
     spec:
+      {{- with .Values.serviceAccount }}
+      serviceAccountName: {{ .name | default "cloudbeaver" | quote }}
+      {{- end }}
       # securityContext:
       #     runAsUser: 1000
       #     runAsGroup: 1000
