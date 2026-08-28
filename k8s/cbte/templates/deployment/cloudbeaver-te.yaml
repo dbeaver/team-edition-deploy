@@ -18,6 +18,9 @@ spec:
         {{ .Release.Name }}-net: "true"
         app: cloudbeaver-te
     spec:
+      {{- with .Values.serviceAccount }}
+      serviceAccountName: {{ .name | default "cloudbeaver" | quote }}
+      {{- end }}
       # securityContext:
       #     runAsUser: 1000
       #     runAsGroup: 1000

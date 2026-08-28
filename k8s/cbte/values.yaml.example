@@ -9,6 +9,13 @@ cloudbeaver:
   # pullCredsName - name of a secret config map that contains docker repo auths
   # pullCredsName: regcred
 
+# Kubernetes ServiceAccount assigned to CloudBeaver workloads
+serviceAccount:
+  create: true
+  name: cloudbeaver
+  # AWS IRSA example: eks.amazonaws.com/role-arn: arn:aws:iam::<account-id>:role/<role-name>
+  annotations: {}
+
 # Ingress Values
 # Supported ingress controllers: aws-alb, nginx, haproxy
 ingressController: nginx
