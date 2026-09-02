@@ -55,8 +55,11 @@ Previously, the volumes were owned by the ‘root’ user, but now they are owne
 #### Version update procedure
 
 1. Change directory to `team-edition-deploy/k8s/cbte`.
-2. Change value of `imageTag` in configuration file `values.yaml` with a preferred version. Go to next step if tag `latest` is set.
-3. Upgrade cluster: `helm upgrade cloudbeaver-te ./ --values ./values.yaml`
+2. Update your deployment files:
+   - Fetch the latest changes: `git fetch`.
+   - Switch to the branch for the version you're updating to: `git checkout <version>` (for example, `git checkout 26.1.0`).
+3. Change the value of `imageTag` in the `values.yaml` configuration file to the preferred version. Skip this step if the tag is set to `latest`.
+4. Upgrade the cluster: `helm upgrade cloudbeaver-te ./ --values ./values.yaml`.
 
 ### Additional configuration
 
