@@ -307,11 +307,18 @@ rollbackCloudBeaver() {
 			return 0
 		fi
 		echo -n "."
-		let "TEAM_EDITION_STATUS_RETRY-=1"
+		TEAM_EDITION_STATUS_RETRY=$((TEAM_EDITION_STATUS_RETRY - 1))
 		sleep 1
 	done
 
 	echo -e "ERROR: Failed to start after rollback."
+	printSupportMessage
+	exit 1
+}
+
+rollbackUpdate() {
+	echo -e "\nERROR: $1. Rolling back to version $TEAM_EDITION_TAG..."
+	rollbackCloudBeaver "$BACKUP_DIR" "$TEAM_EDITION_TAG"
 	printSupportMessage
 	exit 1
 }
@@ -359,14 +366,6 @@ updateCloudbeaver() {
         	exit 1
         }
         
-        # Stop team-edition-deploy
-        docker compose \
-            -f "$TEAM_EDITION_COMPOSE_DIR/$COMPOSE_FILE" \
-            --env-file "$TEAM_EDITION_COMPOSE_DIR/.env" \
-            --project-directory "$TEAM_EDITION_COMPOSE_DIR/" \
-            down \
-            --remove-orphans
-        
         # Backup current configuration
         mkdir -p "$BACKUP_DIR"
         rsync -av --exclude='cert' --exclude='nginx' "$TEAM_EDITION_COMPOSE_DIR/" "$BACKUP_DIR/"
@@ -383,6 +382,15 @@ updateCloudbeaver() {
             echo "Your local changes have been saved in branch: $USER_BACKUP_BRANCH"
         fi
 
+        # Stop team-edition-deploy
+        docker compose \
+            -f "$TEAM_EDITION_COMPOSE_DIR/$COMPOSE_FILE" \
+            --env-file "$TEAM_EDITION_COMPOSE_DIR/.env" \
+            --project-directory "$TEAM_EDITION_COMPOSE_DIR/" \
+            down \
+            --remove-orphans \
+            || rollbackUpdate "Failed to stop the current version"
+
         # Checkout new version
         git checkout --force $TEAM_EDITION_NEW_TAG || { 
         	echo "==============================================================================="
@@ -394,7 +402,8 @@ updateCloudbeaver() {
         }
 
         if [ "${PRODUCT_MODIFIER_ID}" = "aws" ]; then
-            sed -i 's/cloudbeaver-dc\:\$/cloudbeaver-dc-aws\:\$/g' "$TEAM_EDITION_COMPOSE_DIR/$COMPOSE_FILE"
+            sed -i 's/cloudbeaver-dc\:\$/cloudbeaver-dc-aws\:\$/g' "$TEAM_EDITION_COMPOSE_DIR/$COMPOSE_FILE" \
+                || rollbackUpdate "Failed to apply the AWS product modifier"
             if ! grep -q "cloudbeaver-dc-aws:" "$TEAM_EDITION_COMPOSE_DIR/$COMPOSE_FILE"; then
                 echo "Error: Failed to apply the AWS product modifier to $COMPOSE_FILE."
                 rollbackCloudBeaver "$BACKUP_DIR" "$TEAM_EDITION_TAG"
@@ -405,7 +414,8 @@ updateCloudbeaver() {
 
         sed -i \
             "s/CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_TAG/CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_NEW_TAG/g" \
-            "$TEAM_EDITION_COMPOSE_DIR/.env"
+            "$TEAM_EDITION_COMPOSE_DIR/.env" \
+            || rollbackUpdate "Failed to update the version in .env"
         
         export CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_NEW_TAG
 
@@ -430,7 +440,8 @@ updateCloudbeaver() {
         	--project-directory "$TEAM_EDITION_COMPOSE_DIR/" \
         	up -d \
         	--remove-orphans \
-        	--pull always
+	        --pull always \
+	        || rollbackUpdate "Failed to start the new version"
         
         TEAM_EDITION_STATUS_RETRY=300
         until [ $TEAM_EDITION_STATUS_RETRY -lt 0 ]; do
@@ -440,7 +451,7 @@ updateCloudbeaver() {
                 return 0
             fi
             echo -n "."
-            let "TEAM_EDITION_STATUS_RETRY-=1"
+            TEAM_EDITION_STATUS_RETRY=$((TEAM_EDITION_STATUS_RETRY - 1))
             sleep 1
         done
         
