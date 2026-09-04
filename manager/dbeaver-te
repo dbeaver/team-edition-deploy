@@ -46,6 +46,11 @@ fi
 
 COMPOSE_FILE="${COMPOSE_FILE:-docker-compose.yml}"
 
+if [ "${PRODUCT_MODIFIER_ID}" = "aws" ] || grep -q "cloudbeaver-dc-aws:" "$TEAM_EDITION_COMPOSE_DIR/$COMPOSE_FILE"; then
+	PRODUCT_MODIFIER_ID="aws"
+	TEAM_EDITION_IMAGE="cloudbeaver-dc-aws"
+fi
+
 case $(uname -m) in
 
   "x86_64")
@@ -387,6 +392,17 @@ updateCloudbeaver() {
         	printSupportMessage
         	exit 1
         }
+
+        if [ "${PRODUCT_MODIFIER_ID}" = "aws" ]; then
+            sed -i 's/cloudbeaver-dc\:\$/cloudbeaver-dc-aws\:\$/g' "$TEAM_EDITION_COMPOSE_DIR/$COMPOSE_FILE"
+            if ! grep -q "cloudbeaver-dc-aws:" "$TEAM_EDITION_COMPOSE_DIR/$COMPOSE_FILE"; then
+                echo "Error: Failed to apply the AWS product modifier to $COMPOSE_FILE."
+                rollbackCloudBeaver "$BACKUP_DIR" "$TEAM_EDITION_TAG"
+                printSupportMessage
+                exit 1
+            fi
+        fi
+
         sed -i \
             "s/CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_TAG/CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_NEW_TAG/g" \
             "$TEAM_EDITION_COMPOSE_DIR/.env"
