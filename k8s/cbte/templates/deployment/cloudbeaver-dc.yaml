@@ -19,6 +19,9 @@ spec:
         {{ .Release.Name }}-private-net: "true"
         app: cloudbeaver-dc
     spec:
+      {{- with .Values.serviceAccount }}
+      serviceAccountName: {{ .name | default "cloudbeaver" | quote }}
+      {{- end }}
       # securityContext:
       #     runAsUser: 1000
       #     runAsGroup: 1000
@@ -64,7 +67,13 @@ spec:
               value: "http://cloudbeaver-qm:8972/qm"
           ports:
             - containerPort: 8970
-          resources: {}
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "2Gi"
+              cpu: "1000m"
           volumeMounts:
             - name: {{ .Release.Name }}-dc-data
               mountPath: /opt/domain-controller/workspace

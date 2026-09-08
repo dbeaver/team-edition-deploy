@@ -19,6 +19,9 @@ spec:
         {{ .Release.Name }}-private-net: "true"
         app: cloudbeaver-qm
     spec:
+      {{- with .Values.serviceAccount }}
+      serviceAccountName: {{ .name | default "cloudbeaver" | quote }}
+      {{- end }}
       # securityContext:
       #     runAsUser: 1000
       #     runAsGroup: 1000
@@ -33,7 +36,13 @@ spec:
               value: "http://cloudbeaver-dc:8970/dc"
           ports:
             - containerPort: 8972
-          resources: {}
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "2Gi"
+              cpu: "1000m"
           volumeMounts:
             - name: cross-ssl-cert
               mountPath: /opt/query-manager/conf/certificates

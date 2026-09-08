@@ -4,10 +4,17 @@
 
 # cloudbeaver general values for all TE services
 cloudbeaver:
-  imageTag: "26.1.0"
+  imageTag: "26.2.0"
   pullPolicy: Always
   # pullCredsName - name of a secret config map that contains docker repo auths
   # pullCredsName: regcred
+
+# Kubernetes ServiceAccount assigned to CloudBeaver workloads
+serviceAccount:
+  create: true
+  name: cloudbeaver
+  # AWS IRSA example: eks.amazonaws.com/role-arn: arn:aws:iam::<account-id>:role/<role-name>
+  annotations: {}
 
 # Ingress Values
 # Supported ingress controllers: aws-alb, nginx, haproxy

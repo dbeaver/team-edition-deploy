@@ -18,6 +18,9 @@ spec:
         {{ .Release.Name }}-net: "true"
         app: cloudbeaver-te
     spec:
+      {{- with .Values.serviceAccount }}
+      serviceAccountName: {{ .name | default "cloudbeaver" | quote }}
+      {{- end }}
       # securityContext:
       #     runAsUser: 1000
       #     runAsGroup: 1000
@@ -32,7 +35,13 @@ spec:
               value: "http://cloudbeaver-dc:8970/dc"
           ports:
             - containerPort: 8978
-          resources: {}
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "16Gi"
+              cpu: "8000m"
           volumeMounts:
             - name: cross-ssl-cert
               mountPath: /opt/cloudbeaver/conf/certificates
