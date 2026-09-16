@@ -112,8 +112,16 @@ checkInternetConnection() {
 	fi
 }
 
+getDeployVersion() {
+	if [[ "$1" =~ ^([0-9]+\.[0-9]+\.[0-9]+)\.[0-9]+$ ]]; then
+		echo "${BASH_REMATCH[1]}"
+	else
+		echo "$1"
+	fi
+}
+
 getAvailableVersions() {
-	curl -s https://hub.docker.com/v2/repositories/dbeaver/"$TEAM_EDITION_IMAGE"/tags | jq -r '.results[].name | select(test("^[0-9]+\\.[0-9]+\\.[0-9]+$"))'
+	curl -s https://hub.docker.com/v2/repositories/dbeaver/"$TEAM_EDITION_IMAGE"/tags | jq -r '.results[].name | select(test("^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$"))'
 }
 
 configureenvfile()
@@ -127,7 +135,7 @@ checkCloudBeaverUpdateVersion() {
 	then
 		LATEST_DIGEST=$(curl -s https://hub.docker.com/v2/namespaces/dbeaver/repositories/"$TEAM_EDITION_IMAGE"/tags/latest | jq ".images[] | select(.architecture==\"${OS_ARCH}\" )| .digest ")
 		DOCKER_REG=$(curl  -s  https://hub.docker.com/v2/repositories/dbeaver/"$TEAM_EDITION_IMAGE"/tags)
-		LIST_TAGS=$(echo $DOCKER_REG | jq ".results[] | .name" | grep -E '[0-9]+\.[0-9]+\.[0-9]+' | sed 's/"//g')
+		LIST_TAGS=$(echo "$DOCKER_REG" | jq -r '.results[].name | select(test("^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$"))')
 		while read -r line; do tags+=("$line"); done <<<"$LIST_TAGS"
 		for name in "${tags[@]}"; do
 			if [ $(echo $DOCKER_REG | jq ".results[] | select(.name==\"$name\") | .images[] | select(.architecture==\"$OS_ARCH\") | .digest") == $LATEST_DIGEST ] 
@@ -159,7 +167,7 @@ checkCloudBeaverUpdateVersion() {
 	then
 		LATEST_DIGEST=$(curl -s https://hub.docker.com/v2/namespaces/dbeaver/repositories/"$TEAM_EDITION_IMAGE"/tags/latest | jq ".images[] | select(.architecture==\"${OS_ARCH}\" )| .digest ")
 		DOCKER_REG=$(curl  -s  https://hub.docker.com/v2/repositories/dbeaver/"$TEAM_EDITION_IMAGE"/tags)
-		LIST_TAGS=$(echo $DOCKER_REG | jq ".results[] | .name" | grep -E '[0-9]+\.[0-9]+\.[0-9]+' | sed 's/"//g')
+		LIST_TAGS=$(echo "$DOCKER_REG" | jq -r '.results[].name | select(test("^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$"))')
 		while read -r line; do tags+=("$line"); done <<<"$LIST_TAGS"
 		for name in "${tags[@]}"; do
 			if [ $(echo $DOCKER_REG | jq ".results[] | select(.name==\"$name\") | .images[] | select(.architecture==\"$OS_ARCH\") | .digest") == $LATEST_DIGEST ] 
@@ -176,8 +184,8 @@ checkCloudBeaverUpdateVersion() {
 		fi
 		TEAM_EDITION_UPDATE_AVAILABLE=true
 	else
-		if [[ ! "$1" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-			echo "ERROR: Invalid version format <$1>. Expected format: x.x.x"
+		if [[ ! "$1" =~ ^[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?$ ]]; then
+			echo "ERROR: Invalid version format <$1>. Expected format: x.x.x or x.x.x.x"
 			exit 1
 		fi
 		TEAM_EDITION_NEW_TAG="$1"
@@ -277,9 +285,10 @@ rollbackCloudBeaver() {
         --remove-orphans
 
 	cd "$TEAM_EDITION_BASE_DIR/"
-	git checkout --force "$BACKUP_VERSION" || { 
+	BACKUP_DEPLOY_VERSION=$(getDeployVersion "$BACKUP_VERSION")
+	git checkout --force "$BACKUP_DEPLOY_VERSION" || {
 		echo "==============================================================================="
-		echo "Error: Failed to checkout version $BACKUP_VERSION."
+		echo "Error: Failed to checkout version $BACKUP_DEPLOY_VERSION."
 		echo "==============================================================================="
 		printSupportMessage
 		exit 1
@@ -392,9 +401,10 @@ updateCloudbeaver() {
             || rollbackUpdate "Failed to stop the current version"
 
         # Checkout new version
-        git checkout --force $TEAM_EDITION_NEW_TAG || { 
+        TEAM_EDITION_NEW_DEPLOY_TAG=$(getDeployVersion "$TEAM_EDITION_NEW_TAG")
+        git checkout --force "$TEAM_EDITION_NEW_DEPLOY_TAG" || {
         	echo "==============================================================================="
-        	echo "Error: Failed to checkout version $TEAM_EDITION_NEW_TAG."
+	        echo "Error: Failed to checkout version $TEAM_EDITION_NEW_DEPLOY_TAG."
         	echo "==============================================================================="
         	rollbackCloudBeaver "$BACKUP_DIR" "$TEAM_EDITION_TAG"
         	printSupportMessage
