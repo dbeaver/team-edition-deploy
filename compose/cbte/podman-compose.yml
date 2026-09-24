@@ -49,7 +49,7 @@ services:
   postgres:
     restart: unless-stopped
     hostname: postgres
-    image: ${PODMAN_IMAGE_SOURCE:-docker.io/dbeaver}/cloudbeaver-postgres:14
+    image: ${PODMAN_IMAGE_SOURCE:-docker.io/dbeaver}/cloudbeaver-postgres:${PG_VERSION:14}
     volumes:
       - metadata_data:/var/lib/postgresql/data:z
     environment:
