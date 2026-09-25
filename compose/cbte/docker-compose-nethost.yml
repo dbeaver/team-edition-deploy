@@ -32,7 +32,7 @@ services:
       - cloudbeaver-tm
   kafka:
     restart: unless-stopped
-    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-kafka:3.9
+    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-kafka:4.3
     network_mode: host
     environment:
       - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@127.0.0.1:9093

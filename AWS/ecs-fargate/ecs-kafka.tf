@@ -9,7 +9,7 @@ module "kafka" {
   name_prefix      = local.name_prefix
   name_prefix_full = local.name_prefix_full
   deployment_id    = var.deployment_id
-  image            = "${var.image_source}/cloudbeaver-kafka:3.9"
+  image            = "${var.image_source}/cloudbeaver-kafka:4.3"
   cpu              = 2048
   memory           = 4096
   container_port   = 9092
