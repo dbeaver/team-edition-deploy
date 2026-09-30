@@ -228,6 +228,8 @@ For detailed instructions on how to use the script manager, refer to [manager do
 
 ## Version update procedure
 
+**PostgreSQL version:** Keep the existing `.env` when updating; do not replace it with `.env.example` or add `PG_VERSION=18` without migrating the database. Without `PG_VERSION`, Compose uses PostgreSQL 14. If you previously upgraded PostgreSQL manually, set `PG_VERSION` to the version matching your data volume. Changing the image alone does not migrate data.
+
 ### Standard update procedure (recommended)
 
 1. Navigate to `team-edition-deploy/compose/cbte`
