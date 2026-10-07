@@ -228,7 +228,17 @@ For detailed instructions on how to use the script manager, refer to [manager do
 
 ## Version update procedure
 
-**PostgreSQL version:** Keep the existing `.env` when updating; do not replace it with `.env.example` or add `PG_VERSION=18` without migrating the database. Without `PG_VERSION`, Compose uses PostgreSQL 14. If you previously upgraded PostgreSQL manually, set `PG_VERSION` to the version matching your data volume. Changing the image alone does not migrate data.
+**Upgrading PostgreSQL for existing deployments:** Without `PG_VERSION`, existing deployments keep using PostgreSQL 14. Keep your existing `.env`. Do not replace it with `.env.example`. Do not set `PG_VERSION=18` for an existing `metadata_data` volume. Changing the image does not upgrade the data.
+
+To move an existing database to PostgreSQL 18:
+
+1. You must create and verify a full logical backup of your database yourself.
+2. Stop the cluster without removing its volumes. Do not use `docker compose down -v`.
+3. Attach a new empty PostgreSQL volume. Keep the old volume and all other deployment volumes.
+4. Set `PG_VERSION=18` in the existing `.env`, and start only PostgreSQL.
+5. Restore the backup before starting the application.
+
+Until you complete this migration, keep `PG_VERSION` set to the version that matches your existing volume.
 
 ### Standard update procedure (recommended)
 
