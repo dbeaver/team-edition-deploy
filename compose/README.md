@@ -21,7 +21,7 @@ orchestrators.
 - Minimum 50GB storage, > 100GB recommended
 - Git
 - An OCI container management tool such as Docker or Podman
-- Docker Compose v2 **version 2.10 or above** or Podman Compose
+- Docker Compose v2 **version 2.10 or above** or Podman Compose **version 1.4.1 or above**
     - If you install `docker-compose-plugin`, make sure to use the `docker compose` command instead of `docker-compose`.
 
 Ensure all TCP ports from the below list are available in your network stack.
