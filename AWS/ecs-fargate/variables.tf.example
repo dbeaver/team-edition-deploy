@@ -61,13 +61,13 @@ variable "rds_db_type" {
 variable "rds_db_version" {
   description = "Version of type RDS DB instance"
   type        = string
-  default     = "16.6"
+  default     = "18"
 }
 
 variable "db_image" {
   description = "Image for the internal database container"
   type        = string
-  default     = "dbeaver/cloudbeaver-postgres:16"
+  default     = "dbeaver/cloudbeaver-postgres:18"
 }
 
 variable "cloudbeaver-db-env" {
