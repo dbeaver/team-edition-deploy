@@ -72,7 +72,7 @@ git clone https://github.com/dbeaver/team-edition-deploy.git
 
 Keep the existing `variables.tf` and Terraform state when updating. Do not copy the new `variables.tf.example` over an existing configuration. For new databases, the example selects PostgreSQL 18 for either the container on EFS or RDS. Do not change `db_image` for an existing EFS database without migrating its data. Upgrading an existing RDS database is a separate operation. Review the Terraform plan before applying changes.
 
-The `deploy-aws-ecs-te` Jenkins job uses variables from `dbeaver-devops`, not your local `variables.tf`. For a new database, select `DatabaseType` and `PostgreSQLVersion=18` explicitly. Keep the existing type and version when updating. The job applies Terraform without a plan review; do not use it to upgrade an existing database to 18.
+The `deploy-aws-ecs-te` Jenkins job uses variables from `dbeaver-devops`, not your local `variables.tf`. It does not use the PostgreSQL 18 defaults in this example. To deploy a new PostgreSQL 18 database, use the Terraform configuration directly. The job applies Terraform without a plan review; do not use it to upgrade an existing database to 18.
 
 1. Navigate to the `team-edition-deploy/AWS/ecs-fargate` directory.
 
