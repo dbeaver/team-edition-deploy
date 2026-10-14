@@ -41,7 +41,7 @@ services:
 
   postgres:
     restart: unless-stopped
-    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-postgres:14
+    image: ${IMAGE_SOURCE:-dbeaver}/cloudbeaver-postgres:${PG_VERSION:-14}
     volumes:
       - metadata_data:/var/lib/postgresql/data
     environment:
@@ -152,4 +152,3 @@ services:
     depends_on:
       - cloudbeaver-dc
     network_mode: host
-

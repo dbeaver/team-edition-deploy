@@ -31,7 +31,7 @@ git clone https://github.com/dbeaver/team-edition-deploy.git
       - Navigate to `team-edition-deploy/AWS/ecs-fargate`  
       - Open `variables.tf` file.  
       - Change variable `rds_db` to `true`.
-      - Specify `rds_db_version`, the default is `postgres:16.1`. Only PostgreSQL version can be specified.  
+       - Set `rds_db_version` to a PostgreSQL engine version. The example selects 18 for new RDS databases.  
       - Set the credentials for database in `cloudbeaver-db-env`. By default it is `postgres`.
 
 6. Configure the deployment in `variables.tf` file as follows:  
@@ -69,6 +69,10 @@ git clone https://github.com/dbeaver/team-edition-deploy.git
 ## Version update
 
 **Note:** If you need to upgrade to Team Edition 25.1.0 or later from an earlier version, please follow [this guide](./upgrade-to-25-1.md).
+
+Keep the existing `variables.tf` and Terraform state when updating. Do not copy the new `variables.tf.example` over an existing configuration. For new databases, the example selects PostgreSQL 18 for either the container on EFS or RDS. Do not change `db_image` for an existing EFS database without migrating its data. Upgrading an existing RDS database is a separate operation. Review the Terraform plan before applying changes.
+
+The `deploy-aws-ecs-te` Jenkins job uses variables from `dbeaver-devops`, not your local `variables.tf`. It does not use the PostgreSQL 18 defaults in this example. To deploy a new PostgreSQL 18 database, use the Terraform configuration directly. The job applies Terraform without a plan review; do not use it to upgrade an existing database to 18.
 
 1. Navigate to the `team-edition-deploy/AWS/ecs-fargate` directory.
 

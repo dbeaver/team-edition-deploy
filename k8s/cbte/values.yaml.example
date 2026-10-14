@@ -54,7 +54,7 @@ cloudbeaverTM:
 kafka:
   image: "dbeaver/cloudbeaver-kafka:4.3"
 postgres:
-  image: "dbeaver/cloudbeaver-postgres:13"
+  image: "dbeaver/cloudbeaver-postgres:18"
 
 # Cloud storage configuration 
 # By default is None, it means not cloud deployment

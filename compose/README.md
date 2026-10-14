@@ -21,7 +21,7 @@ orchestrators.
 - Minimum 50GB storage, > 100GB recommended
 - Git
 - An OCI container management tool such as Docker or Podman
-- Docker Compose v2 **version 2.10 or above** or Podman Compose
+- Docker Compose v2 **version 2.10 or above** or Podman Compose **version 1.4.1 or above**
     - If you install `docker-compose-plugin`, make sure to use the `docker compose` command instead of `docker-compose`.
 
 Ensure all TCP ports from the below list are available in your network stack.
@@ -227,6 +227,18 @@ For detailed instructions on how to use the script manager, refer to [manager do
 
 
 ## Version update procedure
+
+**Upgrading PostgreSQL for existing deployments:** Without `PG_VERSION`, existing deployments keep using PostgreSQL 14. Keep your existing `.env`. Do not replace it with `.env.example`. Do not set `PG_VERSION=18` for an existing `metadata_data` volume. Changing the image does not upgrade the data.
+
+To move an existing database to PostgreSQL 18:
+
+1. You must create and verify a full logical backup of your database yourself.
+2. Stop the cluster without removing its volumes. Do not use `docker compose down -v`.
+3. Attach a new empty PostgreSQL volume. Keep the old volume and all other deployment volumes.
+4. Set `PG_VERSION=18` in the existing `.env`, and start only PostgreSQL.
+5. Restore the backup before starting the application.
+
+Until you complete this migration, keep `PG_VERSION` set to the version that matches your existing volume.
 
 ### Standard update procedure (recommended)
 
