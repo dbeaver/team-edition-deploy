@@ -124,8 +124,6 @@ The chart configures the application and its Ingress resources, not an external 
 
 After deployment, make a fresh request/session and compare the expected public client IP with ingress access logs and QM audit records. A node/pod address indicates source-IP loss upstream. Also verify that forged forwarded headers do not change the recorded IP and that direct backend access is blocked.
 
-Render regression tests require Helm, Python 3 and PyYAML: `python3 -m unittest discover -s k8s/tests -v` (from the repository root).
-
 #### AWS ALB configuration
 
 If you want to use AWS Application Load Balancer as ingress controller, [follow this instruction](../AWS/aws-eks/README.md#aws-alb-configuration-for-kubernetes-deployment).
