@@ -17,6 +17,11 @@ serviceAccount:
   annotations: {}
 
 # Ingress Values
+# Trust forwarded headers only behind a trusted ingress with no direct backend access.
+forwardProxy: true
+# Annotations for all application Ingress resources; override built-in values.
+ingressAnnotations: {}
+
 # Supported ingress controllers: aws-alb, nginx, haproxy
 ingressController: nginx
 # Domain name for ingress endpoint

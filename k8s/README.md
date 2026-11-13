@@ -8,6 +8,7 @@
   - [OpenShift deployment](#openshift-deployment)
   - [AWS ALB configuration ](../AWS/aws-eks/README.md#aws-alb-configuration-for-kubernetes-deployment)
   - [Digital Ocean proxy configuration](#digital-ocean-proxy-configuration)
+  - [Real client IP](#real-client-ip)
   - [Clouds volumes configuration](#clouds-volumes-configuration)
     - [AWS](../AWS/aws-eks/README.md#aws-volumes-configuration-for-kubernetes-deployment)
     - [Google Cloud](../GCP/gke/README.md)
@@ -82,14 +83,48 @@ You need additional configuration changes to deploy Team Edition in OpenShift.
 
 #### Digital Ocean proxy configuration
 
-Edit ingress controller with:
+For a managed DigitalOcean load balancer, enable PROXY protocol on both the load balancer and ingress controller. These settings do not apply to k3s ServiceLB (Klipper).
 
-- `kubectl edit service -n ingress-nginx ingress-nginx-controller`
-
-and add two lines in the `metadata.annotations`
+In the ingress controller Service annotations:
 
 - `service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"`
 - `service.beta.kubernetes.io/do-loadbalancer-hostname: "cloudbeaverBaseDomain"`
+
+For community ingress-nginx, also set `use-proxy-protocol: "true"` in its controller ConfigMap and restrict `proxy-real-ip-cidr` to the trusted load balancer source ranges. Coordinate both changes to avoid interrupting traffic.
+
+#### Real client IP
+
+Set the existing application proxy support through chart values:
+
+```yaml
+forwardProxy: true
+ingressAnnotations: {}
+```
+
+`forwardProxy` sets `CLOUDBEAVER_APP_FORWARD_PROXY` on the Team Edition web application. Set it to `false` to disable forwarded-header processing. Omitting it preserves the image/configuration default; old values files keep their previous behavior. It does not change the configuration of the separate DC/RM/QM/TM services.
+
+`ingressAnnotations` adds or overrides annotations for the selected controller without duplicate keys. It applies to both the web and backend Ingress resources. For example:
+
+```yaml
+ingressController: aws-alb
+ingressAnnotations:
+  alb.ingress.kubernetes.io/load-balancer-attributes: "routing.http.xff_header_processing.mode=append"
+```
+
+The chart configures the application and its Ingress resources, not an external ingress controller or its Service. Configure that upstream separately:
+
+| Traffic path | Required upstream configuration |
+| --- | --- |
+| k3s ServiceLB or source-preserving L4 LB → ingress | Preserve source IP; use `externalTrafficPolicy: Local` on the ingress controller's external Service where needed. Send traffic only to nodes with ready local ingress endpoints. |
+| ALB → application | Forward `X-Forwarded-For` (ALB defaults to append mode). `externalTrafficPolicy: Local` does not recover the client IP from ALB connections. |
+| ALB / trusted HTTP proxy → ingress | Configure ingress to use forwarded headers only from trusted upstream ranges. For community ingress-nginx, review `use-forwarded-headers`, `enable-real-ip`, and `proxy-real-ip-cidr`. |
+| NLB → ingress | For instance targets, preserve source IP and avoid Service SNAT (usually `Local`). For IP targets, check `preserve_client_ip.enabled` and network support. Alternatively, enable PROXY protocol v2 on both NLB and ingress. |
+
+**Trust boundary:** enable `forwardProxy` only when backend access is restricted to trusted proxies (network policy/firewall/security groups). The chart does not enforce this restriction. The first trusted HTTP proxy must remove client-supplied `Forwarded` and `X-Forwarded-*` headers and construct authoritative values; subsequent proxies must trust only known upstreams. ALB append mode alone does not sanitize a forged leading `X-Forwarded-For` entry: use a sanitizing trusted edge if clients can supply these headers. Never trust arbitrary source CIDRs. If the upstream has already lost the IP without forwarding it, the chart cannot recover it.
+
+After deployment, make a fresh request/session and compare the expected public client IP with ingress access logs and QM audit records. A node/pod address indicates source-IP loss upstream. Also verify that forged forwarded headers do not change the recorded IP and that direct backend access is blocked.
+
+Render regression tests require Helm, Python 3 and PyYAML: `python3 -m unittest discover -s k8s/tests -v` (from the repository root).
 
 #### AWS ALB configuration
 
