@@ -5,22 +5,10 @@ kind: Ingress
 metadata:
   name: ingress-{{ .Release.Name }}
   annotations:
-    {{- if eq "https" .Values.httpScheme }}
-    ingress.kubernetes.io/ssl-redirect: "true"
+    {{- $defaults := include "cbte.ingress-nginx.annotations" . | fromYaml }}
+    {{- range $key, $value := mergeOverwrite $defaults (.Values.ingressAnnotations | default dict) }}
+    {{ $key }}: {{ $value | toString | quote }}
     {{- end }}
-    nginx.ingress.kubernetes.io/affinity: "cookie"
-    nginx.ingress.kubernetes.io/affinity-mode: "persistent"
-    nginx.ingress.kubernetes.io/session-cookie-name: "cb-node-id"
-    nginx.ingress.kubernetes.io/session-cookie-path: "/"
-    nginx.ingress.kubernetes.io/session-cookie-domain: "{{ .Values.cloudbeaverBaseDomain }}"
-    nginx.ingress.kubernetes.io/session-cookie-change-on-failure: "true"
-    nginx.ingress.kubernetes.io/session-cookie-secure: "true"
-    nginx.ingress.kubernetes.io/session-cookie-max-age: "345600"
-    nginx.ingress.kubernetes.io/proxy-body-size: "500m"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"    
-    nginx.ingress.kubernetes.io/rewrite-target: "/$1$2"
-    nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
   ingressClassName: "nginx"
 {{- if eq "https" .Values.httpScheme }}
@@ -46,15 +34,10 @@ kind: Ingress
 metadata:
   name: ingress-{{ .Release.Name }}-backend
   annotations:
-    kubernetes.io/ingress.class: "nginx"
-    {{- if eq "https" .Values.httpScheme }}
-    ingress.kubernetes.io/ssl-redirect: "true"
+    {{- $defaults := include "cbte.ingress-nginx.annotations.backend" . | fromYaml }}
+    {{- range $key, $value := mergeOverwrite $defaults (.Values.ingressAnnotations | default dict) }}
+    {{ $key }}: {{ $value | toString | quote }}
     {{- end }}
-    nginx.ingress.kubernetes.io/proxy-body-size: "500m"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
-    nginx.ingress.kubernetes.io/rewrite-target: "/$1$2"
-    nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
   {{- if eq "https" .Values.httpScheme }}
   tls:
@@ -95,3 +78,34 @@ spec:
               port:
                 number: 8973
 {{ end }}
+
+{{- define "cbte.ingress-nginx.annotations" -}}
+{{- if eq "https" .Values.httpScheme }}
+ingress.kubernetes.io/ssl-redirect: "true"
+{{- end }}
+nginx.ingress.kubernetes.io/affinity: "cookie"
+nginx.ingress.kubernetes.io/affinity-mode: "persistent"
+nginx.ingress.kubernetes.io/session-cookie-name: "cb-node-id"
+nginx.ingress.kubernetes.io/session-cookie-path: "/"
+nginx.ingress.kubernetes.io/session-cookie-domain: "{{ .Values.cloudbeaverBaseDomain }}"
+nginx.ingress.kubernetes.io/session-cookie-change-on-failure: "true"
+nginx.ingress.kubernetes.io/session-cookie-secure: "true"
+nginx.ingress.kubernetes.io/session-cookie-max-age: "345600"
+nginx.ingress.kubernetes.io/proxy-body-size: "500m"
+nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+nginx.ingress.kubernetes.io/rewrite-target: "/$1$2"
+nginx.ingress.kubernetes.io/use-regex: "true"
+{{- end }}
+
+{{- define "cbte.ingress-nginx.annotations.backend" -}}
+kubernetes.io/ingress.class: "nginx"
+{{- if eq "https" .Values.httpScheme }}
+ingress.kubernetes.io/ssl-redirect: "true"
+{{- end }}
+nginx.ingress.kubernetes.io/proxy-body-size: "500m"
+nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+nginx.ingress.kubernetes.io/rewrite-target: "/$1$2"
+nginx.ingress.kubernetes.io/use-regex: "true"
+{{- end }}
