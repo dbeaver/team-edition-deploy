@@ -112,6 +112,19 @@ The first time you open it, you’ll be taken straight to the Admin Panel.
 
 [Desktop client](https://dbeaver.com/download/team-edition/): when you launch the DBeaver Team Edition desktop app, use the same URL (`https://<your-domain>` or `http://<server-ip>:<port>`) to connect to the server.
 
+### Server time zone
+
+Set `TZ` in `compose/cbte/.env` to an IANA time zone, for example `TZ=Europe/Berlin`.
+The default is `UTC` when `TZ` is unset or empty. This sets the `cloudbeaver-te`
+server time zone, not a per-user date display format or the database server time zone.
+Other Team Edition services are unchanged.
+An explicit `-Duser.timezone` in `JAVA_TOOL_OPTIONS` overrides `TZ` for Java.
+
+From `compose/cbte`, apply the change with `docker compose up -d --no-deps --force-recreate cloudbeaver-te`.
+For host networking, add `-f docker-compose-nethost.yml`; for Podman, use
+`podman-compose -f podman-compose.yml up -d --no-deps --force-recreate cloudbeaver-te`.
+Keep your existing `.env` during updates to preserve this setting.
+
 ### Stopping the cluster
 `docker-compose down`
 
