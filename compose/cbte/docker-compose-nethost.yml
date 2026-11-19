@@ -94,6 +94,7 @@ services:
     environment:
       - CLOUDBEAVER_DC_SERVER_URL=http://127.0.0.1:8970/dc
       - NETWORK_MODE=host
+      - TZ=${TZ:-UTC}
       - JAVA_TOOL_OPTIONS=${JAVA_TOOL_OPTIONS:-}
     expose:
       - ${CLOUDBEAVER_WEB_SERVER_PORT:-8978}
