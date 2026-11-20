@@ -31,6 +31,10 @@ spec:
           imagePullPolicy: "{{ .Values.cloudbeaver.pullPolicy }}"
           name: cloudbeaver-te
           env:
+            {{- if hasKey .Values "forwardProxy" }}
+            - name: CLOUDBEAVER_APP_FORWARD_PROXY
+              value: {{ .Values.forwardProxy | toString | quote }}
+            {{- end }}
             - name: CLOUDBEAVER_DC_SERVER_URL
               value: "http://cloudbeaver-dc:8970/dc"
           ports:
