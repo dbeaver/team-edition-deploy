@@ -76,10 +76,11 @@ The `deploy-aws-ecs-te` Jenkins job uses variables from `dbeaver-devops`, not yo
 
 1. Navigate to the `team-edition-deploy/AWS/ecs-fargate` directory.
 
-2. Specify the desired version in  `variables.tf` in the `dbeaver_te_version` variable.
+2. In `variables.tf`, set `dbeaver_te_version` to `"26.3"` for the newest image in that release line, or use a full tag such as `"26.3.0.1"` to pin an exact release.
 
 3. Run `terraform apply` to upgrade the ECS cluster and complete the deployment.
 
+If you keep the same rolling tag, Terraform may have no changes to apply. In that case, force a new ECS deployment for each Team Edition application service so it pulls the current image.
 
 ## Modules description
 

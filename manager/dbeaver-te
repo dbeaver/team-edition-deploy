@@ -38,6 +38,10 @@ do
 done < "$TEAM_EDITION_COMPOSE_DIR/.env"
 
 TEAM_EDITION_TAG="$CLOUDBEAVER_VERSION_TAG"
+VM_IMAGES_FILE="$TEAM_EDITION_COMPOSE_DIR/compose.vm-images.yml"
+if [ -n "$TEAM_EDITION_VM_RELEASE" ]; then
+	TEAM_EDITION_TAG="$TEAM_EDITION_VM_RELEASE"
+fi
 
 if [ "$DBEAVER_TEAM_EDITION_AMI" ] && [ -z "$COMPOSE_FILE" ] && grep -q '127\.0\.0\.1' "$TEAM_EDITION_COMPOSE_DIR/.env"; then
 	echo "COMPOSE_FILE=docker-compose-nethost.yml" >> "$TEAM_EDITION_COMPOSE_DIR/.env"
@@ -45,6 +49,9 @@ if [ "$DBEAVER_TEAM_EDITION_AMI" ] && [ -z "$COMPOSE_FILE" ] && grep -q '127\.0\
 fi
 
 COMPOSE_FILE="${COMPOSE_FILE:-docker-compose.yml}"
+if [ -n "$TEAM_EDITION_VM_RELEASE" ]; then
+	COMPOSE_FILE="${COMPOSE_FILE%%:*}"
+fi
 
 if [ "${PRODUCT_MODIFIER_ID}" = "aws" ] || grep -q "cloudbeaver-dc-aws:" "$TEAM_EDITION_COMPOSE_DIR/$COMPOSE_FILE"; then
 	PRODUCT_MODIFIER_ID="aws"
@@ -79,7 +86,8 @@ Usage: dbeaver-te [command]
       - update <version>
                    update DBeaver Team Edition Server to <version>
                    <version> can't be lower than current version $TEAM_EDITION_TAG
-                   If version is not specified - tag \`latest\` will be used.
+                   If version is not specified, check the configured release line on
+                   a rolling VM or use the \`latest\` tag on other installations.
       - update list
                    print avialable versions for update
       - createBackup create backup all cluster in tar archive
@@ -114,6 +122,134 @@ checkInternetConnection() {
 
 getAvailableVersions() {
 	curl -s https://hub.docker.com/v2/repositories/dbeaver/"$TEAM_EDITION_IMAGE"/tags | jq -r '.results[].name | select(test("^[0-9]+\\.[0-9]+\\.[0-9]+$"))'
+}
+
+baseCompose() {
+	docker compose --env-file "$TEAM_EDITION_COMPOSE_DIR/.env" \
+		--project-directory "$TEAM_EDITION_COMPOSE_DIR/" \
+		-f "$TEAM_EDITION_COMPOSE_DIR/$COMPOSE_FILE" "$@"
+}
+
+runningCompose() {
+	if [ -n "$TEAM_EDITION_VM_RELEASE" ]; then
+		docker compose --env-file "$TEAM_EDITION_COMPOSE_DIR/.env" \
+			--project-directory "$TEAM_EDITION_COMPOSE_DIR/" \
+			-f "$TEAM_EDITION_COMPOSE_DIR/$COMPOSE_FILE" -f "$VM_IMAGES_FILE" "$@"
+	else
+		baseCompose "$@"
+	fi
+}
+
+isVmRelease() {
+	[[ "$1" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.0(\.[1-9][0-9]*)?$ ]] &&
+		(( BASH_REMATCH[1] > 26 || (BASH_REMATCH[1] == 26 && BASH_REMATCH[2] >= 3) ))
+}
+
+# With a channel selected, verify that every release image matches the exact tag
+# before pinning the local images. Independent images are pinned too, for rollback.
+pinVmImages() (
+	set -e
+	local exact="$1" channel="$2" output="$3" config entries service image id alias_id pin
+	isVmRelease "$exact" || exit 1
+	config=$(CLOUDBEAVER_VERSION_TAG="$exact" baseCompose config --format json)
+	entries=$(jq -er '.services | to_entries[] | [.key, .value.image] | @tsv' <<< "$config")
+	CLOUDBEAVER_VERSION_TAG="$exact" baseCompose pull -q
+	if [ "$channel" != "$exact" ]; then
+		CLOUDBEAVER_VERSION_TAG="$channel" baseCompose pull -q
+	fi
+	printf 'services:\n' > "$output"
+	while IFS=$'\t' read -r service image; do
+		id=$(docker image inspect --format '{{.Id}}' "$image")
+		if [[ "$image" == *":$exact" && "$channel" != "$exact" ]]; then
+			alias_id=$(docker image inspect --format '{{.Id}}' "${image%:*}:$channel")
+			if [ "$id" != "$alias_id" ]; then
+				echo "Image $image does not match ${image%:*}:$channel. Wait for the release to finish publishing." >&2
+				exit 1
+			fi
+		fi
+		pin="dbeaver-te-local/$service:${id#sha256:}"
+		docker image tag "$id" "$pin"
+		printf '  %s:\n    image: %s\n    pull_policy: never\n' "$service" "$pin" >> "$output"
+	done <<< "$entries"
+)
+
+verifyVmImages() {
+	local config entries service image containers container id
+	config=$(runningCompose config --format json) || return 1
+	entries=$(jq -er '.services | to_entries[] | [.key, .value.image] | @tsv' <<< "$config") || return 1
+	while IFS=$'\t' read -r service image; do
+		[[ "$image" == dbeaver-te-local/* ]] || return 1
+		id=$(docker image inspect --format '{{.Id}}' "$image") || return 1
+		containers=$(runningCompose ps -q "$service") || return 1
+		for container in $containers; do
+			[ "$(docker inspect --format '{{.Image}}' "$container")" = "$id" ] || return 1
+		done
+	done <<< "$entries"
+}
+
+vmRegistryTags() {
+	local endpoint="https://hub.docker.com/v2/namespaces/dbeaver/repositories/$TEAM_EDITION_IMAGE/tags"
+	local url="$endpoint?page_size=100" page
+	[ -z "$1" ] || url="$url&name=$1."
+	while [ -n "$url" ]; do
+		page=$(curl -fsS --max-time 30 "$url") || return 1
+		jq -r --arg digest "$2" '
+			.results[] | select($digest == "" or .digest == $digest) | .name
+			| select(test("^[0-9]+\\.[0-9]+\\.0(\\.[1-9][0-9]*)?$"))
+			| select(split(".") | (.[0] | tonumber) > 26 or
+				((.[0] | tonumber) == 26 and (.[1] | tonumber) >= 3))
+		' <<< "$page" || return 1
+		url=$(jq -r 'if has("next") then .next // "" else error("missing pagination") end' <<< "$page") || return 1
+		[[ -z "$url" || "$url" == "$endpoint?"* ]] || return 1
+	done
+}
+
+checkVmUpdateVersion() {
+	local request="$1" channel digest versions response
+	if [ "$request" = list ]; then
+		versions=$(vmRegistryTags "" "") || exit 1
+		printf '%s\n' "$versions" | sort -Vr
+		exit 0
+	fi
+	case "$request" in
+		""|latest)
+			channel="$CLOUDBEAVER_VERSION_TAG"
+			if isVmRelease "$channel"; then
+				channel="$(cut -d. -f1,2 <<< "$channel")"
+			fi
+			[[ "$channel" =~ ^[0-9]+\.[0-9]+$ ]] || exit 1
+			response=$(curl -fsS --max-time 30 "https://hub.docker.com/v2/namespaces/dbeaver/repositories/$TEAM_EDITION_IMAGE/tags/$channel")
+			digest=$(jq -er '.digest | select(test("^sha256:[a-f0-9]{64}$"))' <<< "$response")
+			versions=$(vmRegistryTags "$channel" "$digest")
+			TEAM_EDITION_NEW_TAG=$(printf '%s\n' "$versions" | sort -Vr | head -n 1)
+			if ! isVmRelease "$TEAM_EDITION_NEW_TAG"; then
+				echo "No exact release matches image tag $channel." >&2
+				exit 1
+			fi
+			VM_TARGET_CHANNEL="$channel"
+			;;
+		*)
+			if ! isVmRelease "$request"; then
+				echo "Use a full release version from 26.3 onward (for example, 26.3.0 or 26.3.0.1)." >&2
+				exit 1
+			fi
+			TEAM_EDITION_NEW_TAG="$request"
+			VM_TARGET_CHANNEL="$request"
+			;;
+	esac
+	if [ "$TEAM_EDITION_NEW_TAG" = "$TEAM_EDITION_TAG" ] && [ "$VM_TARGET_CHANNEL" = "$CLOUDBEAVER_VERSION_TAG" ]; then
+		echo "Same version already installed."
+		return
+	fi
+	if [ -z "$request" ] || { [ "$TEAM_EDITION_NEW_TAG" != "$TEAM_EDITION_TAG" ] &&
+		[ "$(printf '%s\n' "$TEAM_EDITION_NEW_TAG" "$TEAM_EDITION_TAG" | sort -V | head -n 1)" = "$TEAM_EDITION_NEW_TAG" ]; }; then
+		read -r -p "Install $TEAM_EDITION_NEW_TAG? [y/N] " response
+		case "$response" in
+			[yY]|[yY][eE][sS]) ;;
+			*) return ;;
+		esac
+	fi
+	TEAM_EDITION_UPDATE_AVAILABLE=true
 }
 
 configureenvfile()
@@ -232,13 +368,9 @@ startCloudbeaver() {
 	checkCloudBeaverStatus
 	if [ "$TEAM_EDITION_STATUS" == false ]
 	then
-		docker compose \
-			-f "$TEAM_EDITION_COMPOSE_DIR/$COMPOSE_FILE" \
-			--env-file "$TEAM_EDITION_COMPOSE_DIR/.env" \
-			--project-directory "$TEAM_EDITION_COMPOSE_DIR/" \
-			up -d \
-			--remove-orphans \
-			--pull always
+		local pull_policy=always
+		[ -z "$TEAM_EDITION_VM_RELEASE" ] || pull_policy=never
+		runningCompose up -d --remove-orphans --pull "$pull_policy"
 
 		TEAM_EDITION_STATUS_RETRY=300
 		until [ $TEAM_EDITION_STATUS_RETRY -lt 0 ]
@@ -277,7 +409,7 @@ rollbackCloudBeaver() {
         --remove-orphans
 
 	cd "$TEAM_EDITION_BASE_DIR/"
-	git checkout --force "$BACKUP_VERSION" || { 
+	git checkout --force "${VM_PREVIOUS_COMMIT:-$BACKUP_VERSION}" || {
 		echo "==============================================================================="
 		echo "Error: Failed to checkout version $BACKUP_VERSION."
 		echo "==============================================================================="
@@ -287,18 +419,18 @@ rollbackCloudBeaver() {
 
 	rsync -av --exclude='cert' --exclude='nginx' "$BACKUP_DIR/" "$TEAM_EDITION_COMPOSE_DIR/"
 
-    sed -i \
-        "s/CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_NEW_TAG/CLOUDBEAVER_VERSION_TAG=$BACKUP_VERSION/g" \
-        "$TEAM_EDITION_COMPOSE_DIR/.env" 
-	export CLOUDBEAVER_VERSION_TAG=$BACKUP_VERSION
+    if [ -n "$TEAM_EDITION_VM_RELEASE" ]; then
+        export CLOUDBEAVER_VERSION_TAG="$VM_PREVIOUS_CHANNEL"
+    else
+        sed -i \
+            "s/CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_NEW_TAG/CLOUDBEAVER_VERSION_TAG=$BACKUP_VERSION/g" \
+            "$TEAM_EDITION_COMPOSE_DIR/.env"
+        export CLOUDBEAVER_VERSION_TAG="$BACKUP_VERSION"
+    fi
 
-	docker compose \
-        -f "$TEAM_EDITION_COMPOSE_DIR/$COMPOSE_FILE" \
-        --env-file "$TEAM_EDITION_COMPOSE_DIR/.env" \
-        --project-directory "$TEAM_EDITION_COMPOSE_DIR/" \
-        up -d \
-        --remove-orphans
+	runningCompose up -d --remove-orphans
 
+	TEAM_EDITION_STATUS=false
 	TEAM_EDITION_STATUS_RETRY=300
 	until [ $TEAM_EDITION_STATUS_RETRY -lt 0 ]; do
 		checkCloudBeaverStatus
@@ -324,9 +456,12 @@ rollbackUpdate() {
 }
 
 updateCloudbeaver() {
-    [ "$(docker ps -a | grep $TEAM_EDITION_IMAGE)" ]
-    # Check if update is available
-    checkCloudBeaverUpdateVersion "$1" 
+    if [ -n "$TEAM_EDITION_VM_RELEASE" ]; then
+        checkVmUpdateVersion "$1"
+    else
+        docker ps -a | grep -q "$TEAM_EDITION_IMAGE" || exit 1
+        checkCloudBeaverUpdateVersion "$1"
+    fi
     
     if [ "$TEAM_EDITION_UPDATE_AVAILABLE" == true ]; then
         TIMESTAMP=$(date +%m-%d-%Y_%H-%M)
@@ -358,13 +493,39 @@ updateCloudbeaver() {
         	printSupportMessage
         	exit 1
         fi
-        git fetch || { 
-        	echo "==============================================================================="
-        	echo "Error: Failed to fetch latest changes from repository."
-        	echo "==============================================================================="
-        	printSupportMessage
-        	exit 1
-        }
+        local target_commit
+        if [ -n "$TEAM_EDITION_VM_RELEASE" ]; then
+            local target_ref="refs/tags/$TEAM_EDITION_NEW_TAG"
+            git fetch origin "$target_ref:$target_ref" || {
+                echo "Deployment Git tag $TEAM_EDITION_NEW_TAG is required. The server was not stopped." >&2
+                exit 1
+            }
+            target_commit=$(git rev-parse --verify "$target_ref^{commit}")
+            VM_PREVIOUS_COMMIT=$(git rev-parse --verify HEAD)
+            VM_PREVIOUS_CHANNEL="$CLOUDBEAVER_VERSION_TAG"
+            verifyVmImages || {
+                echo "Cannot verify the installed images for rollback. The server was not stopped." >&2
+                exit 1
+            }
+            VM_STAGE_DIR=$(mktemp -d)
+            trap 'rm -f -- "$VM_STAGE_DIR/$COMPOSE_FILE" "$VM_STAGE_DIR/.env" "$VM_STAGE_DIR/compose.vm-images.yml"; rmdir -- "$VM_STAGE_DIR"' EXIT
+            git show "$target_commit:compose/cbte/$COMPOSE_FILE" > "$VM_STAGE_DIR/$COMPOSE_FILE"
+            cp "$TEAM_EDITION_COMPOSE_DIR/.env" "$VM_STAGE_DIR/.env"
+            if [ "${PRODUCT_MODIFIER_ID}" = aws ]; then
+                sed -i 's/cloudbeaver-dc:\$/cloudbeaver-dc-aws:\$/g' "$VM_STAGE_DIR/$COMPOSE_FILE"
+                grep -q 'cloudbeaver-dc-aws:' "$VM_STAGE_DIR/$COMPOSE_FILE"
+            fi
+            TEAM_EDITION_COMPOSE_DIR="$VM_STAGE_DIR" pinVmImages "$TEAM_EDITION_NEW_TAG" \
+                "$VM_TARGET_CHANNEL" "$VM_STAGE_DIR/compose.vm-images.yml"
+        else
+            git fetch || {
+                echo "==============================================================================="
+                echo "Error: Failed to fetch latest changes from repository."
+                echo "==============================================================================="
+                printSupportMessage
+                exit 1
+            }
+        fi
         
         # Backup current configuration
         mkdir -p "$BACKUP_DIR"
@@ -392,7 +553,7 @@ updateCloudbeaver() {
             || rollbackUpdate "Failed to stop the current version"
 
         # Checkout new version
-        git checkout --force $TEAM_EDITION_NEW_TAG || { 
+        git checkout --force "${target_commit:-$TEAM_EDITION_NEW_TAG}" || {
         	echo "==============================================================================="
         	echo "Error: Failed to checkout version $TEAM_EDITION_NEW_TAG."
         	echo "==============================================================================="
@@ -412,12 +573,13 @@ updateCloudbeaver() {
             fi
         fi
 
+        local image_tag="${VM_TARGET_CHANNEL:-$TEAM_EDITION_NEW_TAG}" pull_policy=always
         sed -i \
-            "s/CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_TAG/CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_NEW_TAG/g" \
+            "s/^CLOUDBEAVER_VERSION_TAG=.*/CLOUDBEAVER_VERSION_TAG=$image_tag/" \
             "$TEAM_EDITION_COMPOSE_DIR/.env" \
             || rollbackUpdate "Failed to update the version in .env"
         
-        export CLOUDBEAVER_VERSION_TAG=$TEAM_EDITION_NEW_TAG
+        export CLOUDBEAVER_VERSION_TAG="$image_tag"
 
         # Update docker-compose volumes for AMI
         if [ "$DBEAVER_TEAM_EDITION_AMI" ]; then
@@ -434,19 +596,23 @@ updateCloudbeaver() {
         fi
         
         # Start team-edition-deploy with new version and check status
-        docker compose \
-        	-f "$TEAM_EDITION_COMPOSE_DIR/$COMPOSE_FILE" \
-        	--env-file "$TEAM_EDITION_COMPOSE_DIR/.env" \
-        	--project-directory "$TEAM_EDITION_COMPOSE_DIR/" \
-        	up -d \
-        	--remove-orphans \
-	        --pull always \
-	        || rollbackUpdate "Failed to start the new version"
+        if [ -n "$TEAM_EDITION_VM_RELEASE" ]; then
+            cp "$VM_STAGE_DIR/compose.vm-images.yml" "$VM_IMAGES_FILE" ||
+                rollbackUpdate "Failed to save the new image pins"
+            pull_policy=never
+        fi
+        runningCompose up -d --remove-orphans --pull "$pull_policy" ||
+            rollbackUpdate "Failed to start the new version"
         
         TEAM_EDITION_STATUS_RETRY=300
         until [ $TEAM_EDITION_STATUS_RETRY -lt 0 ]; do
             checkCloudBeaverStatus
             if [ "$TEAM_EDITION_STATUS" == true ]; then
+                if [ -n "$TEAM_EDITION_VM_RELEASE" ]; then
+                    sed -i "s/^TEAM_EDITION_VM_RELEASE=.*/TEAM_EDITION_VM_RELEASE=$TEAM_EDITION_NEW_TAG/" \
+                        "$TEAM_EDITION_COMPOSE_DIR/.env" ||
+                        rollbackUpdate "Failed to record the installed release"
+                fi
                 echo -e "\nDBeaver Team Edition Server started successfully!"
                 return 0
             fi
@@ -558,14 +724,15 @@ restoreBackup(){
 	
     rm -rf $TEMP_DIR
     docker compose -f "$TEAM_EDITION_COMPOSE_DIR/$COMPOSE_FILE" down 
-    docker compose \
-        -f "$TEAM_EDITION_COMPOSE_DIR/$COMPOSE_FILE" \
-        --env-file "$TEAM_EDITION_COMPOSE_DIR/.env" \
-        --project-directory "$TEAM_EDITION_COMPOSE_DIR/" \
-        up -d
+    runningCompose up -d
 }
 
 case $1 in
+
+  "pin-vm-images")
+    [ "$DBEAVER_TEAM_EDITION_AMI" = true ] && [ -z "$TEAM_EDITION_VM_RELEASE" ] || exit 1
+    pinVmImages "$2" "$CLOUDBEAVER_VERSION_TAG" "$VM_IMAGES_FILE"
+    ;;
 
   "help")
     printHelp

@@ -22,6 +22,10 @@ This will open the `.env` file, where you can change the parameters you want, th
 
 ### Version update procedure
 
+On new Team Edition cloud images from 26.3 onward, `.env` starts with a two-part image tag such as `26.3`. Run `dbeaver-te update` to check for the newest release in that line. Running `dbeaver-te update 26.3.0.1` instead pins that exact version. Restarts do not pull updates, and an update that fails to start restores the previous deployment files and locally pinned images. This does not undo database changes. Do not delete the `compose.vm-images.yml` override or prune its locally tagged images.
+
+On manually managed installations not provisioned by the cloud image, configure an exact image tag matching the deployment Git tag before using the manager.
+
 1. Connect to your server through the terminal.
 2. Enter `dbeaver-te update list`
 3. Choose the version you want to update.
