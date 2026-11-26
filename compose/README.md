@@ -236,7 +236,7 @@ Manager installation:
 
 Now you can use `dbeaver-te` command to start manager.
 
-See the [manager documentation](../manager/README.md). For a manual installation managed by `dbeaver-te`, use a full image tag that matches the deployment Git tag. The manager on new Team Edition cloud images handles rolling tags separately.
+See the [manager documentation](../manager/README.md). If you use `dbeaver-te` to manage updates, use the full image tag that matches the deployment Git tag. The rolling-tag instructions below are for manual Compose updates.
 
 
 ## Version update procedure
