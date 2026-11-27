@@ -236,7 +236,7 @@ Manager installation:
 
 Now you can use `dbeaver-te` command to start manager.
 
-For detailed instructions on how to use the script manager, refer to [manager doucmentation](../manager/README.md).
+See the [manager documentation](../manager/README.md). If you use `dbeaver-te` to manage updates, use the full image tag that matches the deployment Git tag. The rolling-tag instructions below are for manual Compose updates.
 
 
 ## Version update procedure
@@ -259,8 +259,8 @@ Until you complete this migration, keep `PG_VERSION` set to the version that mat
 2. Stop the cluster: `docker-compose down` or `docker compose down`
 3. Update your deployment files:
    - Fetch latest changes: `git fetch`
-   - Switch to the branch for the version you're updating to: `git checkout <version>` (e.g., `git checkout 25.2.0`)
-   - Change value of `CLOUDBEAVER_VERSION_TAG` in `.env` with a preferred version (skip if tag `latest` is set)
+   - Switch to the deployment branch or exact Git tag, for example `git checkout 26.3.0`.
+   - In `.env`, set `CLOUDBEAVER_VERSION_TAG=26.3` for the newest image in the 26.3 release line, or use a full image tag such as `26.3.0.1` to pin an exact release. `26.3` is an image tag, not a Git ref.
 4. Pull new docker images: `docker-compose pull` or `docker compose pull`
 5. Start the cluster: `docker-compose up -d` or `docker compose up -d`
 
@@ -269,9 +269,9 @@ Until you complete this migration, keep `PG_VERSION` set to the version that mat
 If you are not updating across major version boundaries and don't need configuration changes:
 
 1. Navigate to `team-edition-deploy/compose/cbte`
-2. Change value of `CLOUDBEAVER_VERSION_TAG` in `.env` with a preferred version. Go to next step if tag `latest` is set.
-3. Pull new docker images: `docker-compose pull` or `docker compose pull`  
-4. Restart cluster: `docker-compose up -d` or `docker compose up -d`
+2. Update `CLOUDBEAVER_VERSION_TAG` in `.env` if you want a different tag. Leave it as `26.3` to stay on that release line.
+3. Pull the new images even if the tag hasn’t changed: `docker-compose pull` or `docker compose pull`.
+4. Recreate the containers with the pulled images: `docker-compose up -d` or `docker compose up -d`. A plain restart does not replace the images.
 
 **Note:** The standard procedure using `docker-compose down` is recommended because it ensures clean container replacement, especially when service names or configurations change between versions.
 
